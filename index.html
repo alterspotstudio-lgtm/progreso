@@ -144,20 +144,22 @@ body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;ma
 
 <body>
 
-<!-- ================================= -->
-<!-- MÉTODO NERI · PANEL EDITABLE -->
-<!-- SOLO CAMBIA LOS VALORES DE ABAJO -->
-<!-- ================================= -->
+<!-- ================================================= -->
+<!-- MÉTODO NERI · PANEL CENTRAL EDITABLE -->
+<!-- SOLO CAMBIA ESTA SECCIÓN -->
+<!-- ================================================= -->
 
 <script>
 const PROCESO = {
-  cliente: "<span data-cliente>Carlos y Fernanda</span>",
-  propiedad: "<span data-propiedad>Casa en Lomas de Ahuatlán</span>",
-  precio: "<span data-precio>$3,200,000 MXN</span>",
+  cliente: "Eduardo Analco",
+  propiedad: "Depto. Tabachín Bellavista",
+  precio: "$1,900,000 MXN",
   asesor: "Enrique Neri",
-  etapaActual: 4,
-  progreso: 72,
-  estadoActual: "<span data-estado>Preparando firma</span>",
+  
+  etapaActual: 7,
+  progreso: 92,
+
+  estadoActual: "Día de firma",
 
   pendientes: [
     "Descargar autorización Infonavit",
@@ -165,12 +167,20 @@ const PROCESO = {
   ],
 
   siguientePaso:
-    "<span data-siguiente>Una vez recibida la autorización, la notaría podrá continuar con programación de firma.</span>",
+    "La notaría enviara archivo para confirmación de deposito.",
 
   mensajeCliente:
-    "<span data-mensaje>Todo avanza correctamente. Te avisaremos cuando la siguiente etapa esté lista.</span>"
+    "Todo avanza correctamente. Te avisaremos cuando la siguiente etapa esté lista."
 };
 </script>
+
+
+<!-- ================================= -->
+<!-- MÉTODO NERI · PANEL EDITABLE -->
+<!-- SOLO CAMBIA LOS VALORES DE ABAJO -->
+<!-- ================================= -->
+
+
 
 
 <!-- ================================= -->
@@ -181,6 +191,27 @@ const PROCESO = {
 
 
 
+
+<div class="next-step" style="margin-top:20px">
+  <div class="next-label">Cliente</div>
+  <div class="next-item" data-cliente></div>
+</div>
+
+<div class="next-step">
+  <div class="next-label">Propiedad</div>
+  <div class="next-item" data-propiedad></div>
+</div>
+
+<div class="next-step">
+  <div class="next-label">Precio</div>
+  <div class="next-item" data-precio></div>
+</div>
+
+<div class="next-step">
+  <div class="next-label">Estado actual</div>
+  <div class="next-item" data-estado></div>
+</div>
+
 <!-- ══════════════════════
      SLIDE 1 — Tu operación
      ══════════════════════ -->
@@ -189,7 +220,7 @@ const PROCESO = {
   <div class="header">
     <div class="hdr-left">
       <div class="hdr-method">Método Neri</div>
-      <div class="hdr-name">Enrique Neri</div>
+      <div class="hdr-name"><span data-cliente></span></div>
       <div class="hdr-role">Asesor Inmobiliario · Cuernavaca</div>
     </div>
     <div class="hdr-logo">
@@ -206,9 +237,9 @@ const PROCESO = {
   <div class="prop-banner">
     <div class="prop-left">
       <div class="prop-tag">Propiedad en proceso</div>
-      <div class="prop-name" id="propNombre">Casa Ahuatlán</div>
+      <div class="prop-name" id="propNombre">Casa Lomas de Ahuatlán</div>
     </div>
-    <div class="prop-price"><span class="sym">$</span><span id="propPrecio">5,200,000</span></div>
+    <div class="prop-price"><span class="sym">$</span><span id="propPrecio">3,200,000</span></div>
   </div>
 
   <!-- CÍRCULO GRANDE CENTRADO -->
@@ -439,51 +470,64 @@ if(new URLSearchParams(window.location.search).get("admin") === "neri"){
 render();
 </script>
 
+
+
+
 <script>
 document.addEventListener("DOMContentLoaded",()=>{
 
-  // Cliente
-  const clienteEl = document.querySelector("[data-cliente]");
-  if(clienteEl) clienteEl.innerText = PROCESO.cliente;
+  const setText=(selector,value)=>{
+    document.querySelectorAll(selector).forEach(el=>{
+      el.textContent=value;
+    });
+  };
 
-  // Propiedad
-  const propiedadEl = document.querySelector("[data-propiedad]");
-  if(propiedadEl) propiedadEl.innerText = PROCESO.propiedad;
+  setText("[data-cliente]",PROCESO.cliente);
+  setText("[data-propiedad]",PROCESO.propiedad);
+  setText("[data-precio]",PROCESO.precio);
+  setText("[data-estado]",PROCESO.estadoActual);
+  setText("[data-siguiente]",PROCESO.siguientePaso);
+  setText("[data-mensaje]",PROCESO.mensajeCliente);
 
-  // Precio
-  const precioEl = document.querySelector("[data-precio]");
-  if(precioEl) precioEl.innerText = PROCESO.precio;
-
-  // Estado actual
-  const estadoEl = document.querySelector("[data-estado]");
-  if(estadoEl) estadoEl.innerText = PROCESO.estadoActual;
-
-  // Mensaje tranquilidad
-  const calmaEl = document.querySelector("[data-mensaje]");
-  if(calmaEl) calmaEl.innerText = PROCESO.mensajeCliente;
-
-  // Próximo paso
-  const pasoEl = document.querySelector("[data-siguiente]");
-  if(pasoEl) pasoEl.innerText = PROCESO.siguientePaso;
-
-  // Pendientes
-  const pendientesEl = document.querySelector("[data-pendientes]");
-  if(pendientesEl){
-    pendientesEl.innerHTML = "";
-    PROCESO.pendientes.forEach(p=>{
-      const div = document.createElement("div");
-      div.className = "next-item";
-      div.innerText = "• " + p;
-      pendientesEl.appendChild(div);
+  const pendientes=document.querySelector("[data-pendientes]");
+  if(pendientes){
+    pendientes.innerHTML="";
+    PROCESO.pendientes.forEach(item=>{
+      const div=document.createElement("div");
+      div.className="next-item";
+      div.textContent="• "+item;
+      pendientes.appendChild(div);
     });
   }
 
-  // Progreso
-  const progEl = document.querySelector("[data-progreso]");
-  if(progEl) progEl.innerText = PROCESO.progreso + "%";
+  // progreso
+  document.querySelectorAll(".percent,[data-progreso]").forEach(el=>{
+    el.textContent=PROCESO.progreso + "%";
+  });
+
+  // etapas timeline
+  const etapas=document.querySelectorAll(".step,.timeline-step,.phase");
+  etapas.forEach((el,index)=>{
+    if(index < PROCESO.etapaActual){
+      el.classList.add("active");
+    }else{
+      el.classList.remove("active");
+    }
+  });
 
 });
 </script>
 
 </body>
 </html>
+<div class="next-step">
+<div class="next-label">Pendientes</div>
+<div data-pendientes></div>
+</div>
+
+<div class="next-step">
+<div class="next-label">Próximo paso</div>
+<div class="next-item" data-siguiente></div>
+</div>
+
+<div class="calm-note" data-mensaje></div>
