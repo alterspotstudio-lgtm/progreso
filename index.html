@@ -145,6 +145,35 @@ body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;ma
 <body>
 
 <!-- ================================= -->
+<!-- MÉTODO NERI · PANEL EDITABLE -->
+<!-- SOLO CAMBIA LOS VALORES DE ABAJO -->
+<!-- ================================= -->
+
+<script>
+const PROCESO = {
+  cliente: "<span data-cliente>Carlos y Fernanda</span>",
+  propiedad: "<span data-propiedad>Casa en Lomas de Ahuatlán</span>",
+  precio: "<span data-precio>$3,200,000 MXN</span>",
+  asesor: "Enrique Neri",
+  etapaActual: 4,
+  progreso: 72,
+  estadoActual: "<span data-estado>Preparando firma</span>",
+
+  pendientes: [
+    "Descargar autorización Infonavit",
+    "Confirmar autorización patronal"
+  ],
+
+  siguientePaso:
+    "<span data-siguiente>Una vez recibida la autorización, la notaría podrá continuar con programación de firma.</span>",
+
+  mensajeCliente:
+    "<span data-mensaje>Todo avanza correctamente. Te avisaremos cuando la siguiente etapa esté lista.</span>"
+};
+</script>
+
+
+<!-- ================================= -->
 <!-- MÉTODO NERI · ZONAS PERSONALIZABLES -->
 <!-- Cambia únicamente los textos necesarios -->
 <!-- Sin mover diseño ni estructura -->
@@ -409,5 +438,52 @@ if(new URLSearchParams(window.location.search).get("admin") === "neri"){
 
 render();
 </script>
+
+<script>
+document.addEventListener("DOMContentLoaded",()=>{
+
+  // Cliente
+  const clienteEl = document.querySelector("[data-cliente]");
+  if(clienteEl) clienteEl.innerText = PROCESO.cliente;
+
+  // Propiedad
+  const propiedadEl = document.querySelector("[data-propiedad]");
+  if(propiedadEl) propiedadEl.innerText = PROCESO.propiedad;
+
+  // Precio
+  const precioEl = document.querySelector("[data-precio]");
+  if(precioEl) precioEl.innerText = PROCESO.precio;
+
+  // Estado actual
+  const estadoEl = document.querySelector("[data-estado]");
+  if(estadoEl) estadoEl.innerText = PROCESO.estadoActual;
+
+  // Mensaje tranquilidad
+  const calmaEl = document.querySelector("[data-mensaje]");
+  if(calmaEl) calmaEl.innerText = PROCESO.mensajeCliente;
+
+  // Próximo paso
+  const pasoEl = document.querySelector("[data-siguiente]");
+  if(pasoEl) pasoEl.innerText = PROCESO.siguientePaso;
+
+  // Pendientes
+  const pendientesEl = document.querySelector("[data-pendientes]");
+  if(pendientesEl){
+    pendientesEl.innerHTML = "";
+    PROCESO.pendientes.forEach(p=>{
+      const div = document.createElement("div");
+      div.className = "next-item";
+      div.innerText = "• " + p;
+      pendientesEl.appendChild(div);
+    });
+  }
+
+  // Progreso
+  const progEl = document.querySelector("[data-progreso]");
+  if(progEl) progEl.innerText = PROCESO.progreso + "%";
+
+});
+</script>
+
 </body>
 </html>
