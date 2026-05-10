@@ -132,9 +132,25 @@ body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;ma
 .alert-title{font-size:11px;font-weight:600;color:rgba(255,255,255,.7);margin-bottom:2px}
 .alert-detail{font-size:10px;color:rgba(255,255,255,.3);font-weight:300;line-height:1.5}
 .admin-lbl{font-size:8px;letter-spacing:3px;color:rgba(226,210,0,.3);text-transform:uppercase;font-weight:700;margin:16px 0 8px}
+
+.next-step{margin-top:16px;padding:16px;border:1px solid rgba(255,255,255,.08);border-radius:18px;background:rgba(255,255,255,.03)}
+.next-label{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:#c7b89a;margin-bottom:10px}
+.next-item{font-size:14px;line-height:1.6;color:#f2f2f2}
+.calm-note{margin-top:18px;padding:14px 18px;border-radius:16px;background:rgba(199,184,154,.08);border:1px solid rgba(199,184,154,.12);font-size:14px;line-height:1.6;color:#e9dfcb}
+.personalizable{display:none}
+
 </style>
 </head>
+
 <body>
+
+<!-- ================================= -->
+<!-- MÉTODO NERI · ZONAS PERSONALIZABLES -->
+<!-- Cambia únicamente los textos necesarios -->
+<!-- Sin mover diseño ni estructura -->
+<!-- ================================= -->
+
+
 
 <!-- ══════════════════════
      SLIDE 1 — Tu operación
@@ -249,7 +265,7 @@ body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;ma
 
   <div class="bottom-note">
     <div class="bn-label">Nota de proceso</div>
-    <div class="bn-text" id="bnText">"Cada etapa está siendo gestionada con rigor y discreción."</div>
+    <div class="bn-text" id="bnText">"Cada etapa está siendo acompañada cuidadosamente para que avances con tranquilidad y claridad."</div>
   </div>
 
   <div class="wa-row">
@@ -308,7 +324,7 @@ body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;ma
    ZONA EDITABLE — solo estos valores
    FASE_ACTUAL: 0=Apartado  1=Val.Financiera
                 2=Docs  3=Contrato  4=Notaría
-                5=Autorizaciones  6=Firma  7=Entrega
+                5=Últimas confirmaciones  6=Firma  7=Entrega
    ════════════════════════════════════════════ */
 var FOLIO       = "EN-2506-4821";
 var FASE_ACTUAL = 0;
@@ -317,14 +333,14 @@ var WA_NUM      = "527779855687";
 
 var CIRC = 472.5;
 var fases = [
-  {n:"Apartado",                pct:5,   copy:'"La propiedad se encuentra en proceso de reserva privada."',        emo:'"Tu operación ha iniciado. La propiedad ya está reservada para ti."',                          checks:["Apartado recibido","Publicidad pausada","Vendedor notificado","Visitas detenidas","Integración documental iniciada"]},
-  {n:"Validación financiera",   pct:15,  copy:'"Validando la estructura financiera de la operación."',             emo:'"Tu operación avanza. Estamos verificando tu perfil financiero con total cuidado."',           checks:["Revisión bancaria / INFONAVIT","Capacidad de pago","Aprobaciones preliminares","Documentación fiscal"]},
-  {n:"Integración documental",  pct:30,  copy:'"La documentación está siendo integrada y revisada."',              emo:'"Tu expediente está siendo construido con rigor. Todo avanza correctamente."',                  checks:["INE y actas","Escrituras","Predial y boletas","RFC","Estado civil"]},
-  {n:"Contrato de compraventa", pct:45,  copy:'"Se formalizan las condiciones acordadas entre ambas partes."',     emo:'"Las condiciones de tu operación están siendo formalizadas. Un paso decisivo."',               checks:["Redacción","Revisión jurídica","Firmas de ambas partes","Condiciones aceptadas"]},
-  {n:"Ingreso a notaría",       pct:60,  copy:'"La operación está en proceso de validación notarial."',            emo:'"Tu operación ya está en manos del notario. El proceso avanza de forma impecable."',           checks:["Expediente notarial","Validación jurídica","Certificados","Revisión registral"]},
-  {n:"Autorizaciones",          pct:75,  copy:'"La operación avanza hacia su etapa final de escrituración."',      emo:'"Estamos en la recta final. Las autorizaciones avanzan según lo planeado."',                  checks:["Autorización final","Liberación de recursos","Coordinación de pago"]},
-  {n:"Firma en notaría",        pct:90,  copy:'"La firma de escrituración ha sido programada correctamente."',     emo:'"La fecha de firma está confirmada. Tu nuevo capítulo está a punto de comenzar."',            checks:["Firma oficial","Protocolización","Formalización legal"]},
-  {n:"Entrega de propiedad",    pct:100, copy:'"La propiedad ha sido entregada y la operación concluida."',        emo:'"Felicidades. Tu propiedad es tuya. Fue un honor acompañarte en este proceso."',              checks:["Entrega de llaves","Confirmación de posesión","Cierre operativo"]}
+  {n:"Apartado",                pct:5,   copy:'"La propiedad se encuentra en proceso de reserva privada."',        emo:'"Tu operación ha iniciado. La propiedad ya está reservada para ti."',                          checks:["Apartado recibido","Publicidad pausada","Vendedor notificado","Visitas detenidas","Preparando documentos iniciada"]},
+  {n:"Revisión de compra",   pct:15,  copy:'"Validando la estructura financiera de la operación."',             emo:'"Tu operación avanza. Estamos verificando tu perfil financiero con total cuidado."',           checks:["Revisión con banco o Infonavit","Validación de capacidad de compra","Confirmaciones iniciales","Documentos recibidos"]},
+  {n:"Preparando documentos",  pct:30,  copy:'"La documentación está siendo integrada y revisada."',              emo:'"Estamos revisando cuidadosamente cada documento para que todo avance correctamente. Todo avanza correctamente."',                  checks:["INE y actas","Escrituras","Predial y boletas","RFC","Estado civil"]},
+  {n:"Acuerdo de compra", pct:45,  copy:'"Se formalizan las condiciones acordadas entre ambas partes."',     emo:'"Las condiciones de tu operación están siendo formalizadas. Un paso decisivo."',               checks:["Redacción","Revisión jurídica","Firmas de ambas partes","Condiciones aceptadas"]},
+  {n:"Revisión en notaría",       pct:60,  copy:'"La operación está en proceso de validación notarial."',            emo:'"La notaría ya se encuentra revisando tu proceso para preparar la siguiente etapa."',           checks:["Documentación enviada a notaría","Revisión legal de propiedad","Validaciones oficiales","Preparación para firma"]},
+  {n:"Últimas confirmaciones",          pct:75,  copy:'"La operación avanza hacia su etapa final de escrituración."',      emo:'"Estamos muy cerca de la firma. Solo faltan algunas confirmaciones importantes."',                  checks:["Confirmaciones finales","Liberación de recursos","Coordinación para firma"]},
+  {n:"Día de firma",        pct:90,  copy:'"La firma de escrituración ha sido programada correctamente."',     emo:'"La fecha de firma está confirmada. Tu nuevo capítulo está a punto de comenzar."',            checks:["Firma programada","Documentos listos","Preparación de entrega"]},
+  {n:"Entrega de llaves",    pct:100, copy:'"La propiedad ha sido entregada y la operación concluida."',        emo:'"Felicidades. Tu propiedad es tuya. Fue un honor acompañarte en este proceso."',              checks:["Entrega de llaves","Confirmación de posesión","Cierre operativo"]}
 ];
 
 function goSlide(n){
