@@ -12,45 +12,47 @@
 html,body{background:#0B0B0B;min-height:100vh;overflow-x:hidden}
 body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;margin:0 auto}
 
-/* HEADER NUEVO — sin foto, solo texto + logo */
-.header{padding:0;border-bottom:1px solid rgba(198,168,107,0.15);position:sticky;top:0;z-index:20;background:rgba(11,11,11,0.97);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
-.hdr-top{padding:12px 20px 10px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+/* ── SLIDES ── */
+.slide{display:none;min-height:100vh;flex-direction:column}
+.slide.active{display:flex}
+
+/* ── HEADER sticky ── */
+.header{padding:12px 20px 10px;border-bottom:1px solid rgba(198,168,107,0.15);position:sticky;top:0;z-index:20;background:rgba(11,11,11,0.97);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:space-between;gap:12px}
 .hdr-left{}
 .hdr-method{font-size:8px;letter-spacing:5px;color:rgba(198,168,107,.55);text-transform:uppercase;font-weight:700;margin-bottom:2px}
-.hdr-name{font-family:"Bebas Neue",sans-serif;font-size:26px;letter-spacing:4px;color:#fff;line-height:1}
-.hdr-role{font-size:8px;color:rgba(255,255,255,.22);font-weight:300;letter-spacing:1px;margin-top:3px}
-.hdr-logo{flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:3px}
-.hdr-logo img{height:36px;width:auto;object-fit:contain}
-.hdr-divider{height:1px;background:linear-gradient(90deg,rgba(198,168,107,0),rgba(198,168,107,0.3),rgba(198,168,107,0));margin:0 20px}
+.hdr-name{font-family:"Bebas Neue",sans-serif;font-size:24px;letter-spacing:4px;color:#fff;line-height:1}
+.hdr-role{font-size:8px;color:rgba(255,255,255,.22);font-weight:300;letter-spacing:1px;margin-top:2px}
+.hdr-logo{flex-shrink:0}
+.hdr-logo img{height:44px;width:auto;object-fit:contain;display:block}
 
-/* PROCESO TITLE BANNER */
-.proceso-banner{padding:10px 20px 11px;background:rgba(198,168,107,0.04);border-bottom:1px solid rgba(198,168,107,0.1);display:flex;align-items:center;gap:8px}
-.proceso-dot{width:5px;height:5px;border-radius:50%;background:#C6A86B;flex-shrink:0}
+/* ── PROCESO BANNER ── */
+.proceso-banner{padding:10px 20px;background:rgba(198,168,107,0.04);border-bottom:1px solid rgba(198,168,107,0.1);display:flex;align-items:center;gap:8px}
+.proceso-dot{width:5px;height:5px;border-radius:50%;background:#C6A86B;flex-shrink:0;animation:dotBlink 2s ease-in-out infinite}
 .proceso-txt{font-size:8px;letter-spacing:4px;color:rgba(198,168,107,.5);text-transform:uppercase;font-weight:700}
 
-/* PROP BANNER */
-.prop-banner{padding:13px 20px;background:rgba(198,168,107,0.05);border-bottom:1px solid rgba(198,168,107,0.12);display:flex;align-items:center;justify-content:space-between;gap:8px}
+/* ── PROP BANNER ── */
+.prop-banner{padding:14px 20px;background:rgba(198,168,107,0.05);border-bottom:1px solid rgba(198,168,107,0.12);display:flex;align-items:center;justify-content:space-between;gap:8px}
 .prop-left{min-width:0;flex:1}
 .prop-tag{font-size:7px;letter-spacing:3px;color:rgba(198,168,107,.4);text-transform:uppercase;font-weight:700;margin-bottom:2px}
 .prop-name{font-size:11px;letter-spacing:1px;color:rgba(255,255,255,.55);font-weight:500;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:190px}
-.prop-price{font-family:"Bebas Neue",sans-serif;font-size:22px;letter-spacing:0px;color:#C6A86B;white-space:nowrap;flex-shrink:0}
-.prop-price .sym{font-size:14px;vertical-align:2px;margin-right:1px}
+.prop-price{font-family:"Bebas Neue",sans-serif;font-size:22px;letter-spacing:0;color:#C6A86B;white-space:nowrap;flex-shrink:0}
+.prop-price .sym{font-size:13px;vertical-align:2px;margin-right:1px}
 
-/* PROGRESS HERO */
-.prog-hero{padding:22px 20px 18px;display:flex;align-items:center;gap:18px;border-bottom:1px solid rgba(255,255,255,.04)}
-.circle-wrap{position:relative;flex-shrink:0;width:82px;height:82px}
-.c-svg{transform:rotate(-90deg);width:82px;height:82px}
+/* ── PROGRESS HERO ── */
+.prog-hero{padding:24px 20px 20px;display:flex;align-items:center;gap:18px;border-bottom:1px solid rgba(255,255,255,.04)}
+.circle-wrap{position:relative;flex-shrink:0;width:84px;height:84px}
+.c-svg{transform:rotate(-90deg);width:84px;height:84px}
 .c-track{fill:none;stroke:rgba(255,255,255,.05);stroke-width:4.5}
 .c-glow{fill:none;stroke:rgba(226,210,0,.1);stroke-width:10;stroke-linecap:round;stroke-dasharray:220.9;stroke-dashoffset:220.9;transition:stroke-dashoffset 1s cubic-bezier(.16,1,.3,1)}
 .c-fill{fill:none;stroke:url(#yellowGrad);stroke-width:4.5;stroke-linecap:round;stroke-dasharray:220.9;stroke-dashoffset:220.9;transition:stroke-dashoffset 1s cubic-bezier(.16,1,.3,1)}
 .c-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.c-pct{font-family:"Bebas Neue",sans-serif;font-size:22px;letter-spacing:1px;line-height:1;color:#e2d200}
+.c-pct{font-family:"Bebas Neue",sans-serif;font-size:23px;letter-spacing:1px;line-height:1;color:#e2d200}
 .c-lbl{font-size:7px;letter-spacing:2px;color:rgba(226,210,0,.45);text-transform:uppercase;font-weight:700}
 .c-pulse{position:absolute;inset:-5px;border-radius:50%;border:1px solid rgba(226,210,0,.12);animation:cPulse 2.8s ease-in-out infinite;pointer-events:none}
 @keyframes cPulse{0%,100%{opacity:0;transform:scale(.94)}60%{opacity:1;transform:scale(1)}}
 .prog-text{flex:1;min-width:0}
 .pt-fase{font-size:8px;letter-spacing:3px;color:rgba(198,168,107,.5);text-transform:uppercase;font-weight:700;margin-bottom:4px}
-.pt-title{font-family:"Bebas Neue",sans-serif;font-size:24px;letter-spacing:2px;color:#fff;line-height:1;margin-bottom:9px}
+.pt-title{font-family:"Bebas Neue",sans-serif;font-size:26px;letter-spacing:2px;color:#fff;line-height:1;margin-bottom:10px}
 .pt-title span{color:#e2d200}
 .bar-wrap{position:relative;height:4px;background:rgba(255,255,255,.05);border-radius:2px;margin-bottom:8px;overflow:visible}
 .bar-fill{height:100%;background:linear-gradient(90deg,#c6a100,#e2d200,#aacc00);border-radius:2px;transition:width 1s cubic-bezier(.16,1,.3,1);position:relative;min-width:8px;box-shadow:0 0 10px rgba(220,210,0,.4)}
@@ -58,20 +60,28 @@ body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;ma
 @keyframes dotBlink{0%,100%{opacity:1;box-shadow:0 0 4px rgba(220,220,0,.9),0 0 14px rgba(220,220,0,.35)}50%{opacity:.35;box-shadow:none}}
 .pt-copy{font-size:10px;color:rgba(255,255,255,.28);font-weight:300;font-style:italic;line-height:1.6}
 
-/* STATUS ROW */
+/* ── STATUS ROW ── */
 .status-row{padding:11px 20px;border-bottom:1px solid rgba(255,255,255,.04);display:flex;align-items:center;gap:10px}
 .s-dot{width:6px;height:6px;border-radius:50%;background:#e2d200;flex-shrink:0;box-shadow:0 0 7px rgba(220,220,0,.7);animation:dotBlink 1.6s ease-in-out infinite}
 .s-txt{font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.2);text-transform:uppercase;font-weight:600}
 .s-txt strong{color:rgba(198,168,107,.65)}
 .s-folio{margin-left:auto;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.15);font-weight:300}
 
-/* CAPA 2 */
+/* ── CAPA 2 MENSAJE EMOCIONAL ── */
 .emotional-msg{margin:18px 20px 0;padding:16px;border:0.5px solid rgba(198,168,107,.18);background:rgba(198,168,107,.03);position:relative;overflow:hidden}
 .emotional-msg::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,#C6A86B,#e2d200)}
 .em-label{font-size:7px;letter-spacing:4px;color:rgba(198,168,107,.4);text-transform:uppercase;font-weight:700;margin-bottom:6px}
 .em-text{font-size:13px;font-weight:500;color:rgba(255,255,255,.72);line-height:1.6;font-style:italic}
 
-/* TIMELINE */
+/* ── SLIDE NAV BUTTON ── */
+.slide-nav{margin:auto 20px 28px;padding-top:28px}
+.nav-btn{width:100%;padding:15px;border:0.5px solid rgba(198,168,107,.35);background:transparent;color:#C6A86B;font-family:"Montserrat",sans-serif;font-size:10px;letter-spacing:4px;text-transform:uppercase;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s}
+.nav-btn:hover{background:rgba(198,168,107,.06)}
+.nav-btn.back{border-color:rgba(255,255,255,.08);color:rgba(255,255,255,.25);margin-bottom:10px}
+.nav-btn.back:hover{background:rgba(255,255,255,.03)}
+.nav-arrow{font-size:16px;line-height:1}
+
+/* ── SLIDE 2: TIMELINE ── */
 .timeline{padding:22px 20px 8px}
 .tl-eyebrow{font-size:8px;letter-spacing:4px;color:rgba(255,255,255,.18);text-transform:uppercase;font-weight:700;margin-bottom:20px}
 .tl-item{display:flex;gap:14px}
@@ -86,7 +96,7 @@ body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;ma
 .line-pending{background:rgba(255,255,255,.05)}
 .tl-content{padding-bottom:20px;flex:1;min-width:0}
 .tl-pct-tag{font-size:8px;letter-spacing:2px;color:rgba(255,255,255,.18);font-weight:700;margin-bottom:2px}
-.tl-name{font-size:12px;font-weight:600;color:rgba(255,255,255,.22);transition:color .3s}
+.tl-name{font-size:12px;font-weight:600;color:rgba(255,255,255,.22)}
 .tl-name.na{color:#fff}
 .tl-name.nd{color:rgba(198,168,107,.6)}
 .tl-checks{margin-top:9px;display:none}
@@ -94,23 +104,23 @@ body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;ma
 .tl-chk{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:10px;color:rgba(255,255,255,.38);font-weight:300}
 .chk-ico{width:14px;height:14px;border-radius:50%;background:rgba(198,168,107,.12);border:0.5px solid rgba(198,168,107,.4);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:8px;color:#C6A86B}
 
-/* NOTA */
+/* ── NOTA ── */
 .bottom-note{margin:8px 20px 16px;padding:16px;border-left:2px solid rgba(198,168,107,.28);background:rgba(198,168,107,.03)}
 .bn-label{font-size:8px;letter-spacing:3px;color:rgba(198,168,107,.4);text-transform:uppercase;font-weight:700;margin-bottom:8px}
 .bn-text{font-size:11px;font-weight:300;color:rgba(255,255,255,.32);line-height:1.8;font-style:italic}
 
-/* WA */
+/* ── WA ── */
 .wa-row{padding:0 20px 16px}
-.wa-btn{display:flex;align-items:center;justify-content:center;gap:10px;background:rgba(13,31,13,.7);border:0.5px solid rgba(30,74,30,.9);color:#4caf50;padding:15px;font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:600;width:100%;cursor:pointer;font-family:"Montserrat",sans-serif;transition:background .2s}
+.wa-btn{display:flex;align-items:center;justify-content:center;gap:10px;background:rgba(13,31,13,.7);border:0.5px solid rgba(30,74,30,.9);color:#4caf50;padding:15px;font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:600;width:100%;cursor:pointer;font-family:"Montserrat",sans-serif}
 
-/* FOOTER */
+/* ── FOOTER ── */
 .footer{padding:14px 20px 28px;border-top:1px solid rgba(255,255,255,.04);display:flex;align-items:center;justify-content:space-between;gap:12px}
-.ft-logo img{height:30px;width:auto;object-fit:contain;opacity:.4}
+.ft-logo img{height:28px;width:auto;object-fit:contain;opacity:.4}
 .ft-right{text-align:right}
 .ft-method{font-size:8px;letter-spacing:4px;color:rgba(198,168,107,.25);text-transform:uppercase;font-weight:700}
 .ft-copy{font-size:7px;color:rgba(255,255,255,.1);font-weight:300;margin-top:2px}
 
-/* CAPA 3 */
+/* ── CAPA 3 ADMIN ── */
 .admin-panel{display:none;background:#0a0800;border-top:2px solid rgba(226,210,0,.25)}
 .admin-panel.visible{display:block}
 .admin-bar{padding:12px 20px;background:rgba(226,210,0,.06);border-bottom:1px solid rgba(226,210,0,.12);display:flex;align-items:center;gap:8px}
@@ -131,110 +141,139 @@ body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;ma
 </head>
 <body>
 
-<!-- HEADER: sin foto, solo identidad + logo -->
-<div class="header">
-  <div class="hdr-top">
+<!-- ══════════════════════════════════
+     SLIDE 1 — Resumen de tu operación
+     ══════════════════════════════════ -->
+<div class="slide active" id="slide1">
+
+  <div class="header">
     <div class="hdr-left">
       <div class="hdr-method">Método Neri</div>
       <div class="hdr-name">Enrique Neri</div>
       <div class="hdr-role">Asesor Inmobiliario · Cuernavaca</div>
     </div>
     <div class="hdr-logo">
-      <img src="data:image/png;base64,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" alt="Century 21 Haus">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFgAAAAyCAYAAADY+hwIAAABCGlDQ1BJQ0MgUHJvZmlsZQAAeJxjYGA8wQAELAYMDLl5JUVB7k4KEZFRCuwPGBiBEAwSk4sLGHADoKpv1yBqL+viUYcLcKakFicD6Q9ArFIEtBxopAiQLZIOYWuA2EkQtg2IXV5SUAJkB4DYRSFBzkB2CpCtkY7ETkJiJxcUgdT3ANk2uTmlyQh3M/Ck5oUGA2kOIJZhKGYIYnBncAL5H6IkfxEDg8VXBgbmCQixpJkMDNtbGRgkbiHEVBYwMPC3MDBsO48QQ4RJQWJRIliIBYiZ0tIYGD4tZ2DgjWRgEL7AwMAVDQsIHG5TALvNnSEfCNMZchhSgSKeDHkMyQx6QJYRgwGDIYMZAKbWPz9HbOBQAAARr0lEQVR42u1aeXhU1dl/33PvLJklk5nsiwlLUCF0sdCiX78+TaytbfVTQTOftmWrklQUrQuKLLkzgIC1mMa0aFIwgFp0AuK+00CrrTyK/ZBFkF3MQpKZzL7cuee83x+TYAiBavtHp33yPs88M8+d995zzu+c+76/d0FIQ/F4PJLT6eQAgFs3uqdZTfIsZFhlsWSYJcYgFktAMqkdVDWx5cRx/xO19/36CBEgIlC6rQXTFdyNTQumFOfZ6nMd1suCoRjE4om9JOgQF6QyhnmyzL6W47A5wpG4ONUd/MW02UvXejwe1r8xaSNyOoK7paXup4UFtqcYAnSc8j8SDMabnbcsPzhY9+GH7zGPDalX5josd6CE+wCA9u3bN3KCzw1uteR0tnLP2sXXjB2d+0Iklvj0eHvIOaN22U4AAGpT5F3WIgyFOqiyEgSiW8CIfDFRFIURET7ZtLDwzy//yvfuKw/3rG9YNBYAYO9eRT9Ud+j9RITpura0MBGuigpERPHypqV12XarfffBk9fNunPFEY9H0U+c6Fa3tCiXZmWZxnV0+XdNv9W9HwCgvv7OrItLcm8Mh2NeRGxNV4D/5TtPRIiI1Ni4IPurZVnt0bi6+0fOuikffNCkmzy5NvnSH5YtL863LdIbZAiGYtDRE7hlzxFs+dZ4adv4ccWVR090H75i2gPj0hVg9q+ewHaXSwIAKHOYvpPjsBm4is1EhJMn1yafeWLhNy4uL1jk6wu9d+hI143JpHbEkZnx6xxTb0E8rv7u08+6jyBSMp3N378cYKhMfUkSTInHVQrHozsRkQgAZWChpCbuDsf4rKkzlz7r90farOaMLJPVarx+1vLNQogwEBjTGeC0oWk6JhVGonEMhSM9AAAuRUH3z92HAKAeAMCzdvFF+Xm2G/3+yMfhjyPtHo9HIjgsASKNnOAvYouRBCCCEIwNZgxtbYqxurpayrKZ1plMRos/HJ93Z2Njwul0cgRIe6qWNgBrXJy0mjPIbrflAwC4AKCyElhVlTt+0zUT5pcUOb59+PiphdWzl20721ECjgB8DunpqSAAADXBd+r1MpoM8ncAAF6b4tNVVbk1zxOLv5Jnt7hO9fgDMpMib29eec/6phRHRgACAJGOOYi0Abi62ikAAD496nunq6cvrNPBrQCAeXkTxerVdzmsFuMLZpPBIDG0jR9X2CCI/0LHuQ8AgAthFYJba2ZOu7i6uloacXLDEXEEIvJIiM7gi0+7Gy8aW/DApnUL50yeXNvc0HCfyR+I3NvV1ZuQJQl6fWFx9Fjk/Xvdj/QBAHT19M0mYDrBpcRIoPF3gg2Xy4VFRXHrhfmOjzKMct4nJ3oqZ9Su2nk+fbd7JB/xJUBO5Rg2NS36r7++vjr+zsu/Cm9uUa4bfBLa2hTZ4/GcYQqUu252pJOzTtts2uCM2tNNi64oLbK12jJNWV3dwc1xNfnbgx8GP5i/enVkQPeptYvK7FbT1XabUfH6Yhv+5yeL5w9K1I/Y4OHE6Wzl/SC9ve6RBZNGjeIPZdvNN+h00g0ZRjn85pTlR1HCmBBUYM7Ql2XbM6HbF+jmgh8hAnS5RvLBX+okAwC0blh6SZZZfwMiryKA0URkkBB7BLLdyaR4cec7XS+6GxuDBID9tG1EvoikcsRn5X5x0qRJuuE2ZASxf8L5tbUpMg1JtJPHI7UpipzOyfZ/R8F0NWsjMiIjMiIjkuaRHBEguJTUNbebBvNKIsDW1mp2jgBBpFIEKZ19+ybQ0DyBoiisomI/DvBbIsLWVic7T9AhIDU+ejzDP9PjqZYGXx8YY7DO0PsGKN3APIab43BjDdZxuQAQ3QSD8Bk8drWzVQzl5EhDYvzUZDz/ML9MJ/rUDyqef75/l53gUF5Ow/RonIv2EECqHWmM3TKaI4hX/nT86IYNG+IDiusa5uWaM61jo9EEh2SqkCtJjDiTMEqxj2+/fU3496vvchQXZ1544Fh3990PPHZ0oCQPALDu0bu+pmPMGNNd+GFtbW1y9fLa4uIie1E4EidZRkYETNNA6JEE00vY3hf6ZMGC5kBT0/22ApNxfG8o0X3z3FWnn9nUVKOTk9Zv8KSWqLmrYTcA0Mbf3lWuN2fkJMJRDQBANhopLFhHbe2KztQpm2spLzZfEo9riTl31L9PqY5BGnjm6uW1xZdMLCs5frIn+vN59XuGayhct2bBGEemyTz1Z9s+BtihkaIwdLvFmpW3jsnJseYIAsY1dvCnc1f1EQDKRAC1tTW6ay8vXWzOkG82GvTFRASzpo0/ev0PXE90fkL1tW53tKy04Bq71bw2GkuA0agHIAACAp1OhgNHOq8AgG2OXPMPCvKyN+l1+t4NTfdPAoCTAxMoKczZotexsYGovxgAOkryHfdeMmHUL33+MHAhIKlqYDTqgTEEo0EPYu+x6wHguTJ79mVlJZmvmdr96wFg9q5dzTIAJPXJzOyy4uz3wtF4Z3l5+ejDhw8nCgqyV2RnWasTCRV0OhkIAWJxNfrSH5Y+/sHBbffn5gJkZ1ofKZuQM3nr+iWLEHFFU1OTzuVy8ZZ6xVZSqt/hyMoc2+0NzwSAPa2tHkbkFC6XggCdxinjSx83meTpGXo9bH/hR3u9vso5ONv9HgBAYZHj0TFlBVdFYyqEY+p1APDCdkWRmMulSFd/t+jZsWW5dQBQHAxHdwbDsfftmeYxep08vaN/5xiTNGRIcVU74vWF/+z1R97pC0R3eH2RHTyOXgAAWZZELJ4gi9mYk2szr0VE2l6ZSiXKEksAEZdlFAAAgmCvty+yIxCMbovG1JOyTqJQOLbXH4j+0dcX3sGBulIjC865IEnGM/ofDAYdAYAmSZ8n2yVJUgGIIjH1A68/vMPnj/wpqWpQPir37m9ddPndt9++JhwIwQx/IBLOz7fVPf37BZNqOjq42+0WjlxqGFWSO/Zke8+TN968YmMqH+LkAB7mdrvF5ItKlo0dlTs9qfJOfzjyQVameaLFIm99es0COwCAELgzHEl8xiQkADpt3+VJ49jcUSXZU9u7fAe8gejPnLOW7QIA2Pqk+3vhUPIzt3t5NGVwULOYMrC3L/j4D/93ya/PMPyQskXEQTCGGInGKT838/tbN9TNq6pyNwIQClgFSIAMDBwA4KaalesAYB0AwFutK1ZmO2wLPv2s774rqxe8Ntj/6iSJp+zfcDadEM64TqTTyZjUaN6Pb1zyHgDApuYl37GYo2/rdNLPFUV55KY5dR97WuoWThhX8GhOlrUF5yz66pb1S6aWFufOONHuPXEykLiTFIW59qUcLKKTV1dXS3qddF2PNxRtPxX+4azbVn70+jPLXiguclwTiiYuA4BXr5+9fNlbmx90FGU5fhkKq6cBZkYDmxeLJ0WPN1zrnLVsV1tbKr6fOl3ZNn3u8oNNTTW61NQ545wDQ6n0zZdXjW976cGJf32zfvw7zz9krVRSpxQRhFGvh3BE/b9AMBrIy7Wuaml64GIAJCQhD3GCbO9eRU+kMGSoByKQdMxIpLC9HkWvKHX/cCpVN+hUH2j3/i0aUwUBWTs7O5E8Hsk5e2nj8ZO9b11Q5PjKi0+7m21W469IEPi88V/Mnbuqr7WiYqBaQgAAEyZMoDiJKzq8sYkz567YAwDAQRgJCBAlMeDUmSSdlYhikiSN6QtEet/dHdxJpLDKSjdHRPJ4PJKiKOzCCwsJAIAApVAkBjqJzcvU6fcbZMMek0G33xePV1a53RoAgEAQJpMBuBBv+gKRB/KybaYCW8bvAQCRIR/ip6mnJ9WGSkB0mnqgW/TsA1FRUXEmzRnir2U5icMxFyEEAKPrtm1dMf2NzctrLh1f+HxRvt3Iudje3Nyc3NXXx4gIe/yRmq7uQF9etmWOw24p/6yz7zHnHPfrbW2KPDRp73a7xbXOJcecM5YcQ0Tasn7xjOJ8xw86T/lP9HbE/+rxeKSUM6ez0qVMEKmyxIzl5WBoba3A7dsVaYArulyuQTwYSZYl0Lg4FonE343Hkn8OR+LvchLewa8v5wIkCbNvmPXgY0dOnHp/1AW5/715ozJfcAowxC9d2hGkMQAgjZMgIgyFOiSPxyMlVbMmBCFDFDabrZ+zIqqqBrkOa11+btZGmyWjKSfb8r3POn0HwwHxABHhSx0dfPt2lzT71oeOB8Kx+3Q6WfT6Qp/4O4PzUwfMNWxFpE1Jlas2NN1f6siy/EbjHMJxflvtgocCFkvncG8bWos6UU4m+V9KCh2Xh6Nq7XVO58Of/5/qCG1rU/otInGLKQO8/tBj35+2+OEzTs4BYINJNxBJRICb1kZvMZtC7zkyjW7OhSaIYpKk+4L8ODW+NxgN2LMyEDj/Wj/liwMAPNOilNttFvD6Q127du1K9uNLer0Oen2hxzTOC3Lslqk+f2Tv820dl61ZsyZMNalCaUVFNRIRtrYs2UkETFXVYzPmr45Mv1dhOHwrFkIlgLPKyV/ZtLQ5P9dmP3S0q/766e5XAAAyMnxnbIoQAgGAvlnbnJTjCa70BSJVuXbTQy//YWlWNMFbkUmYZdXVRmPJD6uq6poHbtQ0LrhGJRt+d994g0GSZAk0wSVa5412AECo/zUVCJhM8ceVH23doCy8oNheHwxFAYgCkqzicFEJEQmizxfndLYKIsJH77jjI5tZd6Ao3z7l1WeWNsZUqQlRLbKaDPUmk4GdPNX37GkUEDQmMSEbWOMVVy88sG3rysM5DutFl0/JuWrNGni2tbWVAQBP6SJteWKJMTVfJp0v0PB4PKyqyqk9t7Hu1sJ825Xtnd5PvdHkUy9vWDr+0+6At7Kywvv5MkBIDLSGhgaDMemzsmkz3e9090VvEQC8fHT+wrIi299KCywflpfl1Rp1bElDw7zMlA3EDAJiFpPhjvLRefsvKMreU5jn+HhUafYBk519EwCAIejNJiMjwAwAgFdfbTBMnen+TU9vaFtejg0AmUmS5LMWggwNZpORSfIZNUICcOGdjY0JVeWzA6Gof0xp3u1FecY9o4qy3ygusE84eqL7FfUTeqytTZH7eUeGyahnwKEEAOhUT3gOF6TLc1ie3NyiXFztdIrBHfLIOJpNRoYIGefqDiJSmNPp5FueVL6Ra7es0TQOBr2+dGyhbdeosTn7LyiyzkdM2WyJMYPZZGACQJ8IHp2RxOj9ssdTLVU73U881bzwQ1WlmVwkv4UI3B9K/CUUiaz/qs8RBQCIquqpXm9odySa0IBIBiBAhkJiElM1LQAAEAtpvh5vcLeqJg8BAITDPgIA6OoL3yLL7Fk1ybmUTKgDkx9om4rGksd7vMHd0WDSBwDQ0+/gEN1CURR27XT3e2vXzL9UTdJtIMQ3I6gGVS6ev+om3gTgFm2QAjgWVw95vaHd0YjaCwD4k5oH/9jasrhuzAU51UTB2QhwP7kAASYQAEAklgj3eoO7o3Ft7zktlSu1F0LlNZyLj7p7ghoylBFAkwClZJKfGFCNRRLHer3B3YkE9yHKXJZ00uldSvf63D9SuB3Cnf/ZNf5z95PSX/siwoHfQxeGiMN+ztY5e6H98f7wCCHAuf4bDPLp+fXX6YaCO9xzSFHY+Z493HzPrzvk8yXXMSL/0RXk1BuDA6deUdLbdP3HiMfjkQaZLBzIU3s81dLARrS1KXKbosgjaJ3HGb3wlGvl1k3KKACAt59/qOqtzatu/XdfW3rtOIkrM1B+JvUTRiOKyYqiyJeUw4y8HFtBe7fvNQpJh2wFlqorb5j/0nPrl/zIkmXZ7fdGs4oL7dd4vYHgoW5/yz331MchTdqo0srGMYlFrJnm32x7btXmTIvhNoHQ63a7NQI2MRaLjzMZ9I86Ck0X6mStpj8yngMa/3qmRf+7pNAujnPOjx/XBKRRjxpLL1MhMB6LLiOJ3xaNqU8yYmLzU0u+bdRLJfEk/UUvSxZAkrkmMJXEl5GIa8G45krEtf1Wk+H7370ktzSdaoJpBjCLhKLUfsW1i05pSdYJiEniFGWIE3hSu1QTEFQjsQOJpMbf3LzyDZ1eN05ooMqMX20ySF8nIcoYQ0Fp1F71/9BMEzshHPBEAAAAAElFTkSuQmCC" alt="Century 21 Haus">
     </div>
   </div>
-  <div class="hdr-divider"></div>
-</div>
 
-<!-- TÍTULO DEL PROCESO -->
-<div class="proceso-banner">
-  <div class="proceso-dot"></div>
-  <div class="proceso-txt">Seguimiento de tu proceso de compra</div>
-</div>
-
-
-<!-- PROP BANNER -->
-<div class="prop-banner">
-  <div class="prop-left">
-    <div class="prop-tag">Propiedad en proceso</div>
-    <div class="prop-name" id="propNombre">Casa Ahuatlán</div>
+  <div class="proceso-banner">
+    <div class="proceso-dot"></div>
+    <div class="proceso-txt">Seguimiento de tu proceso de compra</div>
   </div>
-  <div class="prop-price"><span class="sym">$</span>5,200,000</div>
-</div>
 
-<!-- PROGRESS HERO -->
-<div class="prog-hero">
-  <div class="circle-wrap">
-    <svg class="c-svg" viewBox="0 0 82 82">
-      <defs>
-        <linearGradient id="yellowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#c6a100"/>
-          <stop offset="50%" stop-color="#e2d200"/>
-          <stop offset="100%" stop-color="#aacc00"/>
-        </linearGradient>
-      </defs>
-      <circle class="c-track" cx="41" cy="41" r="35.2"/>
-      <circle class="c-glow"  cx="41" cy="41" r="35.2" id="cGlow"/>
-      <circle class="c-fill"  cx="41" cy="41" r="35.2" id="cFill"/>
-    </svg>
-    <div class="c-inner">
-      <div class="c-pct" id="cPct">5%</div>
-      <div class="c-lbl">avance</div>
+  <!-- ════ ZONA EDITABLE — nombre y precio ════ -->
+  <div class="prop-banner">
+    <div class="prop-left">
+      <div class="prop-tag">Propiedad en proceso</div>
+      <div class="prop-name" id="propNombre">Casa Ahuatlán</div>
     </div>
-    <div class="c-pulse"></div>
+    <div class="prop-price"><span class="sym">$</span><span id="propPrecio">5,200,000</span></div>
   </div>
-  <div class="prog-text">
-    <div class="pt-fase" id="ptFase">Fase 1 de 8</div>
-    <div class="pt-title" id="ptTitle">Apartado<span>.</span></div>
-    <div class="bar-wrap">
-      <div class="bar-fill" id="barFill" style="width:5%">
-        <div class="bar-dot"></div>
+
+  <div class="prog-hero">
+    <div class="circle-wrap">
+      <svg class="c-svg" viewBox="0 0 84 84">
+        <defs>
+          <linearGradient id="yellowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#c6a100"/>
+            <stop offset="50%" stop-color="#e2d200"/>
+            <stop offset="100%" stop-color="#aacc00"/>
+          </linearGradient>
+        </defs>
+        <circle class="c-track" cx="42" cy="42" r="35.2"/>
+        <circle class="c-glow"  cx="42" cy="42" r="35.2" id="cGlow"/>
+        <circle class="c-fill"  cx="42" cy="42" r="35.2" id="cFill"/>
+      </svg>
+      <div class="c-inner">
+        <div class="c-pct" id="cPct">5%</div>
+        <div class="c-lbl">avance</div>
       </div>
+      <div class="c-pulse"></div>
     </div>
-    <div class="pt-copy" id="ptCopy">"La propiedad se encuentra en proceso de reserva privada."</div>
+    <div class="prog-text">
+      <div class="pt-fase" id="ptFase">Fase 1 de 8</div>
+      <div class="pt-title" id="ptTitle">Apartado<span>.</span></div>
+      <div class="bar-wrap">
+        <div class="bar-fill" id="barFill" style="width:5%">
+          <div class="bar-dot"></div>
+        </div>
+      </div>
+      <div class="pt-copy" id="ptCopy">"La propiedad se encuentra en proceso de reserva privada."</div>
+    </div>
   </div>
-</div>
 
-<!-- STATUS -->
-<div class="status-row">
-  <div class="s-dot"></div>
-  <div class="s-txt">Operación <strong id="sEstado">en curso</strong></div>
-  <div class="s-folio" id="sFolio">EN-0000</div>
-</div>
-
-<!-- CAPA 2 — MENSAJE EMOCIONAL -->
-<div class="emotional-msg">
-  <div class="em-label">Tu proceso</div>
-  <div class="em-text" id="emText">"Tu operación ha iniciado. La propiedad ya está reservada para ti."</div>
-</div>
-
-<!-- TIMELINE -->
-<div class="timeline">
-  <div class="tl-eyebrow">Etapas del proceso</div>
-  <div id="tlWrap"></div>
-</div>
-
-<!-- NOTA -->
-<div class="bottom-note">
-  <div class="bn-label">Nota de proceso</div>
-  <div class="bn-text" id="bnText">"Cada etapa está siendo gestionada con rigor y discreción."</div>
-</div>
-
-<!-- WA -->
-<div class="wa-row">
-  <button class="wa-btn" onclick="openWA()">&#9993;&nbsp;&nbsp;Contactar a Enrique · 777 985 5687</button>
-</div>
-
-<!-- FOOTER -->
-<div class="footer">
-  <div class="ft-logo"><img src="data:image/png;base64,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" alt="Century 21 Haus"></div>
-  <div class="ft-right">
-    <div class="ft-method">Método Neri</div>
-    <div class="ft-copy">Cuernavaca · México</div>
+  <div class="status-row">
+    <div class="s-dot"></div>
+    <div class="s-txt">Operación <strong id="sEstado">en curso</strong></div>
+    <div class="s-folio" id="sFolio">EN-0000</div>
   </div>
+
+  <div class="emotional-msg">
+    <div class="em-label">Tu proceso</div>
+    <div class="em-text" id="emText">"Tu operación ha iniciado. La propiedad ya está reservada para ti."</div>
+  </div>
+
+  <div class="slide-nav">
+    <button class="nav-btn" onclick="goSlide(2)">
+      Ver etapas del proceso <span class="nav-arrow">→</span>
+    </button>
+  </div>
+
 </div>
 
-<!-- CAPA 3 — PANEL INTERNO (URL: ?admin=neri) -->
+<!-- ══════════════════════════════════
+     SLIDE 2 — Etapas del proceso
+     ══════════════════════════════════ -->
+<div class="slide" id="slide2">
+
+  <div class="header">
+    <div class="hdr-left">
+      <div class="hdr-method">Método Neri</div>
+      <div class="hdr-name">Enrique Neri</div>
+      <div class="hdr-role">Asesor Inmobiliario · Cuernavaca</div>
+    </div>
+    <div class="hdr-logo">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFgAAAAyCAYAAADY+hwIAAABCGlDQ1BJQ0MgUHJvZmlsZQAAeJxjYGA8wQAELAYMDLl5JUVB7k4KEZFRCuwPGBiBEAwSk4sLGHADoKpv1yBqL+viUYcLcKakFicD6Q9ArFIEtBxopAiQLZIOYWuA2EkQtg2IXV5SUAJkB4DYRSFBzkB2CpCtkY7ETkJiJxcUgdT3ANk2uTmlyQh3M/Ck5oUGA2kOIJZhKGYIYnBncAL5H6IkfxEDg8VXBgbmCQixpJkMDNtbGRgkbiHEVBYwMPC3MDBsO48QQ4RJQWJRIliIBYiZ0tIYGD4tZ2DgjWRgEL7AwMAVDQsIHG5TALvNnSEfCNMZchhSgSKeDHkMyQx6QJYRgwGDIYMZAKbWPz9HbOBQAAARr0lEQVR42u1aeXhU1dl/33PvLJklk5nsiwlLUCF0sdCiX78+TaytbfVTQTOftmWrklQUrQuKLLkzgIC1mMa0aFIwgFp0AuK+00CrrTyK/ZBFkF3MQpKZzL7cuee83x+TYAiBavtHp33yPs88M8+d995zzu+c+76/d0FIQ/F4PJLT6eQAgFs3uqdZTfIsZFhlsWSYJcYgFktAMqkdVDWx5cRx/xO19/36CBEgIlC6rQXTFdyNTQumFOfZ6nMd1suCoRjE4om9JOgQF6QyhnmyzL6W47A5wpG4ONUd/MW02UvXejwe1r8xaSNyOoK7paXup4UFtqcYAnSc8j8SDMabnbcsPzhY9+GH7zGPDalX5josd6CE+wCA9u3bN3KCzw1uteR0tnLP2sXXjB2d+0Iklvj0eHvIOaN22U4AAGpT5F3WIgyFOqiyEgSiW8CIfDFRFIURET7ZtLDwzy//yvfuKw/3rG9YNBYAYO9eRT9Ud+j9RITpura0MBGuigpERPHypqV12XarfffBk9fNunPFEY9H0U+c6Fa3tCiXZmWZxnV0+XdNv9W9HwCgvv7OrItLcm8Mh2NeRGxNV4D/5TtPRIiI1Ni4IPurZVnt0bi6+0fOuikffNCkmzy5NvnSH5YtL863LdIbZAiGYtDRE7hlzxFs+dZ4adv4ccWVR090H75i2gPj0hVg9q+ewHaXSwIAKHOYvpPjsBm4is1EhJMn1yafeWLhNy4uL1jk6wu9d+hI143JpHbEkZnx6xxTb0E8rv7u08+6jyBSMp3N378cYKhMfUkSTInHVQrHozsRkQgAZWChpCbuDsf4rKkzlz7r90farOaMLJPVarx+1vLNQogwEBjTGeC0oWk6JhVGonEMhSM9AAAuRUH3z92HAKAeAMCzdvFF+Xm2G/3+yMfhjyPtHo9HIjgsASKNnOAvYouRBCCCEIwNZgxtbYqxurpayrKZ1plMRos/HJ93Z2Njwul0cgRIe6qWNgBrXJy0mjPIbrflAwC4AKCyElhVlTt+0zUT5pcUOb59+PiphdWzl20721ECjgB8DunpqSAAADXBd+r1MpoM8ncAAF6b4tNVVbk1zxOLv5Jnt7hO9fgDMpMib29eec/6phRHRgACAJGOOYi0Abi62ikAAD496nunq6cvrNPBrQCAeXkTxerVdzmsFuMLZpPBIDG0jR9X2CCI/0LHuQ8AgAthFYJba2ZOu7i6uloacXLDEXEEIvJIiM7gi0+7Gy8aW/DApnUL50yeXNvc0HCfyR+I3NvV1ZuQJQl6fWFx9Fjk/Xvdj/QBAHT19M0mYDrBpcRIoPF3gg2Xy4VFRXHrhfmOjzKMct4nJ3oqZ9Su2nk+fbd7JB/xJUBO5Rg2NS36r7++vjr+zsu/Cm9uUa4bfBLa2hTZ4/GcYQqUu252pJOzTtts2uCM2tNNi64oLbK12jJNWV3dwc1xNfnbgx8GP5i/enVkQPeptYvK7FbT1XabUfH6Yhv+5yeL5w9K1I/Y4OHE6Wzl/SC9ve6RBZNGjeIPZdvNN+h00g0ZRjn85pTlR1HCmBBUYM7Ql2XbM6HbF+jmgh8hAnS5RvLBX+okAwC0blh6SZZZfwMiryKA0URkkBB7BLLdyaR4cec7XS+6GxuDBID9tG1EvoikcsRn5X5x0qRJuuE2ZASxf8L5tbUpMg1JtJPHI7UpipzOyfZ/R8F0NWsjMiIjMiIjkuaRHBEguJTUNbebBvNKIsDW1mp2jgBBpFIEKZ19+ybQ0DyBoiisomI/DvBbIsLWVic7T9AhIDU+ejzDP9PjqZYGXx8YY7DO0PsGKN3APIab43BjDdZxuQAQ3QSD8Bk8drWzVQzl5EhDYvzUZDz/ML9MJ/rUDyqef75/l53gUF5Ow/RonIv2EECqHWmM3TKaI4hX/nT86IYNG+IDiusa5uWaM61jo9EEh2SqkCtJjDiTMEqxj2+/fU3496vvchQXZ1544Fh3990PPHZ0oCQPALDu0bu+pmPMGNNd+GFtbW1y9fLa4uIie1E4EidZRkYETNNA6JEE00vY3hf6ZMGC5kBT0/22ApNxfG8o0X3z3FWnn9nUVKOTk9Zv8KSWqLmrYTcA0Mbf3lWuN2fkJMJRDQBANhopLFhHbe2KztQpm2spLzZfEo9riTl31L9PqY5BGnjm6uW1xZdMLCs5frIn+vN59XuGayhct2bBGEemyTz1Z9s+BtihkaIwdLvFmpW3jsnJseYIAsY1dvCnc1f1EQDKRAC1tTW6ay8vXWzOkG82GvTFRASzpo0/ev0PXE90fkL1tW53tKy04Bq71bw2GkuA0agHIAACAp1OhgNHOq8AgG2OXPMPCvKyN+l1+t4NTfdPAoCTAxMoKczZotexsYGovxgAOkryHfdeMmHUL33+MHAhIKlqYDTqgTEEo0EPYu+x6wHguTJ79mVlJZmvmdr96wFg9q5dzTIAJPXJzOyy4uz3wtF4Z3l5+ejDhw8nCgqyV2RnWasTCRV0OhkIAWJxNfrSH5Y+/sHBbffn5gJkZ1ofKZuQM3nr+iWLEHFFU1OTzuVy8ZZ6xVZSqt/hyMoc2+0NzwSAPa2tHkbkFC6XggCdxinjSx83meTpGXo9bH/hR3u9vso5ONv9HgBAYZHj0TFlBVdFYyqEY+p1APDCdkWRmMulSFd/t+jZsWW5dQBQHAxHdwbDsfftmeYxep08vaN/5xiTNGRIcVU74vWF/+z1R97pC0R3eH2RHTyOXgAAWZZELJ4gi9mYk2szr0VE2l6ZSiXKEksAEZdlFAAAgmCvty+yIxCMbovG1JOyTqJQOLbXH4j+0dcX3sGBulIjC865IEnGM/ofDAYdAYAmSZ8n2yVJUgGIIjH1A68/vMPnj/wpqWpQPir37m9ddPndt9++JhwIwQx/IBLOz7fVPf37BZNqOjq42+0WjlxqGFWSO/Zke8+TN968YmMqH+LkAB7mdrvF5ItKlo0dlTs9qfJOfzjyQVameaLFIm99es0COwCAELgzHEl8xiQkADpt3+VJ49jcUSXZU9u7fAe8gejPnLOW7QIA2Pqk+3vhUPIzt3t5NGVwULOYMrC3L/j4D/93ya/PMPyQskXEQTCGGInGKT838/tbN9TNq6pyNwIQClgFSIAMDBwA4KaalesAYB0AwFutK1ZmO2wLPv2s774rqxe8Ntj/6iSJp+zfcDadEM64TqTTyZjUaN6Pb1zyHgDApuYl37GYo2/rdNLPFUV55KY5dR97WuoWThhX8GhOlrUF5yz66pb1S6aWFufOONHuPXEykLiTFIW59qUcLKKTV1dXS3qddF2PNxRtPxX+4azbVn70+jPLXiguclwTiiYuA4BXr5+9fNlbmx90FGU5fhkKq6cBZkYDmxeLJ0WPN1zrnLVsV1tbKr6fOl3ZNn3u8oNNTTW61NQ545wDQ6n0zZdXjW976cGJf32zfvw7zz9krVRSpxQRhFGvh3BE/b9AMBrIy7Wuaml64GIAJCQhD3GCbO9eRU+kMGSoByKQdMxIpLC9HkWvKHX/cCpVN+hUH2j3/i0aUwUBWTs7O5E8Hsk5e2nj8ZO9b11Q5PjKi0+7m21W469IEPi88V/Mnbuqr7WiYqBaQgAAEyZMoDiJKzq8sYkz567YAwDAQRgJCBAlMeDUmSSdlYhikiSN6QtEet/dHdxJpLDKSjdHRPJ4PJKiKOzCCwsJAIAApVAkBjqJzcvU6fcbZMMek0G33xePV1a53RoAgEAQJpMBuBBv+gKRB/KybaYCW8bvAQCRIR/ip6mnJ9WGSkB0mnqgW/TsA1FRUXEmzRnir2U5icMxFyEEAKPrtm1dMf2NzctrLh1f+HxRvt3Iudje3Nyc3NXXx4gIe/yRmq7uQF9etmWOw24p/6yz7zHnHPfrbW2KPDRp73a7xbXOJcecM5YcQ0Tasn7xjOJ8xw86T/lP9HbE/+rxeKSUM6ez0qVMEKmyxIzl5WBoba3A7dsVaYArulyuQTwYSZYl0Lg4FonE343Hkn8OR+LvchLewa8v5wIkCbNvmPXgY0dOnHp/1AW5/715ozJfcAowxC9d2hGkMQAgjZMgIgyFOiSPxyMlVbMmBCFDFDabrZ+zIqqqBrkOa11+btZGmyWjKSfb8r3POn0HwwHxABHhSx0dfPt2lzT71oeOB8Kx+3Q6WfT6Qp/4O4PzUwfMNWxFpE1Jlas2NN1f6siy/EbjHMJxflvtgocCFkvncG8bWos6UU4m+V9KCh2Xh6Nq7XVO58Of/5/qCG1rU/otInGLKQO8/tBj35+2+OEzTs4BYINJNxBJRICb1kZvMZtC7zkyjW7OhSaIYpKk+4L8ODW+NxgN2LMyEDj/Wj/liwMAPNOilNttFvD6Q127du1K9uNLer0Oen2hxzTOC3Lslqk+f2Tv820dl61ZsyZMNalCaUVFNRIRtrYs2UkETFXVYzPmr45Mv1dhOHwrFkIlgLPKyV/ZtLQ5P9dmP3S0q/766e5XAAAyMnxnbIoQAgGAvlnbnJTjCa70BSJVuXbTQy//YWlWNMFbkUmYZdXVRmPJD6uq6poHbtQ0LrhGJRt+d994g0GSZAk0wSVa5412AECo/zUVCJhM8ceVH23doCy8oNheHwxFAYgCkqzicFEJEQmizxfndLYKIsJH77jjI5tZd6Ao3z7l1WeWNsZUqQlRLbKaDPUmk4GdPNX37GkUEDQmMSEbWOMVVy88sG3rysM5DutFl0/JuWrNGni2tbWVAQBP6SJteWKJMTVfJp0v0PB4PKyqyqk9t7Hu1sJ825Xtnd5PvdHkUy9vWDr+0+6At7Kywvv5MkBIDLSGhgaDMemzsmkz3e9090VvEQC8fHT+wrIi299KCywflpfl1Rp1bElDw7zMlA3EDAJiFpPhjvLRefsvKMreU5jn+HhUafYBk519EwCAIejNJiMjwAwAgFdfbTBMnen+TU9vaFtejg0AmUmS5LMWggwNZpORSfIZNUICcOGdjY0JVeWzA6Gof0xp3u1FecY9o4qy3ygusE84eqL7FfUTeqytTZH7eUeGyahnwKEEAOhUT3gOF6TLc1ie3NyiXFztdIrBHfLIOJpNRoYIGefqDiJSmNPp5FueVL6Ra7es0TQOBr2+dGyhbdeosTn7LyiyzkdM2WyJMYPZZGACQJ8IHp2RxOj9ssdTLVU73U881bzwQ1WlmVwkv4UI3B9K/CUUiaz/qs8RBQCIquqpXm9odySa0IBIBiBAhkJiElM1LQAAEAtpvh5vcLeqJg8BAITDPgIA6OoL3yLL7Fk1ybmUTKgDkx9om4rGksd7vMHd0WDSBwDQ0+/gEN1CURR27XT3e2vXzL9UTdJtIMQ3I6gGVS6ev+om3gTgFm2QAjgWVw95vaHd0YjaCwD4k5oH/9jasrhuzAU51UTB2QhwP7kAASYQAEAklgj3eoO7o3Ft7zktlSu1F0LlNZyLj7p7ghoylBFAkwClZJKfGFCNRRLHer3B3YkE9yHKXJZ00uldSvf63D9SuB3Cnf/ZNf5z95PSX/siwoHfQxeGiMN+ztY5e6H98f7wCCHAuf4bDPLp+fXX6YaCO9xzSFHY+Z493HzPrzvk8yXXMSL/0RXk1BuDA6deUdLbdP3HiMfjkQaZLBzIU3s81dLARrS1KXKbosgjaJ3HGb3wlGvl1k3KKACAt59/qOqtzatu/XdfW3rtOIkrM1B+JvUTRiOKyYqiyJeUw4y8HFtBe7fvNQpJh2wFlqorb5j/0nPrl/zIkmXZ7fdGs4oL7dd4vYHgoW5/yz331MchTdqo0srGMYlFrJnm32x7btXmTIvhNoHQ63a7NQI2MRaLjzMZ9I86Ck0X6mStpj8yngMa/3qmRf+7pNAujnPOjx/XBKRRjxpLL1MhMB6LLiOJ3xaNqU8yYmLzU0u+bdRLJfEk/UUvSxZAkrkmMJXEl5GIa8G45krEtf1Wk+H7370ktzSdaoJpBjCLhKLUfsW1i05pSdYJiEniFGWIE3hSu1QTEFQjsQOJpMbf3LzyDZ1eN05ooMqMX20ySF8nIcoYQ0Fp1F71/9BMEzshHPBEAAAAAElFTkSuQmCC" alt="Century 21 Haus">
+    </div>
+  </div>
+
+  <div class="proceso-banner">
+    <div class="proceso-dot"></div>
+    <div class="proceso-txt">Etapas del proceso</div>
+  </div>
+
+  <div class="timeline">
+    <div class="tl-eyebrow">Tu camino hacia la escritura</div>
+    <div id="tlWrap"></div>
+  </div>
+
+  <div class="bottom-note">
+    <div class="bn-label">Nota de proceso</div>
+    <div class="bn-text" id="bnText">"Cada etapa está siendo gestionada con rigor y discreción."</div>
+  </div>
+
+  <div class="wa-row">
+    <button class="wa-btn" onclick="openWA()">&#9993;&nbsp;&nbsp;Contactar a Enrique · 777 985 5687</button>
+  </div>
+
+  <div class="footer">
+    <div class="ft-logo"><img src="data:image/png;base64,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" alt="Century 21 Haus"></div>
+    <div class="ft-right">
+      <div class="ft-method">Método Neri</div>
+      <div class="ft-copy">Cuernavaca · México</div>
+    </div>
+  </div>
+
+  <div class="slide-nav" style="padding-top:0;margin-top:0">
+    <button class="nav-btn back" onclick="goSlide(1)">
+      <span class="nav-arrow">←</span> Volver al resumen
+    </button>
+  </div>
+
+</div>
+
+<!-- CAPA 3 — PANEL INTERNO (?admin=neri) -->
 <div class="admin-panel" id="adminPanel">
   <div class="admin-bar">
     <div class="admin-bar-ico"></div>
@@ -243,7 +282,6 @@ body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;ma
   </div>
   <div class="admin-inner">
     <div class="admin-lbl">Alertas del expediente</div>
-    <!-- dot-red=urgente · dot-yellow=pendiente · dot-green=resuelto -->
     <div class="alert-row">
       <div class="alert-dot dot-yellow"></div>
       <div><div class="alert-title">Expediente en revisión bancaria</div><div class="alert-detail">Ingresado hace 5 días. Seguimiento pendiente con el banco.</div></div>
@@ -266,75 +304,91 @@ body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;ma
   </div>
 </div>
 
-
-
 <script>
-/* ════════════════════════════════════════════════════
-   ZONA EDITABLE — solo cambia estos valores
-   FASE_ACTUAL: 0=Apartado 1=Val.Financiera 2=Docs
-                3=Contrato 4=Notaría 5=Autorizaciones
-                6=Firma 7=Entrega
-   ════════════════════════════════════════════════════ */
+/* ════════════════════════════════════════════
+   ZONA EDITABLE — solo estos valores
+   FASE_ACTUAL: 0=Apartado  1=Val.Financiera
+                2=Docs  3=Contrato  4=Notaría
+                5=Autorizaciones  6=Firma  7=Entrega
+   ════════════════════════════════════════════ */
 var FOLIO       = "EN-2506-4821";
 var FASE_ACTUAL = 0;
 var WA_NUM      = "527779855687";
-/* ─── NO EDITAR ABAJO ─────────────────────────────── */
+/* ── NO EDITAR ABAJO ───────────────────────── */
 
 var CIRC = 221.1;
 var fases = [
-  {n:"Apartado",                pct:5,   copy:'"La propiedad se encuentra en proceso de reserva privada."',          emo:'"Tu operación ha iniciado. La propiedad ya está reservada para ti."',                                     checks:["Apartado recibido","Publicidad pausada","Vendedor notificado","Visitas detenidas","Integración documental iniciada"]},
-  {n:"Validación financiera",   pct:15,  copy:'"Validando la estructura financiera de la operación."',               emo:'"Tu operación avanza. Estamos verificando tu perfil financiero con total cuidado."',                      checks:["Revisión bancaria / INFONAVIT","Capacidad de pago","Aprobaciones preliminares","Documentación fiscal"]},
-  {n:"Integración documental",  pct:30,  copy:'"La documentación está siendo integrada y revisada."',                emo:'"Tu expediente está siendo construido con rigor. Todo avanza correctamente."',                             checks:["INE y actas","Escrituras","Predial y boletas","RFC","Estado civil"]},
-  {n:"Contrato de compraventa", pct:45,  copy:'"Se formalizan las condiciones acordadas entre ambas partes."',       emo:'"Las condiciones de tu operación están siendo formalizadas. Un paso decisivo."',                          checks:["Redacción","Revisión jurídica","Firmas de ambas partes","Condiciones aceptadas"]},
-  {n:"Ingreso a notaría",       pct:60,  copy:'"La operación está en proceso de validación notarial."',              emo:'"Tu operación ya está en manos del notario. El proceso avanza de forma impecable."',                      checks:["Expediente notarial","Validación jurídica","Certificados","Revisión registral"]},
-  {n:"Autorizaciones",          pct:75,  copy:'"La operación avanza hacia su etapa final de escrituración."',         emo:'"Estamos en la recta final. Las autorizaciones avanzan según lo planeado."',                             checks:["Autorización final","Liberación de recursos","Coordinación de pago"]},
-  {n:"Firma en notaría",        pct:90,  copy:'"La firma de escrituración ha sido programada correctamente."',        emo:'"La fecha de firma está confirmada. Tu nuevo capítulo está a punto de comenzar."',                       checks:["Firma oficial","Protocolización","Formalización legal"]},
-  {n:"Entrega de propiedad",    pct:100, copy:'"La propiedad ha sido entregada y la operación concluida."',           emo:'"Felicidades. Tu propiedad es tuya. Fue un honor acompañarte en este proceso."',                         checks:["Entrega de llaves","Confirmación de posesión","Cierre operativo"]}
+  {n:"Apartado",                pct:5,   copy:'"La propiedad se encuentra en proceso de reserva privada."',        emo:'"Tu operación ha iniciado. La propiedad ya está reservada para ti."',                          checks:["Apartado recibido","Publicidad pausada","Vendedor notificado","Visitas detenidas","Integración documental iniciada"]},
+  {n:"Validación financiera",   pct:15,  copy:'"Validando la estructura financiera de la operación."',             emo:'"Tu operación avanza. Estamos verificando tu perfil financiero con total cuidado."',           checks:["Revisión bancaria / INFONAVIT","Capacidad de pago","Aprobaciones preliminares","Documentación fiscal"]},
+  {n:"Integración documental",  pct:30,  copy:'"La documentación está siendo integrada y revisada."',              emo:'"Tu expediente está siendo construido con rigor. Todo avanza correctamente."',                  checks:["INE y actas","Escrituras","Predial y boletas","RFC","Estado civil"]},
+  {n:"Contrato de compraventa", pct:45,  copy:'"Se formalizan las condiciones acordadas entre ambas partes."',     emo:'"Las condiciones de tu operación están siendo formalizadas. Un paso decisivo."',               checks:["Redacción","Revisión jurídica","Firmas de ambas partes","Condiciones aceptadas"]},
+  {n:"Ingreso a notaría",       pct:60,  copy:'"La operación está en proceso de validación notarial."',            emo:'"Tu operación ya está en manos del notario. El proceso avanza de forma impecable."',           checks:["Expediente notarial","Validación jurídica","Certificados","Revisión registral"]},
+  {n:"Autorizaciones",          pct:75,  copy:'"La operación avanza hacia su etapa final de escrituración."',      emo:'"Estamos en la recta final. Las autorizaciones avanzan según lo planeado."',                  checks:["Autorización final","Liberación de recursos","Coordinación de pago"]},
+  {n:"Firma en notaría",        pct:90,  copy:'"La firma de escrituración ha sido programada correctamente."',     emo:'"La fecha de firma está confirmada. Tu nuevo capítulo está a punto de comenzar."',            checks:["Firma oficial","Protocolización","Formalización legal"]},
+  {n:"Entrega de propiedad",    pct:100, copy:'"La propiedad ha sido entregada y la operación concluida."',        emo:'"Felicidades. Tu propiedad es tuya. Fue un honor acompañarte en este proceso."',              checks:["Entrega de llaves","Confirmación de posesión","Cierre operativo"]}
 ];
 
+function goSlide(n){
+  document.querySelectorAll('.slide').forEach(function(s){s.classList.remove('active');});
+  document.getElementById('slide'+n).classList.add('active');
+  window.scrollTo(0,0);
+}
+
 function render(){
-  var f=fases[FASE_ACTUAL];
-  var offset=CIRC-(CIRC*f.pct/100);
-  document.getElementById("cFill").style.strokeDashoffset=offset;
-  document.getElementById("cGlow").style.strokeDashoffset=offset;
-  document.getElementById("cPct").textContent=f.pct+"%";
-  document.getElementById("ptFase").textContent="Fase "+(FASE_ACTUAL+1)+" de 8";
-  document.getElementById("ptTitle").innerHTML=f.n+'<span>.</span>';
-  document.getElementById("barFill").style.width=f.pct+"%";
-  document.getElementById("ptCopy").textContent=f.copy;
-  document.getElementById("emText").textContent=f.emo;
-  document.getElementById("bnText").textContent=f.copy;
-  document.getElementById("sEstado").textContent=f.pct===100?"completada ✓":"en curso";
-  document.getElementById("sFolio").textContent=FOLIO;
-  var wrap=document.getElementById("tlWrap");
-  wrap.innerHTML="";
-  fases.forEach(function(fase,i){
-    var done=i<FASE_ACTUAL,active=i===FASE_ACTUAL,last=i===fases.length-1;
-    var item=document.createElement("div");item.className="tl-item";
-    var spine=document.createElement("div");spine.className="tl-spine";
-    var node=document.createElement("div");
-    node.className="tl-node "+(done?"n-done":active?"n-active":"n-pending");
-    if(done)node.innerHTML='<span style="font-size:11px;color:#C6A86B">&#10003;</span>';
-    else if(active)node.innerHTML='<div style="width:8px;height:8px;border-radius:50%;background:#0B0B0B"></div>';
-    else node.innerHTML='<span style="font-size:8px;color:rgba(255,255,255,0.15);font-weight:700">'+(i+1)+'</span>';
+  var f = fases[FASE_ACTUAL];
+  var offset = CIRC - (CIRC * f.pct / 100);
+  document.getElementById("cFill").style.strokeDashoffset = offset;
+  document.getElementById("cGlow").style.strokeDashoffset = offset;
+  document.getElementById("cPct").textContent  = f.pct + "%";
+  document.getElementById("ptFase").textContent = "Fase " + (FASE_ACTUAL+1) + " de 8";
+  document.getElementById("ptTitle").innerHTML  = f.n + '<span>.</span>';
+  document.getElementById("barFill").style.width = f.pct + "%";
+  document.getElementById("ptCopy").textContent  = f.copy;
+  document.getElementById("emText").textContent  = f.emo;
+  document.getElementById("bnText").textContent  = f.copy;
+  document.getElementById("sEstado").textContent = f.pct === 100 ? "completada ✓" : "en curso";
+  document.getElementById("sFolio").textContent  = FOLIO;
+
+  var wrap = document.getElementById("tlWrap");
+  wrap.innerHTML = "";
+  fases.forEach(function(fase, i){
+    var done = i < FASE_ACTUAL, active = i === FASE_ACTUAL, last = i === fases.length - 1;
+    var item = document.createElement("div"); item.className = "tl-item";
+    var spine = document.createElement("div"); spine.className = "tl-spine";
+    var node = document.createElement("div");
+    node.className = "tl-node " + (done ? "n-done" : active ? "n-active" : "n-pending");
+    if(done) node.innerHTML = '<span style="font-size:11px;color:#C6A86B">&#10003;</span>';
+    else if(active) node.innerHTML = '<div style="width:8px;height:8px;border-radius:50%;background:#0B0B0B"></div>';
+    else node.innerHTML = '<span style="font-size:8px;color:rgba(255,255,255,0.15);font-weight:700">' + (i+1) + '</span>';
     spine.appendChild(node);
-    if(!last){var line=document.createElement("div");line.className="tl-line "+(done?"line-done":"line-pending");spine.appendChild(line);}
-    var content=document.createElement("div");content.className="tl-content";
-    content.innerHTML='<div class="tl-pct-tag">'+fase.pct+'%</div><div class="tl-name'+(active?" na":done?" nd":"")+'">'+fase.n+'</div>';
-    if(active){var cl=document.createElement("div");cl.className="tl-checks show";fase.checks.forEach(function(ch){cl.innerHTML+='<div class="tl-chk"><div class="chk-ico">&#10003;</div>'+ch+'</div>';});content.appendChild(cl);}
-    item.appendChild(spine);item.appendChild(content);wrap.appendChild(item);
+    if(!last){
+      var line = document.createElement("div");
+      line.className = "tl-line " + (done ? "line-done" : "line-pending");
+      spine.appendChild(line);
+    }
+    var content = document.createElement("div"); content.className = "tl-content";
+    content.innerHTML = '<div class="tl-pct-tag">' + fase.pct + '%</div><div class="tl-name' + (active ? " na" : done ? " nd" : "") + '">' + fase.n + '</div>';
+    if(active){
+      var cl = document.createElement("div"); cl.className = "tl-checks show";
+      fase.checks.forEach(function(ch){
+        cl.innerHTML += '<div class="tl-chk"><div class="chk-ico">&#10003;</div>' + ch + '</div>';
+      });
+      content.appendChild(cl);
+    }
+    item.appendChild(spine); item.appendChild(content); wrap.appendChild(item);
   });
-  document.getElementById("adminFolio").textContent=FOLIO;
-  document.getElementById("adminFase").textContent="Fase "+(FASE_ACTUAL+1)+" — "+fases[FASE_ACTUAL].n;
-  document.getElementById("adminFecha").textContent=new Date().toLocaleDateString("es-MX",{day:"2-digit",month:"short",year:"numeric"});
+
+  document.getElementById("adminFolio").textContent = FOLIO;
+  document.getElementById("adminFase").textContent  = "Fase " + (FASE_ACTUAL+1) + " — " + fases[FASE_ACTUAL].n;
+  document.getElementById("adminFecha").textContent = new Date().toLocaleDateString("es-MX",{day:"2-digit",month:"short",year:"numeric"});
 }
 
 function openWA(){
-  var msg=encodeURIComponent("Hola Enrique, me gustaría saber el avance de mi operación. Folio: "+FOLIO);
-  window.open("https://wa.me/"+WA_NUM+"?text="+msg,"_blank");
+  var msg = encodeURIComponent("Hola Enrique, me gustaría saber el avance de mi operación. Folio: " + FOLIO);
+  window.open("https://wa.me/" + WA_NUM + "?text=" + msg, "_blank");
 }
 
-if(new URLSearchParams(window.location.search).get("admin")==="neri"){
+if(new URLSearchParams(window.location.search).get("admin") === "neri"){
   document.getElementById("adminPanel").classList.add("visible");
 }
 
