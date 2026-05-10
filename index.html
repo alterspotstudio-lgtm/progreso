@@ -16,49 +16,52 @@ body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;ma
 .slide{display:none;min-height:100vh;flex-direction:column}
 .slide.active{display:flex}
 
-/* ── HEADER sticky ── */
+/* ── HEADER ── */
 .header{padding:12px 20px 10px;border-bottom:1px solid rgba(198,168,107,0.15);position:sticky;top:0;z-index:20;background:rgba(11,11,11,0.97);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:space-between;gap:12px}
 .hdr-left{}
 .hdr-method{font-size:8px;letter-spacing:5px;color:rgba(198,168,107,.55);text-transform:uppercase;font-weight:700;margin-bottom:2px}
 .hdr-name{font-family:"Bebas Neue",sans-serif;font-size:24px;letter-spacing:4px;color:#fff;line-height:1}
 .hdr-role{font-size:8px;color:rgba(255,255,255,.22);font-weight:300;letter-spacing:1px;margin-top:2px}
-.hdr-logo{flex-shrink:0}
 .hdr-logo img{height:44px;width:auto;object-fit:contain;display:block}
 
 /* ── PROCESO BANNER ── */
-.proceso-banner{padding:10px 20px;background:rgba(198,168,107,0.04);border-bottom:1px solid rgba(198,168,107,0.1);display:flex;align-items:center;gap:8px}
+.proceso-banner{padding:9px 20px;background:rgba(198,168,107,0.04);border-bottom:1px solid rgba(198,168,107,0.1);display:flex;align-items:center;gap:8px}
 .proceso-dot{width:5px;height:5px;border-radius:50%;background:#C6A86B;flex-shrink:0;animation:dotBlink 2s ease-in-out infinite}
 .proceso-txt{font-size:8px;letter-spacing:4px;color:rgba(198,168,107,.5);text-transform:uppercase;font-weight:700}
 
 /* ── PROP BANNER ── */
-.prop-banner{padding:14px 20px;background:rgba(198,168,107,0.05);border-bottom:1px solid rgba(198,168,107,0.12);display:flex;align-items:center;justify-content:space-between;gap:8px}
+.prop-banner{padding:13px 20px;background:rgba(198,168,107,0.05);border-bottom:1px solid rgba(198,168,107,0.12);display:flex;align-items:center;justify-content:space-between;gap:8px}
 .prop-left{min-width:0;flex:1}
 .prop-tag{font-size:7px;letter-spacing:3px;color:rgba(198,168,107,.4);text-transform:uppercase;font-weight:700;margin-bottom:2px}
-.prop-name{font-size:11px;letter-spacing:1px;color:rgba(255,255,255,.55);font-weight:500;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:190px}
+.prop-name{font-size:11px;letter-spacing:1px;color:rgba(255,255,255,.55);font-weight:500;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px}
 .prop-price{font-family:"Bebas Neue",sans-serif;font-size:22px;letter-spacing:0;color:#C6A86B;white-space:nowrap;flex-shrink:0}
 .prop-price .sym{font-size:13px;vertical-align:2px;margin-right:1px}
 
-/* ── PROGRESS HERO ── */
-.prog-hero{padding:24px 20px 20px;display:flex;align-items:center;gap:18px;border-bottom:1px solid rgba(255,255,255,.04)}
-.circle-wrap{position:relative;flex-shrink:0;width:84px;height:84px}
-.c-svg{transform:rotate(-90deg);width:84px;height:84px}
-.c-track{fill:none;stroke:rgba(255,255,255,.05);stroke-width:4.5}
-.c-glow{fill:none;stroke:rgba(226,210,0,.1);stroke-width:10;stroke-linecap:round;stroke-dasharray:220.9;stroke-dashoffset:220.9;transition:stroke-dashoffset 1s cubic-bezier(.16,1,.3,1)}
-.c-fill{fill:none;stroke:url(#yellowGrad);stroke-width:4.5;stroke-linecap:round;stroke-dasharray:220.9;stroke-dashoffset:220.9;transition:stroke-dashoffset 1s cubic-bezier(.16,1,.3,1)}
-.c-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.c-pct{font-family:"Bebas Neue",sans-serif;font-size:23px;letter-spacing:1px;line-height:1;color:#e2d200}
-.c-lbl{font-size:7px;letter-spacing:2px;color:rgba(226,210,0,.45);text-transform:uppercase;font-weight:700}
-.c-pulse{position:absolute;inset:-5px;border-radius:50%;border:1px solid rgba(226,210,0,.12);animation:cPulse 2.8s ease-in-out infinite;pointer-events:none}
+/* ── CÍRCULO GRANDE CENTRADO ── */
+.circle-hero{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 20px 24px;border-bottom:1px solid rgba(255,255,255,.04);position:relative}
+.circle-hero::before{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(226,210,0,0.04) 0%,transparent 70%);pointer-events:none}
+.circle-wrap-lg{position:relative;width:180px;height:180px}
+.c-svg-lg{transform:rotate(-90deg);width:180px;height:180px}
+.c-track-lg{fill:none;stroke:rgba(255,255,255,.05);stroke-width:5}
+.c-glow-lg{fill:none;stroke:rgba(226,210,0,.08);stroke-width:14;stroke-linecap:round;stroke-dasharray:472.1;stroke-dashoffset:472.1;transition:stroke-dashoffset 1.2s cubic-bezier(.16,1,.3,1)}
+.c-fill-lg{fill:none;stroke:url(#yellowGradLg);stroke-width:5;stroke-linecap:round;stroke-dasharray:472.1;stroke-dashoffset:472.1;transition:stroke-dashoffset 1.2s cubic-bezier(.16,1,.3,1)}
+.c-inner-lg{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.c-pct-lg{font-family:"Bebas Neue",sans-serif;font-size:52px;letter-spacing:2px;line-height:1;color:#e2d200}
+.c-lbl-lg{font-size:8px;letter-spacing:4px;color:rgba(226,210,0,.4);text-transform:uppercase;font-weight:700}
+.c-pulse-lg{position:absolute;inset:-8px;border-radius:50%;border:1px solid rgba(226,210,0,.1);animation:cPulse 2.8s ease-in-out infinite;pointer-events:none}
+.c-pulse-lg2{position:absolute;inset:-16px;border-radius:50%;border:1px solid rgba(226,210,0,.05);animation:cPulse 2.8s ease-in-out infinite .7s;pointer-events:none}
 @keyframes cPulse{0%,100%{opacity:0;transform:scale(.94)}60%{opacity:1;transform:scale(1)}}
-.prog-text{flex:1;min-width:0}
-.pt-fase{font-size:8px;letter-spacing:3px;color:rgba(198,168,107,.5);text-transform:uppercase;font-weight:700;margin-bottom:4px}
-.pt-title{font-family:"Bebas Neue",sans-serif;font-size:26px;letter-spacing:2px;color:#fff;line-height:1;margin-bottom:10px}
+
+/* ── FASE INFO (debajo del círculo) ── */
+.fase-info{padding:20px 20px 0;width:100%}
+.pt-fase{font-size:8px;letter-spacing:3px;color:rgba(198,168,107,.5);text-transform:uppercase;font-weight:700;margin-bottom:5px}
+.pt-title{font-family:"Bebas Neue",sans-serif;font-size:28px;letter-spacing:2px;color:#fff;line-height:1;margin-bottom:12px}
 .pt-title span{color:#e2d200}
 .bar-wrap{position:relative;height:4px;background:rgba(255,255,255,.05);border-radius:2px;margin-bottom:8px;overflow:visible}
-.bar-fill{height:100%;background:linear-gradient(90deg,#c6a100,#e2d200,#aacc00);border-radius:2px;transition:width 1s cubic-bezier(.16,1,.3,1);position:relative;min-width:8px;box-shadow:0 0 10px rgba(220,210,0,.4)}
+.bar-fill{height:100%;background:linear-gradient(90deg,#c6a100,#e2d200,#aacc00);border-radius:2px;transition:width 1.2s cubic-bezier(.16,1,.3,1);position:relative;min-width:8px;box-shadow:0 0 10px rgba(220,210,0,.4)}
 .bar-dot{position:absolute;right:-5px;top:50%;transform:translateY(-50%);width:10px;height:10px;border-radius:50%;background:#e2d200;box-shadow:0 0 10px rgba(220,220,0,.8);animation:dotBlink 1.6s ease-in-out infinite}
 @keyframes dotBlink{0%,100%{opacity:1;box-shadow:0 0 4px rgba(220,220,0,.9),0 0 14px rgba(220,220,0,.35)}50%{opacity:.35;box-shadow:none}}
-.pt-copy{font-size:10px;color:rgba(255,255,255,.28);font-weight:300;font-style:italic;line-height:1.6}
+.pt-copy{font-size:10px;color:rgba(255,255,255,.28);font-weight:300;font-style:italic;line-height:1.6;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.04)}
 
 /* ── STATUS ROW ── */
 .status-row{padding:11px 20px;border-bottom:1px solid rgba(255,255,255,.04);display:flex;align-items:center;gap:10px}
@@ -67,19 +70,17 @@ body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;ma
 .s-txt strong{color:rgba(198,168,107,.65)}
 .s-folio{margin-left:auto;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,.15);font-weight:300}
 
-/* ── CAPA 2 MENSAJE EMOCIONAL ── */
+/* ── MENSAJE EMOCIONAL ── */
 .emotional-msg{margin:18px 20px 0;padding:16px;border:0.5px solid rgba(198,168,107,.18);background:rgba(198,168,107,.03);position:relative;overflow:hidden}
 .emotional-msg::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,#C6A86B,#e2d200)}
 .em-label{font-size:7px;letter-spacing:4px;color:rgba(198,168,107,.4);text-transform:uppercase;font-weight:700;margin-bottom:6px}
 .em-text{font-size:13px;font-weight:500;color:rgba(255,255,255,.72);line-height:1.6;font-style:italic}
 
-/* ── SLIDE NAV BUTTON ── */
-.slide-nav{margin:auto 20px 28px;padding-top:28px}
+/* ── NAV BUTTONS ── */
+.slide-nav{padding:24px 20px 32px;margin-top:auto}
 .nav-btn{width:100%;padding:15px;border:0.5px solid rgba(198,168,107,.35);background:transparent;color:#C6A86B;font-family:"Montserrat",sans-serif;font-size:10px;letter-spacing:4px;text-transform:uppercase;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all .2s}
-.nav-btn:hover{background:rgba(198,168,107,.06)}
+.nav-btn:hover,.nav-btn:active{background:rgba(198,168,107,.06)}
 .nav-btn.back{border-color:rgba(255,255,255,.08);color:rgba(255,255,255,.25);margin-bottom:10px}
-.nav-btn.back:hover{background:rgba(255,255,255,.03)}
-.nav-arrow{font-size:16px;line-height:1}
 
 /* ── SLIDE 2: TIMELINE ── */
 .timeline{padding:22px 20px 8px}
@@ -103,24 +104,18 @@ body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;ma
 .tl-checks.show{display:block}
 .tl-chk{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:10px;color:rgba(255,255,255,.38);font-weight:300}
 .chk-ico{width:14px;height:14px;border-radius:50%;background:rgba(198,168,107,.12);border:0.5px solid rgba(198,168,107,.4);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:8px;color:#C6A86B}
-
-/* ── NOTA ── */
 .bottom-note{margin:8px 20px 16px;padding:16px;border-left:2px solid rgba(198,168,107,.28);background:rgba(198,168,107,.03)}
 .bn-label{font-size:8px;letter-spacing:3px;color:rgba(198,168,107,.4);text-transform:uppercase;font-weight:700;margin-bottom:8px}
 .bn-text{font-size:11px;font-weight:300;color:rgba(255,255,255,.32);line-height:1.8;font-style:italic}
-
-/* ── WA ── */
 .wa-row{padding:0 20px 16px}
 .wa-btn{display:flex;align-items:center;justify-content:center;gap:10px;background:rgba(13,31,13,.7);border:0.5px solid rgba(30,74,30,.9);color:#4caf50;padding:15px;font-size:10px;letter-spacing:3px;text-transform:uppercase;font-weight:600;width:100%;cursor:pointer;font-family:"Montserrat",sans-serif}
-
-/* ── FOOTER ── */
-.footer{padding:14px 20px 28px;border-top:1px solid rgba(255,255,255,.04);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.footer{padding:14px 20px 24px;border-top:1px solid rgba(255,255,255,.04);display:flex;align-items:center;justify-content:space-between;gap:12px}
 .ft-logo img{height:28px;width:auto;object-fit:contain;opacity:.4}
 .ft-right{text-align:right}
 .ft-method{font-size:8px;letter-spacing:4px;color:rgba(198,168,107,.25);text-transform:uppercase;font-weight:700}
 .ft-copy{font-size:7px;color:rgba(255,255,255,.1);font-weight:300;margin-top:2px}
 
-/* ── CAPA 3 ADMIN ── */
+/* ── ADMIN ── */
 .admin-panel{display:none;background:#0a0800;border-top:2px solid rgba(226,210,0,.25)}
 .admin-panel.visible{display:block}
 .admin-bar{padding:12px 20px;background:rgba(226,210,0,.06);border-bottom:1px solid rgba(226,210,0,.12);display:flex;align-items:center;gap:8px}
@@ -141,9 +136,9 @@ body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;ma
 </head>
 <body>
 
-<!-- ══════════════════════════════════
-     SLIDE 1 — Resumen de tu operación
-     ══════════════════════════════════ -->
+<!-- ══════════════════════
+     SLIDE 1 — Tu operación
+     ══════════════════════ -->
 <div class="slide active" id="slide1">
 
   <div class="header">
@@ -162,7 +157,7 @@ body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;ma
     <div class="proceso-txt">Seguimiento de tu proceso de compra</div>
   </div>
 
-  <!-- ════ ZONA EDITABLE — nombre y precio ════ -->
+  <!-- ════ ZONA EDITABLE ════ -->
   <div class="prop-banner">
     <div class="prop-left">
       <div class="prop-tag">Propiedad en proceso</div>
@@ -171,36 +166,40 @@ body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;ma
     <div class="prop-price"><span class="sym">$</span><span id="propPrecio">5,200,000</span></div>
   </div>
 
-  <div class="prog-hero">
-    <div class="circle-wrap">
-      <svg class="c-svg" viewBox="0 0 84 84">
+  <!-- CÍRCULO GRANDE CENTRADO -->
+  <div class="circle-hero">
+    <div class="circle-wrap-lg">
+      <svg class="c-svg-lg" viewBox="0 0 180 180">
         <defs>
-          <linearGradient id="yellowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <linearGradient id="yellowGradLg" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stop-color="#c6a100"/>
             <stop offset="50%" stop-color="#e2d200"/>
             <stop offset="100%" stop-color="#aacc00"/>
           </linearGradient>
         </defs>
-        <circle class="c-track" cx="42" cy="42" r="35.2"/>
-        <circle class="c-glow"  cx="42" cy="42" r="35.2" id="cGlow"/>
-        <circle class="c-fill"  cx="42" cy="42" r="35.2" id="cFill"/>
+        <circle class="c-track-lg" cx="90" cy="90" r="75.2"/>
+        <circle class="c-glow-lg"  cx="90" cy="90" r="75.2" id="cGlow"/>
+        <circle class="c-fill-lg"  cx="90" cy="90" r="75.2" id="cFill"/>
       </svg>
-      <div class="c-inner">
-        <div class="c-pct" id="cPct">5%</div>
-        <div class="c-lbl">avance</div>
+      <div class="c-inner-lg">
+        <div class="c-pct-lg" id="cPct">5%</div>
+        <div class="c-lbl-lg">avance</div>
       </div>
-      <div class="c-pulse"></div>
+      <div class="c-pulse-lg"></div>
+      <div class="c-pulse-lg2"></div>
     </div>
-    <div class="prog-text">
-      <div class="pt-fase" id="ptFase">Fase 1 de 8</div>
-      <div class="pt-title" id="ptTitle">Apartado<span>.</span></div>
-      <div class="bar-wrap">
-        <div class="bar-fill" id="barFill" style="width:5%">
-          <div class="bar-dot"></div>
-        </div>
+  </div>
+
+  <!-- FASE INFO -->
+  <div class="fase-info">
+    <div class="pt-fase" id="ptFase">Fase 1 de 8</div>
+    <div class="pt-title" id="ptTitle">Apartado<span>.</span></div>
+    <div class="bar-wrap">
+      <div class="bar-fill" id="barFill" style="width:5%">
+        <div class="bar-dot"></div>
       </div>
-      <div class="pt-copy" id="ptCopy">"La propiedad se encuentra en proceso de reserva privada."</div>
     </div>
+    <div class="pt-copy" id="ptCopy">"La propiedad se encuentra en proceso de reserva privada."</div>
   </div>
 
   <div class="status-row">
@@ -216,15 +215,15 @@ body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;ma
 
   <div class="slide-nav">
     <button class="nav-btn" onclick="goSlide(2)">
-      Ver etapas del proceso <span class="nav-arrow">→</span>
+      Ver etapas del proceso &nbsp;→
     </button>
   </div>
 
 </div>
 
-<!-- ══════════════════════════════════
-     SLIDE 2 — Etapas del proceso
-     ══════════════════════════════════ -->
+<!-- ═══════════════════════
+     SLIDE 2 — Etapas
+     ═══════════════════════ -->
 <div class="slide" id="slide2">
 
   <div class="header">
@@ -266,9 +265,7 @@ body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;ma
   </div>
 
   <div class="slide-nav" style="padding-top:0;margin-top:0">
-    <button class="nav-btn back" onclick="goSlide(1)">
-      <span class="nav-arrow">←</span> Volver al resumen
-    </button>
+    <button class="nav-btn back" onclick="goSlide(1)">← Volver al resumen</button>
   </div>
 
 </div>
@@ -304,6 +301,8 @@ body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;ma
   </div>
 </div>
 
+
+
 <script>
 /* ════════════════════════════════════════════
    ZONA EDITABLE — solo estos valores
@@ -316,7 +315,7 @@ var FASE_ACTUAL = 0;
 var WA_NUM      = "527779855687";
 /* ── NO EDITAR ABAJO ───────────────────────── */
 
-var CIRC = 221.1;
+var CIRC = 472.5;
 var fases = [
   {n:"Apartado",                pct:5,   copy:'"La propiedad se encuentra en proceso de reserva privada."',        emo:'"Tu operación ha iniciado. La propiedad ya está reservada para ti."',                          checks:["Apartado recibido","Publicidad pausada","Vendedor notificado","Visitas detenidas","Integración documental iniciada"]},
   {n:"Validación financiera",   pct:15,  copy:'"Validando la estructura financiera de la operación."',             emo:'"Tu operación avanza. Estamos verificando tu perfil financiero con total cuidado."',           checks:["Revisión bancaria / INFONAVIT","Capacidad de pago","Aprobaciones preliminares","Documentación fiscal"]},
