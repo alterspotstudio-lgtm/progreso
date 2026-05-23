@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="theme-color" content="#0B0B0B">
-<title>Seguimiento · Método Neri</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<title>Portal de Progreso · Método Neri</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
+
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{background:#0B0B0B;min-height:100vh;overflow-x:hidden}
 body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;margin:0 auto}
@@ -145,9 +145,90 @@ body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;ma
 .alert-title{font-size:11px;font-weight:600;color:rgba(255,255,255,.7);margin-bottom:2px}
 .alert-detail{font-size:10px;color:rgba(255,255,255,.3);font-weight:300;line-height:1.5}
 .admin-lbl{font-size:8px;letter-spacing:3px;color:rgba(198,168,107,.3);text-transform:uppercase;font-weight:700;margin:16px 0 8px}
+
+
+/* ── PANEL ADMIN OCULTO ── */
+.adm-overlay{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,0.95);display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity 0.25s}
+.adm-overlay.open{opacity:1;pointer-events:all}
+.adm-card{background:#0a0900;border:1px solid rgba(198,168,107,0.2);border-top:3px solid #C6A86B;width:100%;max-width:400px;max-height:88vh;overflow-y:auto;border-radius:2px}
+.adm-head{padding:15px 18px 12px;border-bottom:1px solid rgba(198,168,107,0.1);display:flex;align-items:center;gap:10px}
+.adm-led{width:7px;height:7px;border-radius:50%;background:#C6A86B;box-shadow:0 0 6px rgba(198,168,107,0.8);flex-shrink:0}
+.adm-htitle{font-size:8px;letter-spacing:5px;color:rgba(198,168,107,0.65);text-transform:uppercase;font-weight:700;flex:1}
+.adm-x{background:none;border:none;color:rgba(255,255,255,0.2);font-size:20px;cursor:pointer;padding:0 2px;font-family:inherit;line-height:1}
+.adm-x:hover{color:rgba(255,255,255,0.5)}
+.adm-body{padding:18px 18px 22px}
+.adm-sec{font-size:8px;letter-spacing:3px;color:rgba(198,168,107,0.35);text-transform:uppercase;font-weight:700;margin:0 0 12px}
+.adm-row{margin-bottom:12px}
+.adm-lbl{font-size:8px;letter-spacing:2px;color:rgba(198,168,107,0.4);text-transform:uppercase;font-weight:700;margin-bottom:5px;display:block}
+.adm-inp{width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(198,168,107,0.15);color:#fff;font-family:"Montserrat",sans-serif;font-size:13px;padding:10px 12px;outline:none;border-radius:2px;transition:border-color 0.2s}
+.adm-inp:focus{border-color:rgba(198,168,107,0.5)}
+.adm-inp-pw{letter-spacing:4px}
+.adm-div{height:1px;background:rgba(198,168,107,0.08);margin:16px 0}
+.fase-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
+.fb{padding:9px 7px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.06);color:rgba(255,255,255,0.28);font-family:"Montserrat",sans-serif;font-size:8px;font-weight:600;letter-spacing:0.3px;cursor:pointer;border-radius:2px;text-align:center;line-height:1.4;transition:all 0.15s}
+.fb:hover{border-color:rgba(198,168,107,0.28);color:rgba(198,168,107,0.55)}
+.fb.sel{background:rgba(198,168,107,0.1);border-color:#C6A86B;color:#C6A86B}
+.fb-pct{font-size:8px;display:block;margin-top:1px;opacity:0.55}
+.adm-btn{width:100%;margin-top:18px;padding:13px;background:#C6A86B;color:#0B0B0B;font-family:"Montserrat",sans-serif;font-size:9px;font-weight:800;letter-spacing:4px;text-transform:uppercase;border:none;cursor:pointer;border-radius:2px;transition:opacity 0.15s}
+.adm-btn:active{opacity:0.8}
+.adm-err{font-size:10px;color:#e85d5d;text-align:center;margin-top:8px;min-height:16px}
+
+/* PIN trigger — punto invisible en footer */
+.adm-trigger{position:fixed;bottom:0;right:0;width:44px;height:44px;z-index:1000;cursor:pointer;background:transparent;border:none;-webkit-tap-highlight-color:transparent}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:#C6A86B;color:#0B0B0B;font-size:10px;font-weight:800;letter-spacing:2px;padding:9px 20px;border-radius:20px;z-index:9999;opacity:0;transition:all 0.3s;white-space:nowrap;pointer-events:none}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- TRIGGER INVISIBLE (esquina inferior derecha) -->
+<button class="adm-trigger" onclick="tryAdmin()" aria-hidden="true"></button>
+
+<!-- PANEL ADMIN CON CONTRASEÑA -->
+<div class="adm-overlay" id="admOverlay">
+  <div class="adm-card">
+    <div class="adm-head">
+      <div class="adm-led"></div>
+      <div class="adm-htitle">Panel · Método Neri</div>
+      <button class="adm-x" onclick="closeAdmin()">✕</button>
+    </div>
+    <div class="adm-body" id="admBodyLogin">
+      <div class="adm-sec">Acceso de asesor</div>
+      <div class="adm-row">
+        <label class="adm-lbl">Contraseña</label>
+        <input class="adm-inp adm-inp-pw" id="admPw" type="password" placeholder="••••••" onkeydown="if(event.key==='Enter')checkPw()">
+      </div>
+      <button class="adm-btn" onclick="checkPw()">Ingresar →</button>
+      <div class="adm-err" id="admErr"></div>
+    </div>
+    <div class="adm-body" id="admBodyEdit" style="display:none">
+      <div class="adm-sec">Datos del cliente</div>
+      <div class="adm-row">
+        <label class="adm-lbl">Folio</label>
+        <input class="adm-inp" id="eFollio" type="text" placeholder="EN-2506-0001">
+      </div>
+      <div class="adm-row">
+        <label class="adm-lbl">Propiedad</label>
+        <input class="adm-inp" id="eProp" type="text" placeholder="Nombre de la propiedad">
+      </div>
+      <div class="adm-row">
+        <label class="adm-lbl">Precio (sin $ ni comas)</label>
+        <input class="adm-inp" id="ePrecio" type="text" placeholder="3500000">
+      </div>
+      <div class="adm-div"></div>
+      <div class="adm-sec">Fase actual</div>
+      <div class="fase-grid" id="faseGrid"></div>
+      <button class="adm-btn" onclick="applyAdmin()">Aplicar cambios →</button>
+    </div>
+  </div>
+</div>
+
+
 
 <!-- SLIDE 1 -->
 <div class="slide active" id="slide1">
@@ -313,107 +394,73 @@ body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;ma
   </div>
 </div>
 
+
 <script>
-/* ════════════════════════════════════════════════════════
-   ZONA EDITABLE — SOLO CAMBIA ESTOS VALORES
-   ────────────────────────────────────────────────────────
-   FASE_ACTUAL:
-     0 → Apartado
-     1 → Revisión de compra
-     2 → Preparando documentos
-     3 → Acuerdo de compra
-     4 → Revisión en notaría
-     5 → Últimas confirmaciones
-     6 → Día de firma
-     7 → Entrega de llaves
-   ════════════════════════════════════════════════════════ */
-/* ════════════════════════════════════════════════════════
-   ✏️  ZONA DE EDICIÓN — SOLO CAMBIA AQUÍ
-   ════════════════════════════════════════════════════════
+/* ════════════════════════════════════════════════════
+   ZONA EDITABLE — valores por defecto al cargar
+   (estos son los que se muestran mientras no editas)
+════════════════════════════════════════════════════ */
+var FOLIO       = "EN-2506-4821";
+var FASE_ACTUAL = 6;
+var NOMBRE_PROP = "Depto. Tabachín";
+var PRECIO_PROP = "1,900,000";
+var WA_NUM      = "527779855687";
+var ADM_PW      = "neri2025";   // ← CAMBIA ESTA CONTRASEÑA
 
-   PROPIEDAD:
-   Ve al HTML y busca id="propNombre" y id="propPrecio"
-   — o usa las variables de abajo si prefieres JS puro.
-
-   FASE (0 al 7):
-     0 → Apartado
-     1 → Revisión de compra
-     2 → Preparando documentos
-     3 → Acuerdo de compra
-     4 → Revisión en notaría
-     5 → Últimas confirmaciones
-     6 → Día de firma
-     7 → Entrega de llaves
-   ════════════════════════════════════════════════════════ */
-
-var FOLIO           = "EN-2506-4821";   // Folio del cliente
-var FASE_ACTUAL     = 6;                // Número del 0 al 7
-var NOMBRE_PROP     = "Depto. Tabachín";  // Nombre de la propiedad
-var PRECIO_PROP     = "1,900,000";      // Precio sin $ ni espacios
-var WA_NUM          = "527779855687";   // Tu WhatsApp (no cambiar)
-
-/* ════ NO EDITAR ABAJO DE ESTA LÍNEA ════ */
-
+/* ════ NO EDITAR ABAJO ════ */
 var CIRC = 472.5;
 var fases = [
-  {n:"Apartado",                 pct:5,
-    copy:'"La propiedad se encuentra en proceso de reserva privada."',
-    emo:'"Tu operación ha iniciado. La propiedad ya está reservada para ti."',
-    pending:["Carta de apartado firmada","Datos del comprador recibidos"],
-    next:"Iniciaremos la revisión de tu capacidad de compra para avanzar al siguiente paso.",
-    checks:["Apartado recibido","Publicidad pausada","Vendedor notificado","Visitas detenidas","Integración documental iniciada"]},
-  {n:"Revisión de compra",       pct:15,
-    copy:'"Estamos revisando tu capacidad de compra para preparar la siguiente etapa."',
-    emo:'"Tu operación avanza. Estamos verificando tu perfil financiero con total cuidado."',
-    pending:["Revisión con banco o Infonavit","Validación de capacidad de compra"],
-    next:"Una vez confirmada tu capacidad de compra, avanzaremos a la integración de documentos.",
-    checks:["Revisión con banco o Infonavit","Validación de capacidad de compra","Confirmaciones iniciales","Documentos recibidos"]},
-  {n:"Preparando documentos",    pct:30,
-    copy:'"Estamos integrando cuidadosamente cada documento para que todo avance correctamente."',
-    emo:'"Estamos revisando cuidadosamente cada documento para que todo avance correctamente."',
-    pending:["INE vigente del comprador","Comprobante de domicilio reciente"],
-    next:"Con los documentos completos, procederemos a preparar el acuerdo de compra.",
-    checks:["INE y actas","Escrituras","Predial y boletas","RFC","Estado civil"]},
-  {n:"Acuerdo de compra",        pct:45,
-    copy:'"Se están formalizando las condiciones acordadas entre ambas partes."',
-    emo:'"Las condiciones de tu compra están siendo formalizadas. Un paso decisivo."',
-    pending:["Revisión del contrato por ambas partes","Firma del acuerdo"],
-    next:"Con el acuerdo firmado, el expediente ingresará a notaría para revisión legal.",
-    checks:["Redacción","Revisión jurídica","Firmas de ambas partes","Condiciones aceptadas"]},
-  {n:"Revisión en notaría",      pct:60,
-    copy:'"La notaría ya se encuentra revisando tu proceso para preparar la siguiente etapa."',
-    emo:'"La notaría ya se encuentra revisando tu proceso para preparar la siguiente etapa."',
-    pending:["Documentación enviada a notaría","Revisión legal de propiedad"],
-    next:"La notaría validará el expediente y programará la fecha de firma.",
-    checks:["Documentación enviada a notaría","Revisión legal de propiedad","Validaciones oficiales","Preparación para firma"]},
-  {n:"Últimas confirmaciones",   pct:75,
-    copy:'"Estamos muy cerca de la firma. Solo faltan algunas confirmaciones importantes."',
-    emo:'"Estamos muy cerca de la firma. Solo faltan algunas confirmaciones importantes."',
-    pending:["Confirmaciones finales","Liberación de recursos"],
-    next:"Con las confirmaciones listas, coordinaremos la fecha y hora de tu firma.",
-    checks:["Confirmaciones finales","Liberación de recursos","Coordinación para firma"]},
-  {n:"Día de firma",             pct:90,
-    copy:'"La fecha de firma está confirmada. Tu nuevo capítulo está a punto de comenzar."',
-    emo:'"La fecha de firma está confirmada. Tu nuevo capítulo está a punto de comenzar."',
-    pending:["Identificación oficial vigente","Forma de pago confirmada"],
-    next:"Después de la firma, coordinaremos la entrega formal de tu propiedad.",
-    checks:["Firma programada","Documentos listos","Preparación de entrega"]},
-  {n:"Entrega de llaves",        pct:100,
-    copy:'"Tu propiedad ha sido entregada. La operación ha concluido exitosamente."',
-    emo:'"Felicidades. Tu propiedad es tuya. Fue un honor acompañarte en este proceso."',
-    pending:[],
-    next:"",
-    checks:["Entrega de llaves","Confirmación de posesión","Cierre operativo"]}
+  {n:"Apartado",pct:5,
+   copy:'"La propiedad se encuentra en proceso de reserva privada."',
+   emo:'"Tu operación ha iniciado. La propiedad ya está reservada para ti."',
+   pending:["Carta de apartado firmada","Datos del comprador recibidos"],
+   next:"Iniciaremos la revisión de tu capacidad de compra para avanzar al siguiente paso.",
+   checks:["Apartado recibido","Publicidad pausada","Vendedor notificado","Visitas detenidas","Integración documental iniciada"]},
+  {n:"Revisión de compra",pct:15,
+   copy:'"Estamos revisando tu capacidad de compra para preparar la siguiente etapa."',
+   emo:'"Tu operación avanza. Estamos verificando tu perfil financiero con total cuidado."',
+   pending:["Revisión con banco o Infonavit","Validación de capacidad de compra"],
+   next:"Una vez confirmada tu capacidad de compra, avanzaremos a la integración de documentos.",
+   checks:["Revisión con banco o Infonavit","Validación de capacidad de compra","Confirmaciones iniciales","Documentos recibidos"]},
+  {n:"Preparando documentos",pct:30,
+   copy:'"Estamos integrando cuidadosamente cada documento para que todo avance correctamente."',
+   emo:'"Estamos revisando cuidadosamente cada documento para que todo avance correctamente."',
+   pending:["INE vigente del comprador","Comprobante de domicilio reciente"],
+   next:"Con los documentos completos, procederemos a preparar el acuerdo de compra.",
+   checks:["INE y actas","Escrituras","Predial y boletas","RFC","Estado civil"]},
+  {n:"Acuerdo de compra",pct:45,
+   copy:'"Se están formalizando las condiciones acordadas entre ambas partes."',
+   emo:'"Las condiciones de tu compra están siendo formalizadas. Un paso decisivo."',
+   pending:["Revisión del contrato por ambas partes","Firma del acuerdo"],
+   next:"Con el acuerdo firmado, el expediente ingresará a notaría para revisión legal.",
+   checks:["Redacción","Revisión jurídica","Firmas de ambas partes","Condiciones aceptadas"]},
+  {n:"Revisión en notaría",pct:60,
+   copy:'"La notaría ya se encuentra revisando tu proceso para preparar la siguiente etapa."',
+   emo:'"La notaría ya se encuentra revisando tu proceso para preparar la siguiente etapa."',
+   pending:["Documentación enviada a notaría","Revisión legal de propiedad"],
+   next:"La notaría validará el expediente y programará la fecha de firma.",
+   checks:["Documentación enviada a notaría","Revisión legal de propiedad","Validaciones oficiales","Preparación para firma"]},
+  {n:"Últimas confirmaciones",pct:75,
+   copy:'"Estamos muy cerca de la firma. Solo faltan algunas confirmaciones importantes."',
+   emo:'"Estamos muy cerca de la firma. Solo faltan algunas confirmaciones importantes."',
+   pending:["Confirmaciones finales","Liberación de recursos"],
+   next:"Con las confirmaciones listas, coordinaremos la fecha y hora de tu firma.",
+   checks:["Confirmaciones finales","Liberación de recursos","Coordinación para firma"]},
+  {n:"Día de firma",pct:90,
+   copy:'"La fecha de firma está confirmada. Tu nuevo capítulo está a punto de comenzar."',
+   emo:'"La fecha de firma está confirmada. Tu nuevo capítulo está a punto de comenzar."',
+   pending:["Identificación oficial vigente","Forma de pago confirmada"],
+   next:"Después de la firma, coordinaremos la entrega formal de tu propiedad.",
+   checks:["Firma programada","Documentos listos","Preparación de entrega"]},
+  {n:"Entrega de llaves",pct:100,
+   copy:'"Tu propiedad ha sido entregada. La operación ha concluido exitosamente."',
+   emo:'"Felicidades. Tu propiedad es tuya. Fue un honor acompañarte en este proceso."',
+   pending:[],next:"",
+   checks:["Entrega de llaves","Confirmación de posesión","Cierre operativo"]}
 ];
 
-function goSlide(n){
-  document.querySelectorAll('.slide').forEach(function(s){s.classList.remove('active');});
-  document.getElementById('slide'+n).classList.add('active');
-  window.scrollTo(0,0);
-}
-
+/* ── RENDER ── */
 function render(){
-  // Aplicar nombre y precio desde variables editables
   document.getElementById("propNombre").textContent = NOMBRE_PROP;
   document.getElementById("propPrecio").textContent = PRECIO_PROP;
   var f = fases[FASE_ACTUAL];
@@ -428,63 +475,115 @@ function render(){
   document.getElementById("emText").textContent  = f.emo;
   document.getElementById("sEstado").textContent = f.pct === 100 ? "Proceso completado ✓" : "Tu compra avanza";
   document.getElementById("sFolio").textContent  = FOLIO;
-
-  // Timeline
-  var wrap = document.getElementById("tlWrap");
-  wrap.innerHTML = "";
-  fases.forEach(function(fase, i){
-    var done = i < FASE_ACTUAL, active = i === FASE_ACTUAL, last = i === fases.length-1;
-    var item = document.createElement("div"); item.className = "tl-item";
-    var spine = document.createElement("div"); spine.className = "tl-spine";
-    var node = document.createElement("div");
-    node.className = "tl-node " + (done?"n-done":active?"n-active":"n-pending");
-    if(done) node.innerHTML = '<span style="font-size:11px;color:#C6A86B">&#10003;</span>';
-    else if(active) node.innerHTML = '<div style="width:8px;height:8px;border-radius:50%;background:#0B0B0B"></div>';
-    else node.innerHTML = '<span style="font-size:8px;color:rgba(255,255,255,0.15);font-weight:700">'+(i+1)+'</span>';
-    spine.appendChild(node);
-    if(!last){
-      var line = document.createElement("div");
-      line.className = "tl-line "+(done?"line-done":"line-pending");
-      spine.appendChild(line);
-    }
-    var content = document.createElement("div"); content.className = "tl-content";
-    content.innerHTML = '<div class="tl-pct-tag">'+fase.pct+'%</div><div class="tl-name'+(active?" na":done?" nd":"")+'">'+fase.n+'</div>';
-    if(active){
-      // Checklist
-      var cl = document.createElement("div"); cl.className = "tl-checks show";
-      fase.checks.forEach(function(ch){
-        cl.innerHTML += '<div class="tl-chk"><div class="chk-ico">&#10003;</div>'+ch+'</div>';
-      });
-      content.appendChild(cl);
-      // Pendiente para continuar
-      if(fase.pending && fase.pending.length > 0){
-        var pb = document.createElement("div"); pb.className = "next-block";
-        pb.innerHTML = '<div class="next-label">Pendiente para continuar</div>';
-        fase.pending.forEach(function(p){
-          pb.innerHTML += '<div class="next-item">'+p+'</div>';
-        });
-        content.appendChild(pb);
-      }
-      // Próximo paso
-      if(fase.next){
-        var ns = document.createElement("div"); ns.className = "next-step-block";
-        ns.innerHTML = '<div class="next-step-label">Próximo paso</div><div class="next-step-text">'+fase.next+'</div>';
-        content.appendChild(ns);
-      }
-    }
-    item.appendChild(spine); item.appendChild(content); wrap.appendChild(item);
-  });
-
   document.getElementById("adminFolio").textContent = FOLIO;
   document.getElementById("adminFase").textContent  = "Fase "+(FASE_ACTUAL+1)+" — "+fases[FASE_ACTUAL].n;
   document.getElementById("adminFecha").textContent = new Date().toLocaleDateString("es-MX",{day:"2-digit",month:"short",year:"numeric"});
+
+  var wrap = document.getElementById("tlWrap"); wrap.innerHTML = "";
+  fases.forEach(function(fase,i){
+    var done=i<FASE_ACTUAL,active=i===FASE_ACTUAL,last=i===fases.length-1;
+    var item=document.createElement("div");item.className="tl-item";
+    var spine=document.createElement("div");spine.className="tl-spine";
+    var node=document.createElement("div");
+    node.className="tl-node "+(done?"n-done":active?"n-active":"n-pending");
+    if(done)node.innerHTML='<span style="font-size:11px;color:#C6A86B">&#10003;</span>';
+    else if(active)node.innerHTML='<div style="width:8px;height:8px;border-radius:50%;background:#0B0B0B"></div>';
+    else node.innerHTML='<span style="font-size:8px;color:rgba(255,255,255,0.15);font-weight:700">'+(i+1)+'</span>';
+    spine.appendChild(node);
+    if(!last){var line=document.createElement("div");line.className="tl-line "+(done?"line-done":"line-pending");spine.appendChild(line);}
+    var content=document.createElement("div");content.className="tl-content";
+    content.innerHTML='<div class="tl-pct-tag">'+fase.pct+'%</div><div class="tl-name'+(active?" na":done?" nd":"")+'">'+fase.n+'</div>';
+    if(active){
+      var cl=document.createElement("div");cl.className="tl-checks show";
+      fase.checks.forEach(function(ch){cl.innerHTML+='<div class="tl-chk"><div class="chk-ico">&#10003;</div>'+ch+'</div>';});
+      content.appendChild(cl);
+      if(fase.pending&&fase.pending.length>0){var pb=document.createElement("div");pb.className="next-block";pb.innerHTML='<div class="next-label">Pendiente para continuar</div>';fase.pending.forEach(function(p){pb.innerHTML+='<div class="next-item">'+p+'</div>';});content.appendChild(pb);}
+      if(fase.next){var ns=document.createElement("div");ns.className="next-step-block";ns.innerHTML='<div class="next-step-label">Próximo paso</div><div class="next-step-text">'+fase.next+'</div>';content.appendChild(ns);}
+    }
+    item.appendChild(spine);item.appendChild(content);wrap.appendChild(item);
+  });
+}
+
+/* ── ADMIN ── */
+var admUnlocked = false;
+var faseEdit = FASE_ACTUAL;
+
+function tryAdmin(){
+  document.getElementById("admOverlay").classList.add("open");
+  if(admUnlocked){ showEditPanel(); }
+  else{ document.getElementById("admBodyLogin").style.display="block"; document.getElementById("admBodyEdit").style.display="none"; setTimeout(function(){document.getElementById("admPw").focus();},200); }
+}
+
+function checkPw(){
+  var pw = document.getElementById("admPw").value;
+  if(pw === ADM_PW){
+    admUnlocked = true;
+    document.getElementById("admErr").textContent = "";
+    document.getElementById("admPw").value = "";
+    showEditPanel();
+  } else {
+    document.getElementById("admErr").textContent = "Contraseña incorrecta";
+    document.getElementById("admPw").value = "";
+    document.getElementById("admPw").focus();
+  }
+}
+
+function showEditPanel(){
+  document.getElementById("admBodyLogin").style.display="none";
+  document.getElementById("admBodyEdit").style.display="block";
+  document.getElementById("eFollio").value  = FOLIO;
+  document.getElementById("eProp").value    = NOMBRE_PROP;
+  document.getElementById("ePrecio").value  = PRECIO_PROP;
+  faseEdit = FASE_ACTUAL;
+  buildFaseGrid();
+}
+
+function buildFaseGrid(){
+  var g=document.getElementById("faseGrid");g.innerHTML="";
+  fases.forEach(function(f,i){
+    var b=document.createElement("button");b.className="fb"+(i===faseEdit?" sel":"");
+    b.innerHTML=f.n+'<span class="fb-pct">'+f.pct+'%</span>';
+    b.onclick=function(){faseEdit=i;document.querySelectorAll(".fb").forEach(function(x){x.classList.remove("sel");});b.classList.add("sel");};
+    g.appendChild(b);
+  });
+}
+
+function applyAdmin(){
+  var folio  = document.getElementById("eFollio").value.trim();
+  var prop   = document.getElementById("eProp").value.trim();
+  var precio = document.getElementById("ePrecio").value.trim();
+  if(!prop){showToast("Escribe el nombre de la propiedad");return;}
+  FOLIO       = folio;
+  NOMBRE_PROP = prop;
+  PRECIO_PROP = precio ? Number(precio.replace(/[^0-9]/g,"")).toLocaleString("es-MX") : precio;
+  FASE_ACTUAL = faseEdit;
+  closeAdmin();
+  render();
+  showToast("✓ Portal actualizado · Fase " + (FASE_ACTUAL+1));
+}
+
+function closeAdmin(){
+  document.getElementById("admOverlay").classList.remove("open");
+}
+
+function goSlide(n){
+  document.querySelectorAll('.slide').forEach(function(s){s.classList.remove('active');});
+  document.getElementById('slide'+n).classList.add('active');
+  window.scrollTo(0,0);
 }
 
 function openWA(){
-  var msg = encodeURIComponent("Hola Enrique, me gustaría saber el avance de mi proceso. Folio: "+FOLIO);
+  var msg=encodeURIComponent("Hola Enrique, me gustaría saber el avance de mi proceso. Folio: "+FOLIO);
   window.open("https://wa.me/"+WA_NUM+"?text="+msg,"_blank");
 }
 
+function showToast(msg){
+  var t=document.getElementById("toast");
+  t.textContent=msg;t.classList.add("show");
+  setTimeout(function(){t.classList.remove("show");},2500);
+}
+
+/* Panel antiguo ?admin=neri sigue funcionando */
 if(new URLSearchParams(window.location.search).get("admin")==="neri"){
   document.getElementById("adminPanel").classList.add("visible");
 }
