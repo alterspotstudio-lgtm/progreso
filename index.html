@@ -1,11 +1,12 @@
 <!DOCTYPE html>
+
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<meta name="theme-color" content="#0B0B0B">
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0" name="viewport"/>
+<meta content="#0B0B0B" name="theme-color"/>
 <title>Portal de Progreso · Método Neri</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Montserrat:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
 <style>
 
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -179,233 +180,249 @@ body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;ma
 /* Toast */
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(60px);background:#C6A86B;color:#0B0B0B;font-size:10px;font-weight:800;letter-spacing:2px;padding:9px 20px;border-radius:20px;z-index:9999;opacity:0;transition:all 0.3s;white-space:nowrap;pointer-events:none}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* WHITE LABEL · LOGO OPCIONAL */
+.hdr-logo.hidden,.ft-logo.hidden{display:none}
+.hdr-logo-text{font-family:"Bebas Neue",sans-serif;font-size:22px;letter-spacing:3px;color:#C6A86B;border:1px solid rgba(198,168,107,.22);padding:8px 10px;line-height:1;white-space:nowrap}
+.hdr-logo img,.ft-logo img{max-width:120px}
 </style>
 </head>
 <body>
-
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
-
 <!-- TRIGGER INVISIBLE (esquina inferior derecha) -->
-<button class="adm-trigger" onclick="tryAdmin()" aria-hidden="true"></button>
-
+<button aria-hidden="true" class="adm-trigger" onclick="tryAdmin()"></button>
 <!-- PANEL ADMIN CON CONTRASEÑA -->
 <div class="adm-overlay" id="admOverlay">
-  <div class="adm-card">
-    <div class="adm-head">
-      <div class="adm-led"></div>
-      <div class="adm-htitle">Panel · Método Neri</div>
-      <button class="adm-x" onclick="closeAdmin()">✕</button>
-    </div>
-    <div class="adm-body" id="admBodyLogin">
-      <div class="adm-sec">Acceso de asesor</div>
-      <div class="adm-row">
-        <label class="adm-lbl">Contraseña</label>
-        <input class="adm-inp adm-inp-pw" id="admPw" type="password" placeholder="••••••" onkeydown="if(event.key==='Enter')checkPw()">
-      </div>
-      <button class="adm-btn" onclick="checkPw()">Ingresar →</button>
-      <div class="adm-err" id="admErr"></div>
-    </div>
-    <div class="adm-body" id="admBodyEdit" style="display:none">
-      <div class="adm-sec">Datos del cliente</div>
-      <div class="adm-row">
-        <label class="adm-lbl">Folio</label>
-        <input class="adm-inp" id="eFollio" type="text" placeholder="EN-2506-0001">
-      </div>
-      <div class="adm-row">
-        <label class="adm-lbl">Propiedad</label>
-        <input class="adm-inp" id="eProp" type="text" placeholder="Nombre de la propiedad">
-      </div>
-      <div class="adm-row">
-        <label class="adm-lbl">Precio (sin $ ni comas)</label>
-        <input class="adm-inp" id="ePrecio" type="text" placeholder="3500000">
-      </div>
-      <div class="adm-div"></div>
-      <div class="adm-sec">Fase actual</div>
-      <div class="fase-grid" id="faseGrid"></div>
-      <button class="adm-btn" onclick="applyAdmin()">Aplicar cambios →</button>
-    </div>
-  </div>
+<div class="adm-card">
+<div class="adm-head">
+<div class="adm-led"></div>
+<div class="adm-htitle">Panel · Método Neri</div>
+<button class="adm-x" onclick="closeAdmin()">✕</button>
 </div>
-
-
-
+<div class="adm-body" id="admBodyLogin">
+<div class="adm-sec">Acceso de asesor</div>
+<div class="adm-row">
+<label class="adm-lbl">Contraseña</label>
+<input class="adm-inp adm-inp-pw" id="admPw" onkeydown="if(event.key==='Enter')checkPw()" placeholder="••••••" type="password"/>
+</div>
+<button class="adm-btn" onclick="checkPw()">Ingresar →</button>
+<div class="adm-err" id="admErr"></div>
+</div>
+<div class="adm-body" id="admBodyEdit" style="display:none">
+<div class="adm-sec">Datos del cliente</div>
+<div class="adm-row">
+<label class="adm-lbl">Folio</label>
+<input class="adm-inp" id="eFollio" placeholder="EN-2506-0001" type="text"/>
+</div>
+<div class="adm-row">
+<label class="adm-lbl">Propiedad</label>
+<input class="adm-inp" id="eProp" placeholder="Nombre de la propiedad" type="text"/>
+</div>
+<div class="adm-row">
+<label class="adm-lbl">Precio (sin $ ni comas)</label>
+<input class="adm-inp" id="ePrecio" placeholder="3500000" type="text"/>
+</div>
+<div class="adm-div"></div>
+<div class="adm-sec">Fase actual</div>
+<div class="fase-grid" id="faseGrid"></div>
+<button class="adm-btn" onclick="applyAdmin()">Aplicar cambios →</button>
+</div>
+</div>
+</div>
 <!-- SLIDE 1 -->
 <div class="slide active" id="slide1">
-
-  <div class="header">
-    <div class="hdr-left">
-      <div class="hdr-method">Método Neri</div>
-      <div class="hdr-name">Enrique Neri</div>
-      <div class="hdr-role">Asesor Inmobiliario · Cuernavaca</div>
-    </div>
-    <div class="hdr-logo"><img src="data:image/png;base64,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" alt="Century 21 Haus"></div>
-  </div>
-
-  <div class="proceso-banner">
-    <div class="proceso-dot"></div>
-    <div class="proceso-txt">Seguimiento de tu proceso de compra</div>
-  </div>
-
-  <!-- ════════════════════════════════════════════════════
+<div class="header">
+<div class="hdr-left">
+<div class="hdr-method" data-brand-method="">Método NERI</div>
+<div class="hdr-name" data-asesor-nombre="">Enrique Neri</div>
+<div class="hdr-role" data-asesor-rol="">Asesor Inmobiliario · Cuernavaca</div>
+</div>
+<div class="hdr-logo" data-logo-wrap="">
+<img alt="Logo" data-logo-img="" src=""/>
+<div class="hdr-logo-text" data-logo-text="" style="display:none">NERI</div>
+</div>
+</div>
+<div class="proceso-banner">
+<div class="proceso-dot"></div>
+<div class="proceso-txt">Seguimiento de tu proceso de compra</div>
+</div>
+<!-- ════════════════════════════════════════════════════
        ZONA EDITABLE — Cambia solo estas 4 líneas
        FASE_ACTUAL en el JS abajo: 0-7
        ════════════════════════════════════════════════════ -->
-  <div class="prop-banner">
-    <div class="prop-left">
-      <div class="prop-tag">
-        <svg class="prop-icon" width="11" height="10" viewBox="0 0 11 10" fill="none">
-          <path d="M5.5 1L1 4.5V9.5H4V7H7V9.5H10V4.5L5.5 1Z" stroke="#C6A86B" stroke-width="0.8" stroke-linejoin="round"/>
-        </svg>
+<div class="prop-banner">
+<div class="prop-left">
+<div class="prop-tag">
+<svg class="prop-icon" fill="none" height="10" viewbox="0 0 11 10" width="11">
+<path d="M5.5 1L1 4.5V9.5H4V7H7V9.5H10V4.5L5.5 1Z" stroke="#C6A86B" stroke-linejoin="round" stroke-width="0.8"></path>
+</svg>
         Propiedad en proceso
       </div>
-      <div class="prop-name" id="propNombre"></div>
-    </div>
-    <div class="prop-price"><span class="sym">$</span><span id="propPrecio"></span></div>
-  </div>
-
-  <!-- CÍRCULO GRANDE -->
-  <div class="circle-hero">
-    <div class="circle-wrap-lg">
-      <svg class="c-svg-lg" viewBox="0 0 180 180">
-        <defs>
-          <linearGradient id="goldGradLg" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#8B6914"/>
-            <stop offset="50%" stop-color="#C6A86B"/>
-            <stop offset="100%" stop-color="#E2C98A"/>
-          </linearGradient>
-        </defs>
-        <circle class="c-track-lg" cx="90" cy="90" r="75.2"/>
-        <circle class="c-glow-lg"  cx="90" cy="90" r="75.2" id="cGlow"/>
-        <circle class="c-fill-lg"  cx="90" cy="90" r="75.2" id="cFill"/>
-      </svg>
-      <div class="c-inner-lg">
-        <div class="c-pct-lg" id="cPct">5%</div>
-        <div class="c-lbl-lg">avance</div>
-      </div>
-      <div class="c-pulse-lg"></div>
-      <div class="c-pulse-lg2"></div>
-    </div>
-  </div>
-
-  <div class="fase-info">
-    <div class="pt-fase" id="ptFase">Fase 1 de 8</div>
-    <div class="pt-title" id="ptTitle">Apartado<span>.</span></div>
-    <div class="bar-wrap">
-      <div class="bar-fill" id="barFill" style="width:5%">
-        <div class="bar-dot"></div>
-      </div>
-    </div>
-    <div class="pt-copy" id="ptCopy">"La propiedad se encuentra en proceso de reserva privada."</div>
-  </div>
-
-  <div class="calm-note" id="calmNote">Todo avanza correctamente. Te avisaremos cuando la siguiente etapa esté lista.</div>
-
-  <div class="status-row">
-    <div class="s-dot"></div>
-    <div class="s-txt"><strong id="sEstado">Tu compra avanza</strong></div>
-    <div class="s-folio" id="sFolio">EN-0000</div>
-  </div>
-
-  <div class="emotional-msg">
-    <div class="em-label">Tu proceso</div>
-    <div class="em-text" id="emText">"Tu operación ha iniciado. La propiedad ya está reservada para ti."</div>
-  </div>
-
-  <div class="slide-nav">
-    <button class="nav-btn" onclick="goSlide(2)">Ver etapas del proceso &nbsp;→</button>
-  </div>
-
+<div class="prop-name" id="propNombre"></div>
 </div>
-
+<div class="prop-price"><span class="sym">$</span><span id="propPrecio"></span></div>
+</div>
+<!-- CÍRCULO GRANDE -->
+<div class="circle-hero">
+<div class="circle-wrap-lg">
+<svg class="c-svg-lg" viewbox="0 0 180 180">
+<defs>
+<lineargradient id="goldGradLg" x1="0%" x2="100%" y1="0%" y2="100%">
+<stop offset="0%" stop-color="#8B6914"></stop>
+<stop offset="50%" stop-color="#C6A86B"></stop>
+<stop offset="100%" stop-color="#E2C98A"></stop>
+</lineargradient>
+</defs>
+<circle class="c-track-lg" cx="90" cy="90" r="75.2"></circle>
+<circle class="c-glow-lg" cx="90" cy="90" id="cGlow" r="75.2"></circle>
+<circle class="c-fill-lg" cx="90" cy="90" id="cFill" r="75.2"></circle>
+</svg>
+<div class="c-inner-lg">
+<div class="c-pct-lg" id="cPct">5%</div>
+<div class="c-lbl-lg">avance</div>
+</div>
+<div class="c-pulse-lg"></div>
+<div class="c-pulse-lg2"></div>
+</div>
+</div>
+<div class="fase-info">
+<div class="pt-fase" id="ptFase">Fase 1 de 8</div>
+<div class="pt-title" id="ptTitle">Apartado<span>.</span></div>
+<div class="bar-wrap">
+<div class="bar-fill" id="barFill" style="width:5%">
+<div class="bar-dot"></div>
+</div>
+</div>
+<div class="pt-copy" id="ptCopy">"La propiedad se encuentra en proceso de reserva privada."</div>
+</div>
+<div class="calm-note" id="calmNote">Todo avanza correctamente. Te avisaremos cuando la siguiente etapa esté lista.</div>
+<div class="status-row">
+<div class="s-dot"></div>
+<div class="s-txt"><strong id="sEstado">Tu compra avanza</strong></div>
+<div class="s-folio" id="sFolio">EN-0000</div>
+</div>
+<div class="emotional-msg">
+<div class="em-label">Tu proceso</div>
+<div class="em-text" id="emText">"Tu operación ha iniciado. La propiedad ya está reservada para ti."</div>
+</div>
+<div class="slide-nav">
+<button class="nav-btn" onclick="goSlide(2)">Ver etapas del proceso  →</button>
+</div>
+</div>
 <!-- SLIDE 2 -->
 <div class="slide" id="slide2">
-
-  <div class="header">
-    <div class="hdr-left">
-      <div class="hdr-method">Método Neri</div>
-      <div class="hdr-name">Enrique Neri</div>
-      <div class="hdr-role">Asesor Inmobiliario · Cuernavaca</div>
-    </div>
-    <div class="hdr-logo"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFgAAAAyCAYAAADY+hwIAAABCGlDQ1BJQ0MgUHJvZmlsZQAAeJxjYGA8wQAELAYMDLl5JUVB7k4KEZFRCuwPGBiBEAwSk4sLGHADoKpv1yBqL+viUYcLcKakFicD6Q9ArFIEtBxopAiQLZIOYWuA2EkQtg2IXV5SUAJkB4DYRSFBzkB2CpCtkY7ETkJiJxcUgdT3ANk2uTmlyQh3M/Ck5oUGA2kOIJZhKGYIYnBncAL5H6IkfxEDg8VXBgbmCQixpJkMDNtbGRgkbiHEVBYwMPC3MDBsO48QQ4RJQWJRIliIBYiZ0tIYGD4tZ2DgjWRgEL7AwMAVDQsIHG5TALvNnSEfCNMZchhSgSKeDHkMyQx6QJYRgwGDIYMZAKbWPz9HbOBQAAARr0lEQVR42u1aeXhU1dl/33PvLJklk5nsiwlLUCF0sdCiX78+TaytbfVTQTOftmWrklQUrQuKLLkzgIC1mMa0aFIwgFp0AuK+00CrrTyK/ZBFkF3MQpKZzL7cuee83x+TYAiBavtHp33yPs88M8+d995zzu+c+76/d0FIQ/F4PJLT6eQAgFs3uqdZTfIsZFhlsWSYJcYgFktAMqkdVDWx5cRx/xO19/36CBEgIlC6rQXTFdyNTQumFOfZ6nMd1suCoRjE4om9JOgQF6QyhnmyzL6W47A5wpG4ONUd/MW02UvXejwe1r8xaSNyOoK7paXup4UFtqcYAnSc8j8SDMabnbcsPzhY9+GH7zGPDalX5josd6CE+wCA9u3bN3KCzw1uteR0tnLP2sXXjB2d+0Iklvj0eHvIOaN22U4AAGpT5F3WIgyFOqiyEgSiW8CIfDFRFIURET7ZtLDwzy//yvfuKw/3rG9YNBYAYO9eRT9Ud+j9RITpura0MBGuigpERPHypqV12XarfffBk9fNunPFEY9H0U+c6Fa3tCiXZmWZxnV0+XdNv9W9HwCgvv7OrItLcm8Mh2NeRGxNV4D/5TtPRIiI1Ni4IPurZVnt0bi6+0fOuikffNCkmzy5NvnSH5YtL863LdIbZAiGYtDRE7hlzxFs+dZ4adv4ccWVR090H75i2gPj0hVg9q+ewHaXSwIAKHOYvpPjsBm4is1EhJMn1yafeWLhNy4uL1jk6wu9d+hI143JpHbEkZnx6xxTb0E8rv7u08+6jyBSMp3N378cYKhMfUkSTInHVQrHozsRkQgAZWChpCbuDsf4rKkzlz7r90farOaMLJPVarx+1vLNQogwEBjTGeC0oWk6JhVGonEMhSM9AAAuRUH3z92HAKAeAMCzdvFF+Xm2G/3+yMfhjyPtHo9HIjgsASKNnOAvYouRBCCCEIwNZgxtbYqxurpayrKZ1plMRos/HJ93Z2Njwul0cgRIe6qWNgBrXJy0mjPIbrflAwC4AKCyElhVlTt+0zUT5pcUOb59+PiphdWzl20721ECjgB8DunpqSAAADXBd+r1MpoM8ncAAF6b4tNVVbk1zxOLv5Jnt7hO9fgDMpMib29eec/6phRHRgACAJGOOYi0Abi62ikAAD496nunq6cvrNPBrQCAeXkTxerVdzmsFuMLZpPBIDG0jR9X2CCI/0LHuQ8AgAthFYJba2ZOu7i6uloacXLDEXEEIvJIiM7gi0+7Gy8aW/DApnUL50yeXNvc0HCfyR+I3NvV1ZuQJQl6fWFx9Fjk/Xvdj/QBAHT19M0mYDrBpcRIoPF3gg2Xy4VFRXHrhfmOjzKMct4nJ3oqZ9Su2nk+fbd7JB/xJUBO5Rg2NS36r7++vjr+zsu/Cm9uUa4bfBLa2hTZ4/GcYQqUu252pJOzTtts2uCM2tNNi64oLbK12jJNWV3dwc1xNfnbgx8GP5i/enVkQPeptYvK7FbT1XabUfH6Yhv+5yeL5w9K1I/Y4OHE6Wzl/SC9ve6RBZNGjeIPZdvNN+h00g0ZRjn85pTlR1HCmBBUYM7Ql2XbM6HbF+jmgh8hAnS5RvLBX+okAwC0blh6SZZZfwMiryKA0URkkBB7BLLdyaR4cec7XS+6GxuDBID9tG1EvoikcsRn5X5x0qRJuuE2ZASxf8L5tbUpMg1JtJPHI7UpipzOyfZ/R8F0NWsjMiIjMiIjkuaRHBEguJTUNbebBvNKIsDW1mp2jgBBpFIEKZ19+ybQ0DyBoiisomI/DvBbIsLWVic7T9AhIDU+ejzDP9PjqZYGXx8YY7DO0PsGKN3APIab43BjDdZxuQAQ3QSD8Bk8drWzVQzl5EhDYvzUZDz/ML9MJ/rUDyqef75/l53gUF5Ow/RonIv2EECqHWmM3TKaI4hX/nT86IYNG+IDiusa5uWaM61jo9EEh2SqkCtJjDiTMEqxj2+/fU3496vvchQXZ1544Fh3990PPHZ0oCQPALDu0bu+pmPMGNNd+GFtbW1y9fLa4uIie1E4EidZRkYETNNA6JEE00vY3hf6ZMGC5kBT0/22ApNxfG8o0X3z3FWnn9nUVKOTk9Zv8KSWqLmrYTcA0Mbf3lWuN2fkJMJRDQBANhopLFhHbe2KztQpm2spLzZfEo9riTl31L9PqY5BGnjm6uW1xZdMLCs5frIn+vN59XuGayhct2bBGEemyTz1Z9s+BtihkaIwdLvFmpW3jsnJseYIAsY1dvCnc1f1EQDKRAC1tTW6ay8vXWzOkG82GvTFRASzpo0/ev0PXE90fkL1tW53tKy04Bq71bw2GkuA0agHIAACAp1OhgNHOq8AgG2OXPMPCvKyN+l1+t4NTfdPAoCTAxMoKczZotexsYGovxgAOkryHfdeMmHUL33+MHAhIKlqYDTqgTEEo0EPYu+x6wHguTJ79mVlJZmvmdr96wFg9q5dzTIAJPXJzOyy4uz3wtF4Z3l5+ejDhw8nCgqyV2RnWasTCRV0OhkIAWJxNfrSH5Y+/sHBbffn5gJkZ1ofKZuQM3nr+iWLEHFFU1OTzuVy8ZZ6xVZSqt/hyMoc2+0NzwSAPa2tHkbkFC6XggCdxinjSx83meTpGXo9bH/hR3u9vso5ONv9HgBAYZHj0TFlBVdFYyqEY+p1APDCdkWRmMulSFd/t+jZsWW5dQBQHAxHdwbDsfftmeYxep08vaN/5xiTNGRIcVU74vWF/+z1R97pC0R3eH2RHTyOXgAAWZZELJ4gi9mYk2szr0VE2l6ZSiXKEksAEZdlFAAAgmCvty+yIxCMbovG1JOyTqJQOLbXH4j+0dcX3sGBulIjC865IEnGM/ofDAYdAYAmSZ8n2yVJUgGIIjH1A68/vMPnj/wpqWpQPir37m9ddPndt9++JhwIwQx/IBLOz7fVPf37BZNqOjq42+0WjlxqGFWSO/Zke8+TN968YmMqH+LkAB7mdrvF5ItKlo0dlTs9qfJOfzjyQVameaLFIm99es0COwCAELgzHEl8xiQkADpt3+VJ49jcUSXZU9u7fAe8gejPnLOW7QIA2Pqk+3vhUPIzt3t5NGVwULOYMrC3L/j4D/93ya/PMPyQskXEQTCGGInGKT838/tbN9TNq6pyNwIQClgFSIAMDBwA4KaalesAYB0AwFutK1ZmO2wLPv2s774rqxe8Ntj/6iSJp+zfcDadEM64TqTTyZjUaN6Pb1zyHgDApuYl37GYo2/rdNLPFUV55KY5dR97WuoWThhX8GhOlrUF5yz66pb1S6aWFufOONHuPXEykLiTFIW59qUcLKKTV1dXS3qddF2PNxRtPxX+4azbVn70+jPLXiguclwTiiYuA4BXr5+9fNlbmx90FGU5fhkKq6cBZkYDmxeLJ0WPN1zrnLVsV1tbKr6fOl3ZNn3u8oNNTTW61NQ545wDQ6n0zZdXjW976cGJf32zfvw7zz9krVRSpxQRhFGvh3BE/b9AMBrIy7Wuaml64GIAJCQhD3GCbO9eRU+kMGSoByKQdMxIpLC9HkWvKHX/cCpVN+hUH2j3/i0aUwUBWTs7O5E8Hsk5e2nj8ZO9b11Q5PjKi0+7m21W469IEPi88V/Mnbuqr7WiYqBaQgAAEyZMoDiJKzq8sYkz567YAwDAQRgJCBAlMeDUmSSdlYhikiSN6QtEet/dHdxJpLDKSjdHRPJ4PJKiKOzCCwsJAIAApVAkBjqJzcvU6fcbZMMek0G33xePV1a53RoAgEAQJpMBuBBv+gKRB/KybaYCW8bvAQCRIR/ip6mnJ9WGSkB0mnqgW/TsA1FRUXEmzRnir2U5icMxFyEEAKPrtm1dMf2NzctrLh1f+HxRvt3Iudje3Nyc3NXXx4gIe/yRmq7uQF9etmWOw24p/6yz7zHnHPfrbW2KPDRp73a7xbXOJcecM5YcQ0Tasn7xjOJ8xw86T/lP9HbE/+rxeKSUM6ez0qVMEKmyxIzl5WBoba3A7dsVaYArulyuQTwYSZYl0Lg4FonE343Hkn8OR+LvchLewa8v5wIkCbNvmPXgY0dOnHp/1AW5/715ozJfcAowxC9d2hGkMQAgjZMgIgyFOiSPxyMlVbMmBCFDFDabrZ+zIqqqBrkOa11+btZGmyWjKSfb8r3POn0HwwHxABHhSx0dfPt2lzT71oeOB8Kx+3Q6WfT6Qp/4O4PzUwfMNWxFpE1Jlas2NN1f6siy/EbjHMJxflvtgocCFkvncG8bWos6UU4m+V9KCh2Xh6Nq7XVO58Of/5/qCG1rU/otInGLKQO8/tBj35+2+OEzTs4BYINJNxBJRICb1kZvMZtC7zkyjW7OhSaIYpKk+4L8ODW+NxgN2LMyEDj/Wj/liwMAPNOilNttFvD6Q127du1K9uNLer0Oen2hxzTOC3Lslqk+f2Tv820dl61ZsyZMNalCaUVFNRIRtrYs2UkETFXVYzPmr45Mv1dhOHwrFkIlgLPKyV/ZtLQ5P9dmP3S0q/766e5XAAAyMnxnbIoQAgGAvlnbnJTjCa70BSJVuXbTQy//YWlWNMFbkUmYZdXVRmPJD6uq6poHbtQ0LrhGJRt+d994g0GSZAk0wSVa5412AECo/zUVCJhM8ceVH23doCy8oNheHwxFAYgCkqzicFEJEQmizxfndLYKIsJH77jjI5tZd6Ao3z7l1WeWNsZUqQlRLbKaDPUmk4GdPNX37GkUEDQmMSEbWOMVVy88sG3rysM5DutFl0/JuWrNGni2tbWVAQBP6SJteWKJMTVfJp0v0PB4PKyqyqk9t7Hu1sJ825Xtnd5PvdHkUy9vWDr+0+6At7Kywvv5MkBIDLSGhgaDMemzsmkz3e9090VvEQC8fHT+wrIi299KCywflpfl1Rp1bElDw7zMlA3EDAJiFpPhjvLRefsvKMreU5jn+HhUafYBk519EwCAIejNJiMjwAwAgFdfbTBMnen+TU9vaFtejg0AmUmS5LMWggwNZpORSfIZNUICcOGdjY0JVeWzA6Gof0xp3u1FecY9o4qy3ygusE84eqL7FfUTeqytTZH7eUeGyahnwKEEAOhUT3gOF6TLc1ie3NyiXFztdIrBHfLIOJpNRoYIGefqDiJSmNPp5FueVL6Ra7es0TQOBr2+dGyhbdeosTn7LyiyzkdM2WyJMYPZZGACQJ8IHp2RxOj9ssdTLVU73U881bzwQ1WlmVwkv4UI3B9K/CUUiaz/qs8RBQCIquqpXm9odySa0IBIBiBAhkJiElM1LQAAEAtpvh5vcLeqJg8BAITDPgIA6OoL3yLL7Fk1ybmUTKgDkx9om4rGksd7vMHd0WDSBwDQ0+/gEN1CURR27XT3e2vXzL9UTdJtIMQ3I6gGVS6ev+om3gTgFm2QAjgWVw95vaHd0YjaCwD4k5oH/9jasrhuzAU51UTB2QhwP7kAASYQAEAklgj3eoO7o3Ft7zktlSu1F0LlNZyLj7p7ghoylBFAkwClZJKfGFCNRRLHer3B3YkE9yHKXJZ00uldSvf63D9SuB3Cnf/ZNf5z95PSX/siwoHfQxeGiMN+ztY5e6H98f7wCCHAuf4bDPLp+fXX6YaCO9xzSFHY+Z493HzPrzvk8yXXMSL/0RXk1BuDA6deUdLbdP3HiMfjkQaZLBzIU3s81dLARrS1KXKbosgjaJ3HGb3wlGvl1k3KKACAt59/qOqtzatu/XdfW3rtOIkrM1B+JvUTRiOKyYqiyJeUw4y8HFtBe7fvNQpJh2wFlqorb5j/0nPrl/zIkmXZ7fdGs4oL7dd4vYHgoW5/yz331MchTdqo0srGMYlFrJnm32x7btXmTIvhNoHQ63a7NQI2MRaLjzMZ9I86Ck0X6mStpj8yngMa/3qmRf+7pNAujnPOjx/XBKRRjxpLL1MhMB6LLiOJ3xaNqU8yYmLzU0u+bdRLJfEk/UUvSxZAkrkmMJXEl5GIa8G45krEtf1Wk+H7370ktzSdaoJpBjCLhKLUfsW1i05pSdYJiEniFGWIE3hSu1QTEFQjsQOJpMbf3LzyDZ1eN05ooMqMX20ySF8nIcoYQ0Fp1F71/9BMEzshHPBEAAAAAElFTkSuQmCC" alt="Century 21 Haus"></div>
-  </div>
-
-  <div class="proceso-banner">
-    <div class="proceso-dot"></div>
-    <div class="proceso-txt">Etapas del proceso</div>
-  </div>
-
-  <div class="timeline">
-    <div class="tl-eyebrow">Tu camino hacia la escritura</div>
-    <div id="tlWrap"></div>
-  </div>
-
-  <div class="bottom-note">
-    <div class="bn-label">Nota de proceso</div>
-    <div class="bn-text">"Cada etapa está siendo acompañada cuidadosamente para que avances con tranquilidad y claridad."</div>
-  </div>
-
-  <div class="wa-row">
-    <button class="wa-btn" onclick="openWA()">&#9993;&nbsp;&nbsp;Contactar a Enrique · 777 985 5687</button>
-  </div>
-
-  <div class="footer">
-    <div class="ft-logo"><img src="data:image/png;base64,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" alt="Century 21 Haus"></div>
-    <div class="ft-right">
-      <div class="ft-method">Método Neri</div>
-      <div class="ft-copy">Cuernavaca · México</div>
-    </div>
-  </div>
-
-  <div class="slide-nav" style="padding-top:0;margin-top:0">
-    <button class="nav-btn back" onclick="goSlide(1)">← Volver al resumen</button>
-  </div>
-
+<div class="header">
+<div class="hdr-left">
+<div class="hdr-method" data-brand-method="">Método NERI</div>
+<div class="hdr-name" data-asesor-nombre="">Enrique Neri</div>
+<div class="hdr-role" data-asesor-rol="">Asesor Inmobiliario · Cuernavaca</div>
 </div>
-
+<div class="hdr-logo" data-logo-wrap="">
+<img alt="Logo" data-logo-img="" src=""/>
+<div class="hdr-logo-text" data-logo-text="" style="display:none">NERI</div>
+</div>
+</div>
+<div class="proceso-banner">
+<div class="proceso-dot"></div>
+<div class="proceso-txt">Etapas del proceso</div>
+</div>
+<div class="timeline">
+<div class="tl-eyebrow">Tu camino hacia la escritura</div>
+<div id="tlWrap"></div>
+</div>
+<div class="bottom-note">
+<div class="bn-label">Nota de proceso</div>
+<div class="bn-text">"Cada etapa está siendo acompañada cuidadosamente para que avances con tranquilidad y claridad."</div>
+</div>
+<div class="wa-row">
+<button class="wa-btn" data-wa-label="" onclick="openWA()">✉  Contactar</button>
+</div>
+<div class="footer">
+<div class="ft-logo" data-footer-logo-wrap=""><img alt="Logo" data-footer-logo-img="" src=""/></div>
+<div class="ft-right">
+<div class="ft-method" data-footer-brand="">Método NERI</div>
+<div class="ft-copy" data-footer-location="">Cuernavaca · México</div>
+</div>
+</div>
+<div class="slide-nav" style="padding-top:0;margin-top:0">
+<button class="nav-btn back" onclick="goSlide(1)">← Volver al resumen</button>
+</div>
+</div>
 <!-- CAPA 3 — PANEL INTERNO (?admin=neri) -->
 <div class="admin-panel" id="adminPanel">
-  <div class="admin-bar">
-    <div class="admin-bar-ico"></div>
-    <div class="admin-bar-lbl">Panel interno · Método Neri</div>
-    <div class="admin-bar-sub" id="adminFecha"></div>
-  </div>
-  <div class="admin-inner">
-    <div class="admin-lbl">Alertas del expediente</div>
-    <div class="alert-row">
-      <div class="alert-dot dot-yellow"></div>
-      <div><div class="alert-title">Expediente en revisión bancaria</div><div class="alert-detail">Ingresado hace 5 días. Seguimiento pendiente con el banco.</div></div>
-    </div>
-    <div class="alert-row">
-      <div class="alert-dot dot-red"></div>
-      <div><div class="alert-title">Falta: Acta de matrimonio del comprador</div><div class="alert-detail">Solicitado. Sin respuesta del cliente. Recordatorio pendiente.</div></div>
-    </div>
-    <div class="alert-row">
-      <div class="alert-dot dot-green"></div>
-      <div><div class="alert-title">Predial y boletas — recibidos</div><div class="alert-detail">Documentos del vendedor completos e integrados.</div></div>
-    </div>
-    <div class="admin-lbl">Datos internos</div>
-    <div style="font-size:11px;color:rgba(255,255,255,.25);font-weight:300;line-height:2.1">
-      Folio: <span style="color:rgba(198,168,107,.6)" id="adminFolio"></span><br>
-      Fase: <span style="color:rgba(198,168,107,.6)" id="adminFase"></span><br>
-      Días en fase: <span style="color:rgba(198,168,107,.6)">— edita aquí —</span><br>
-      Notario asignado: <span style="color:rgba(198,168,107,.6)">— edita aquí —</span>
-    </div>
-  </div>
+<div class="admin-bar">
+<div class="admin-bar-ico"></div>
+<div class="admin-bar-lbl">Panel interno · Método Neri</div>
+<div class="admin-bar-sub" id="adminFecha"></div>
 </div>
-
-
+<div class="admin-inner">
+<div class="admin-lbl">Alertas del expediente</div>
+<div class="alert-row">
+<div class="alert-dot dot-yellow"></div>
+<div><div class="alert-title">Expediente en revisión de viabilidad</div><div class="alert-detail">Ingresado hace 5 días. Seguimiento pendiente de validación documental.</div></div>
+</div>
+<div class="alert-row">
+<div class="alert-dot dot-red"></div>
+<div><div class="alert-title">Falta: Acta de matrimonio del comprador</div><div class="alert-detail">Solicitado. Sin respuesta del cliente. Recordatorio pendiente.</div></div>
+</div>
+<div class="alert-row">
+<div class="alert-dot dot-green"></div>
+<div><div class="alert-title">Predial y boletas — recibidos</div><div class="alert-detail">Documentos del vendedor completos e integrados.</div></div>
+</div>
+<div class="admin-lbl">Datos internos</div>
+<div style="font-size:11px;color:rgba(255,255,255,.25);font-weight:300;line-height:2.1">
+      Folio: <span id="adminFolio" style="color:rgba(198,168,107,.6)"></span><br/>
+      Fase: <span id="adminFase" style="color:rgba(198,168,107,.6)"></span><br/>
+      Días en fase: <span style="color:rgba(198,168,107,.6)">— edita aquí —</span><br/>
+      Notario asignado: <span style="color:rgba(198,168,107,.6)">— edita aquí —</span>
+</div>
+</div>
+</div>
 <script>
 /* ════════════════════════════════════════════════════
    ZONA EDITABLE — valores por defecto al cargar
    (estos son los que se muestran mientras no editas)
 ════════════════════════════════════════════════════ */
+/* ──────────────────────────────────────────────────────
+   MÉTODO NERI — PLANTILLA WHITE LABEL
+   ⚡ EDITA SOLO ESTE BLOQUE PARA CADA ASESOR / INMOBILIARIA
+   Si no quieres logo, deja LOGO_URL vacío y MOSTRAR_LOGO en false.
+   Todo lo demás del archivo NO se toca.
+────────────────────────────────────────────────────── */
+var MARCA_SUPERIOR  = "Método NERI";
+var ASESOR_NOMBRE   = "Enrique Neri";
+var ASESOR_ROL      = "Asesor Inmobiliario · Cuernavaca";
+var EMPRESA_NOMBRE  = ""; // Ej: Century 21 Haus · Dejar vacío si no aplica
+var MOSTRAR_LOGO    = false;
+var LOGO_URL        = ""; // Pega aquí URL pública o base64 del logo. Vacío = sin logo
+var LOGO_TEXTO      = "NERI"; // Se usa solo si MOSTRAR_LOGO=true pero no hay LOGO_URL
+var FOOTER_TEXTO    = "Cuernavaca · México";
+
 var FOLIO       = "EN-2506-4821";
-var FASE_ACTUAL = 6;
-var NOMBRE_PROP = "Depto. Tabachín";
-var PRECIO_PROP = "1,900,000";
-var WA_NUM      = "527779855687";
-var ADM_PW      = "neri2025";   // ← CAMBIA ESTA CONTRASEÑA
+var FASE_ACTUAL = 6; // 0 a 7
+var NOMBRE_PROP = "Casa Lomas de Ahuatlán";
+var PRECIO_PROP = "3,200,000";
+var WA_NUM      = "527779855687"; // WhatsApp con lada país, sin +
+var WA_LABEL    = "Contactar a Enrique · 777 985 5687";
+var ADM_PW      = "neri2026";   // ← CAMBIA ESTA CONTRASEÑA
+var STORAGE_KEY = "metodo_neri_portal_progreso_v2";
+
+// Carga cambios guardados desde el panel oculto.
+// Esto permite que el avance se conserve al recargar el mismo navegador.
+(function cargarPortalGuardado(){
+  try{
+    var saved = localStorage.getItem(STORAGE_KEY);
+    if(!saved) return;
+    var data = JSON.parse(saved);
+    if(data.folio) FOLIO = data.folio;
+    if(typeof data.fase === "number" && data.fase >= 0 && data.fase <= 7) FASE_ACTUAL = data.fase;
+    if(data.propiedad) NOMBRE_PROP = data.propiedad;
+    if(data.precio) PRECIO_PROP = data.precio;
+  }catch(e){
+    console.warn("No se pudo cargar el avance guardado", e);
+  }
+})();
 
 /* ════ NO EDITAR ABAJO ════ */
 var CIRC = 472.5;
@@ -417,11 +434,11 @@ var fases = [
    next:"Iniciaremos la revisión de tu capacidad de compra para avanzar al siguiente paso.",
    checks:["Apartado recibido","Publicidad pausada","Vendedor notificado","Visitas detenidas","Integración documental iniciada"]},
   {n:"Revisión de compra",pct:15,
-   copy:'"Estamos revisando tu capacidad de compra para preparar la siguiente etapa."',
-   emo:'"Tu operación avanza. Estamos verificando tu perfil financiero con total cuidado."',
-   pending:["Revisión con banco o Infonavit","Validación de capacidad de compra"],
-   next:"Una vez confirmada tu capacidad de compra, avanzaremos a la integración de documentos.",
-   checks:["Revisión con banco o Infonavit","Validación de capacidad de compra","Confirmaciones iniciales","Documentos recibidos"]},
+   copy:'"Estamos revisando la viabilidad de tu compra para preparar la siguiente etapa."',
+   emo:'"Tu operación avanza. Estamos revisando tu escenario de compra con total cuidado."',
+   pending:["Revisión de viabilidad de compra","Validación del escenario de compra"],
+   next:"Una vez confirmado el camino de compra, avanzaremos a la integración de documentos.",
+   checks:["Revisión de viabilidad de compra","Validación del escenario de compra","Confirmaciones iniciales","Documentos recibidos"]},
   {n:"Preparando documentos",pct:30,
    copy:'"Estamos integrando cuidadosamente cada documento para que todo avance correctamente."',
    emo:'"Estamos revisando cuidadosamente cada documento para que todo avance correctamente."',
@@ -443,13 +460,13 @@ var fases = [
   {n:"Últimas confirmaciones",pct:75,
    copy:'"Estamos muy cerca de la firma. Solo faltan algunas confirmaciones importantes."',
    emo:'"Estamos muy cerca de la firma. Solo faltan algunas confirmaciones importantes."',
-   pending:["Confirmaciones finales","Liberación de recursos"],
+   pending:["Confirmaciones finales","Confirmación de recursos"],
    next:"Con las confirmaciones listas, coordinaremos la fecha y hora de tu firma.",
-   checks:["Confirmaciones finales","Liberación de recursos","Coordinación para firma"]},
+   checks:["Confirmaciones finales","Confirmación de recursos","Coordinación para firma"]},
   {n:"Día de firma",pct:90,
    copy:'"La fecha de firma está confirmada. Tu nuevo capítulo está a punto de comenzar."',
    emo:'"La fecha de firma está confirmada. Tu nuevo capítulo está a punto de comenzar."',
-   pending:["Identificación oficial vigente","Forma de pago confirmada"],
+   pending:["Identificación oficial vigente","Condiciones de cierre confirmadas"],
    next:"Después de la firma, coordinaremos la entrega formal de tu propiedad.",
    checks:["Firma programada","Documentos listos","Preparación de entrega"]},
   {n:"Entrega de llaves",pct:100,
@@ -460,7 +477,36 @@ var fases = [
 ];
 
 /* ── RENDER ── */
+function renderBranding(){
+  var marca = MARCA_SUPERIOR || "Método NERI";
+  var asesor = ASESOR_NOMBRE || "Asesor";
+  var rol = ASESOR_ROL || "Acompañamiento inmobiliario";
+  var empresa = EMPRESA_NOMBRE ? " · " + EMPRESA_NOMBRE : "";
+
+  document.querySelectorAll('[data-brand-method]').forEach(function(el){ el.textContent = marca + empresa; });
+  document.querySelectorAll('[data-asesor-nombre]').forEach(function(el){ el.textContent = asesor; });
+  document.querySelectorAll('[data-asesor-rol]').forEach(function(el){ el.textContent = rol; });
+  document.querySelectorAll('[data-footer-brand]').forEach(function(el){ el.textContent = marca; });
+  document.querySelectorAll('[data-footer-location]').forEach(function(el){ el.textContent = FOOTER_TEXTO || ""; });
+  document.querySelectorAll('[data-wa-label]').forEach(function(el){ el.innerHTML = "&#9993;&nbsp;&nbsp;" + (WA_LABEL || ("Contactar a " + asesor)); });
+
+  document.querySelectorAll('[data-logo-wrap]').forEach(function(wrap){
+    var img = wrap.querySelector('[data-logo-img]');
+    var txt = wrap.querySelector('[data-logo-text]');
+    if(!MOSTRAR_LOGO){ wrap.classList.add('hidden'); return; }
+    wrap.classList.remove('hidden');
+    if(LOGO_URL){ img.src = LOGO_URL; img.style.display = 'block'; txt.style.display = 'none'; }
+    else { img.style.display = 'none'; txt.style.display = 'block'; txt.textContent = LOGO_TEXTO || 'NERI'; }
+  });
+  document.querySelectorAll('[data-footer-logo-wrap]').forEach(function(wrap){
+    var img = wrap.querySelector('[data-footer-logo-img]');
+    if(!MOSTRAR_LOGO || !LOGO_URL){ wrap.classList.add('hidden'); return; }
+    wrap.classList.remove('hidden'); img.src = LOGO_URL;
+  });
+}
+
 function render(){
+  renderBranding();
   document.getElementById("propNombre").textContent = NOMBRE_PROP;
   document.getElementById("propPrecio").textContent = PRECIO_PROP;
   var f = fases[FASE_ACTUAL];
@@ -552,14 +598,32 @@ function applyAdmin(){
   var folio  = document.getElementById("eFollio").value.trim();
   var prop   = document.getElementById("eProp").value.trim();
   var precio = document.getElementById("ePrecio").value.trim();
+  if(!folio){showToast("Escribe el folio del expediente");return;}
   if(!prop){showToast("Escribe el nombre de la propiedad");return;}
+
   FOLIO       = folio;
   NOMBRE_PROP = prop;
   PRECIO_PROP = precio ? Number(precio.replace(/[^0-9]/g,"")).toLocaleString("es-MX") : precio;
   FASE_ACTUAL = faseEdit;
+
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      folio:FOLIO,
+      propiedad:NOMBRE_PROP,
+      precio:PRECIO_PROP,
+      fase:FASE_ACTUAL,
+      actualizado:new Date().toISOString()
+    }));
+  }catch(e){
+    console.warn("No se pudo guardar el avance", e);
+    showToast("Se actualizó, pero no se pudo guardar");
+    render();
+    return;
+  }
+
   closeAdmin();
   render();
-  showToast("✓ Portal actualizado · Fase " + (FASE_ACTUAL+1));
+  showToast("✓ Portal guardado · Fase " + (FASE_ACTUAL+1));
 }
 
 function closeAdmin(){
@@ -573,7 +637,7 @@ function goSlide(n){
 }
 
 function openWA(){
-  var msg=encodeURIComponent("Hola Enrique, me gustaría saber el avance de mi proceso. Folio: "+FOLIO);
+  var msg=encodeURIComponent("Hola " + (ASESOR_NOMBRE || "" ) + ", me gustaría saber el avance de mi proceso. Folio: "+FOLIO);
   window.open("https://wa.me/"+WA_NUM+"?text="+msg,"_blank");
 }
 
