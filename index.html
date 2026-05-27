@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-
-<html lang="es">
-<head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0" name="viewport"/>
-<meta content="#0B0B0B" name="theme-color"/>
+<html lang="es"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0" name="viewport">
+<meta content="#0B0B0B" name="theme-color">
+<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
+<meta http-equiv="Pragma" content="no-cache">
 <title>Portal de Progreso · Método Neri</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Montserrat:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&amp;family=Montserrat:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
 <style>
 
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -172,6 +172,8 @@ body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;ma
 .fb-pct{font-size:8px;display:block;margin-top:1px;opacity:0.55}
 .adm-btn{width:100%;margin-top:18px;padding:13px;background:#C6A86B;color:#0B0B0B;font-family:"Montserrat",sans-serif;font-size:9px;font-weight:800;letter-spacing:4px;text-transform:uppercase;border:none;cursor:pointer;border-radius:2px;transition:opacity 0.15s}
 .adm-btn:active{opacity:0.8}
+.adm-btn.secondary{background:transparent;color:#C6A86B;border:1px solid rgba(198,168,107,.35);margin-top:8px}
+.adm-help{font-size:10px;color:rgba(255,255,255,.32);font-weight:300;line-height:1.55;margin-top:10px;border-left:2px solid rgba(198,168,107,.22);padding-left:10px}
 .adm-err{font-size:10px;color:#e85d5d;text-align:center;margin-top:8px;min-height:16px}
 
 /* PIN trigger — punto invisible en footer */
@@ -189,7 +191,7 @@ body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;ma
 </head>
 <body>
 <!-- TOAST -->
-<div class="toast" id="toast"></div>
+<div class="toast show" id="toast">✓ Vista actualizada · descarga y resube a Vercel</div>
 <!-- TRIGGER INVISIBLE (esquina inferior derecha) -->
 <button aria-hidden="true" class="adm-trigger" onclick="tryAdmin()"></button>
 <!-- PANEL ADMIN CON CONTRASEÑA -->
@@ -200,33 +202,36 @@ body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;ma
 <div class="adm-htitle">Panel · Método Neri</div>
 <button class="adm-x" onclick="closeAdmin()">✕</button>
 </div>
-<div class="adm-body" id="admBodyLogin">
+<div class="adm-body" id="admBodyLogin" style="display: none;">
 <div class="adm-sec">Acceso de asesor</div>
 <div class="adm-row">
 <label class="adm-lbl">Contraseña</label>
-<input class="adm-inp adm-inp-pw" id="admPw" onkeydown="if(event.key==='Enter')checkPw()" placeholder="••••••" type="password"/>
+<input class="adm-inp adm-inp-pw" id="admPw" onkeydown="if(event.key==='Enter')checkPw()" placeholder="••••••" type="password">
 </div>
 <button class="adm-btn" onclick="checkPw()">Ingresar →</button>
 <div class="adm-err" id="admErr"></div>
 </div>
-<div class="adm-body" id="admBodyEdit" style="display:none">
+<div class="adm-body" id="admBodyEdit" style="display: block;">
 <div class="adm-sec">Datos del cliente</div>
 <div class="adm-row">
 <label class="adm-lbl">Folio</label>
-<input class="adm-inp" id="eFollio" placeholder="EN-2506-0001" type="text"/>
+<input class="adm-inp" id="eFollio" placeholder="EN-2506-0001" type="text">
 </div>
 <div class="adm-row">
 <label class="adm-lbl">Propiedad</label>
-<input class="adm-inp" id="eProp" placeholder="Nombre de la propiedad" type="text"/>
+<input class="adm-inp" id="eProp" placeholder="Nombre de la propiedad" type="text">
 </div>
 <div class="adm-row">
 <label class="adm-lbl">Precio (sin $ ni comas)</label>
-<input class="adm-inp" id="ePrecio" placeholder="3500000" type="text"/>
+<input class="adm-inp" id="ePrecio" placeholder="3500000" type="text">
 </div>
 <div class="adm-div"></div>
 <div class="adm-sec">Fase actual</div>
-<div class="fase-grid" id="faseGrid"></div>
+<div class="fase-grid" id="faseGrid"><button class="fb">Apartado<span class="fb-pct">5%</span></button><button class="fb">Revisión de compra<span class="fb-pct">15%</span></button><button class="fb">Preparando documentos<span class="fb-pct">30%</span></button><button class="fb sel">Acuerdo de compra<span class="fb-pct">45%</span></button><button class="fb">Revisión en notaría<span class="fb-pct">60%</span></button><button class="fb">Últimas confirmaciones<span class="fb-pct">75%</span></button><button class="fb">Día de firma<span class="fb-pct">90%</span></button><button class="fb">Entrega de llaves<span class="fb-pct">100%</span></button></div>
 <button class="adm-btn" onclick="applyAdmin()">Aplicar cambios →</button>
+<button class="adm-btn secondary" onclick="downloadUpdatedHtml()">Descargar HTML actualizado</button>
+<button class="adm-btn secondary" onclick="copyUpdatedBlock()">Copiar bloque editable</button>
+<div class="adm-help">Para que el cliente vea cambios en su celular: aplica cambios, descarga este HTML actualizado y súbelo otra vez a Vercel con el mismo nombre/ruta.</div>
 </div>
 </div>
 </div>
@@ -238,8 +243,8 @@ body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;ma
 <div class="hdr-name" data-asesor-nombre="">Enrique Neri</div>
 <div class="hdr-role" data-asesor-rol="">Asesor Inmobiliario · Cuernavaca</div>
 </div>
-<div class="hdr-logo" data-logo-wrap="">
-<img alt="Logo" data-logo-img="" src=""/>
+<div class="hdr-logo hidden" data-logo-wrap="">
+<img alt="Logo" data-logo-img="" src="">
 <div class="hdr-logo-text" data-logo-text="" style="display:none">NERI</div>
 </div>
 </div>
@@ -254,32 +259,32 @@ body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;ma
 <div class="prop-banner">
 <div class="prop-left">
 <div class="prop-tag">
-<svg class="prop-icon" fill="none" height="10" viewbox="0 0 11 10" width="11">
+<svg class="prop-icon" fill="none" height="10" viewBox="0 0 11 10" width="11">
 <path d="M5.5 1L1 4.5V9.5H4V7H7V9.5H10V4.5L5.5 1Z" stroke="#C6A86B" stroke-linejoin="round" stroke-width="0.8"></path>
 </svg>
         Propiedad en proceso
       </div>
-<div class="prop-name" id="propNombre"></div>
+<div class="prop-name" id="propNombre">Casa Lomas de Ahuatlán</div>
 </div>
-<div class="prop-price"><span class="sym">$</span><span id="propPrecio"></span></div>
+<div class="prop-price"><span class="sym">$</span><span id="propPrecio">3,200,000</span></div>
 </div>
 <!-- CÍRCULO GRANDE -->
 <div class="circle-hero">
 <div class="circle-wrap-lg">
-<svg class="c-svg-lg" viewbox="0 0 180 180">
+<svg class="c-svg-lg" viewBox="0 0 180 180">
 <defs>
-<lineargradient id="goldGradLg" x1="0%" x2="100%" y1="0%" y2="100%">
+<linearGradient id="goldGradLg" x1="0%" x2="100%" y1="0%" y2="100%">
 <stop offset="0%" stop-color="#8B6914"></stop>
 <stop offset="50%" stop-color="#C6A86B"></stop>
 <stop offset="100%" stop-color="#E2C98A"></stop>
-</lineargradient>
+</linearGradient>
 </defs>
 <circle class="c-track-lg" cx="90" cy="90" r="75.2"></circle>
-<circle class="c-glow-lg" cx="90" cy="90" id="cGlow" r="75.2"></circle>
-<circle class="c-fill-lg" cx="90" cy="90" id="cFill" r="75.2"></circle>
+<circle class="c-glow-lg" cx="90" cy="90" id="cGlow" r="75.2" style="stroke-dashoffset: 259.875;"></circle>
+<circle class="c-fill-lg" cx="90" cy="90" id="cFill" r="75.2" style="stroke-dashoffset: 259.875;"></circle>
 </svg>
 <div class="c-inner-lg">
-<div class="c-pct-lg" id="cPct">5%</div>
+<div class="c-pct-lg" id="cPct">45%</div>
 <div class="c-lbl-lg">avance</div>
 </div>
 <div class="c-pulse-lg"></div>
@@ -287,27 +292,27 @@ body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;ma
 </div>
 </div>
 <div class="fase-info">
-<div class="pt-fase" id="ptFase">Fase 1 de 8</div>
-<div class="pt-title" id="ptTitle">Apartado<span>.</span></div>
+<div class="pt-fase" id="ptFase">Fase 4 de 8</div>
+<div class="pt-title" id="ptTitle">Acuerdo de compra<span>.</span></div>
 <div class="bar-wrap">
-<div class="bar-fill" id="barFill" style="width:5%">
+<div class="bar-fill" id="barFill" style="width: 45%;">
 <div class="bar-dot"></div>
 </div>
 </div>
-<div class="pt-copy" id="ptCopy">"La propiedad se encuentra en proceso de reserva privada."</div>
+<div class="pt-copy" id="ptCopy">"Se están formalizando las condiciones acordadas entre ambas partes."</div>
 </div>
 <div class="calm-note" id="calmNote">Todo avanza correctamente. Te avisaremos cuando la siguiente etapa esté lista.</div>
 <div class="status-row">
 <div class="s-dot"></div>
 <div class="s-txt"><strong id="sEstado">Tu compra avanza</strong></div>
-<div class="s-folio" id="sFolio">EN-0000</div>
+<div class="s-folio" id="sFolio">EN-2506-4821</div>
 </div>
 <div class="emotional-msg">
 <div class="em-label">Tu proceso</div>
-<div class="em-text" id="emText">"Tu operación ha iniciado. La propiedad ya está reservada para ti."</div>
+<div class="em-text" id="emText">"Las condiciones de tu compra están siendo formalizadas. Un paso decisivo."</div>
 </div>
 <div class="slide-nav">
-<button class="nav-btn" onclick="goSlide(2)">Ver etapas del proceso  →</button>
+<button class="nav-btn" onclick="goSlide(2)">Ver etapas del proceso &nbsp;→</button>
 </div>
 </div>
 <!-- SLIDE 2 -->
@@ -318,8 +323,8 @@ body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;ma
 <div class="hdr-name" data-asesor-nombre="">Enrique Neri</div>
 <div class="hdr-role" data-asesor-rol="">Asesor Inmobiliario · Cuernavaca</div>
 </div>
-<div class="hdr-logo" data-logo-wrap="">
-<img alt="Logo" data-logo-img="" src=""/>
+<div class="hdr-logo hidden" data-logo-wrap="">
+<img alt="Logo" data-logo-img="" src="">
 <div class="hdr-logo-text" data-logo-text="" style="display:none">NERI</div>
 </div>
 </div>
@@ -329,17 +334,17 @@ body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;ma
 </div>
 <div class="timeline">
 <div class="tl-eyebrow">Tu camino hacia la escritura</div>
-<div id="tlWrap"></div>
+<div id="tlWrap"><div class="tl-item"><div class="tl-spine"><div class="tl-node n-done"><span style="font-size:11px;color:#C6A86B">✓</span></div><div class="tl-line line-done"></div></div><div class="tl-content"><div class="tl-pct-tag">5%</div><div class="tl-name nd">Apartado</div></div></div><div class="tl-item"><div class="tl-spine"><div class="tl-node n-done"><span style="font-size:11px;color:#C6A86B">✓</span></div><div class="tl-line line-done"></div></div><div class="tl-content"><div class="tl-pct-tag">15%</div><div class="tl-name nd">Revisión de compra</div></div></div><div class="tl-item"><div class="tl-spine"><div class="tl-node n-done"><span style="font-size:11px;color:#C6A86B">✓</span></div><div class="tl-line line-done"></div></div><div class="tl-content"><div class="tl-pct-tag">30%</div><div class="tl-name nd">Preparando documentos</div></div></div><div class="tl-item"><div class="tl-spine"><div class="tl-node n-active"><div style="width:8px;height:8px;border-radius:50%;background:#0B0B0B"></div></div><div class="tl-line line-pending"></div></div><div class="tl-content"><div class="tl-pct-tag">45%</div><div class="tl-name na">Acuerdo de compra</div><div class="tl-checks show"><div class="tl-chk"><div class="chk-ico">✓</div>Redacción</div><div class="tl-chk"><div class="chk-ico">✓</div>Revisión jurídica</div><div class="tl-chk"><div class="chk-ico">✓</div>Firmas de ambas partes</div><div class="tl-chk"><div class="chk-ico">✓</div>Condiciones aceptadas</div></div><div class="next-block"><div class="next-label">Pendiente para continuar</div><div class="next-item">Revisión del contrato por ambas partes</div><div class="next-item">Firma del acuerdo</div></div><div class="next-step-block"><div class="next-step-label">Próximo paso</div><div class="next-step-text">Con el acuerdo firmado, el expediente ingresará a notaría para revisión legal.</div></div></div></div><div class="tl-item"><div class="tl-spine"><div class="tl-node n-pending"><span style="font-size:8px;color:rgba(255,255,255,0.15);font-weight:700">5</span></div><div class="tl-line line-pending"></div></div><div class="tl-content"><div class="tl-pct-tag">60%</div><div class="tl-name">Revisión en notaría</div></div></div><div class="tl-item"><div class="tl-spine"><div class="tl-node n-pending"><span style="font-size:8px;color:rgba(255,255,255,0.15);font-weight:700">6</span></div><div class="tl-line line-pending"></div></div><div class="tl-content"><div class="tl-pct-tag">75%</div><div class="tl-name">Últimas confirmaciones</div></div></div><div class="tl-item"><div class="tl-spine"><div class="tl-node n-pending"><span style="font-size:8px;color:rgba(255,255,255,0.15);font-weight:700">7</span></div><div class="tl-line line-pending"></div></div><div class="tl-content"><div class="tl-pct-tag">90%</div><div class="tl-name">Día de firma</div></div></div><div class="tl-item"><div class="tl-spine"><div class="tl-node n-pending"><span style="font-size:8px;color:rgba(255,255,255,0.15);font-weight:700">8</span></div></div><div class="tl-content"><div class="tl-pct-tag">100%</div><div class="tl-name">Entrega de llaves</div></div></div></div>
 </div>
 <div class="bottom-note">
 <div class="bn-label">Nota de proceso</div>
 <div class="bn-text">"Cada etapa está siendo acompañada cuidadosamente para que avances con tranquilidad y claridad."</div>
 </div>
 <div class="wa-row">
-<button class="wa-btn" data-wa-label="" onclick="openWA()">✉  Contactar</button>
+<button class="wa-btn" data-wa-label="" onclick="openWA()">✉&nbsp;&nbsp;Contactar a Enrique · 777 985 5687</button>
 </div>
 <div class="footer">
-<div class="ft-logo" data-footer-logo-wrap=""><img alt="Logo" data-footer-logo-img="" src=""/></div>
+<div class="ft-logo hidden" data-footer-logo-wrap=""><img alt="Logo" data-footer-logo-img="" src=""></div>
 <div class="ft-right">
 <div class="ft-method" data-footer-brand="">Método NERI</div>
 <div class="ft-copy" data-footer-location="">Cuernavaca · México</div>
@@ -354,7 +359,7 @@ body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;ma
 <div class="admin-bar">
 <div class="admin-bar-ico"></div>
 <div class="admin-bar-lbl">Panel interno · Método Neri</div>
-<div class="admin-bar-sub" id="adminFecha"></div>
+<div class="admin-bar-sub" id="adminFecha">26 may 2026</div>
 </div>
 <div class="admin-inner">
 <div class="admin-lbl">Alertas del expediente</div>
@@ -372,9 +377,9 @@ body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;ma
 </div>
 <div class="admin-lbl">Datos internos</div>
 <div style="font-size:11px;color:rgba(255,255,255,.25);font-weight:300;line-height:2.1">
-      Folio: <span id="adminFolio" style="color:rgba(198,168,107,.6)"></span><br/>
-      Fase: <span id="adminFase" style="color:rgba(198,168,107,.6)"></span><br/>
-      Días en fase: <span style="color:rgba(198,168,107,.6)">— edita aquí —</span><br/>
+      Folio: <span id="adminFolio" style="color:rgba(198,168,107,.6)">EN-2506-4821</span><br>
+      Fase: <span id="adminFase" style="color:rgba(198,168,107,.6)">Fase 4 — Acuerdo de compra</span><br>
+      Días en fase: <span style="color:rgba(198,168,107,.6)">— edita aquí —</span><br>
       Notario asignado: <span style="color:rgba(198,168,107,.6)">— edita aquí —</span>
 </div>
 </div>
@@ -400,16 +405,16 @@ var LOGO_TEXTO      = "NERI"; // Se usa solo si MOSTRAR_LOGO=true pero no hay LO
 var FOOTER_TEXTO    = "Cuernavaca · México";
 
 var FOLIO       = "EN-2506-4821";
-var FASE_ACTUAL = 6; // 0 a 7
+var FASE_ACTUAL = 3; // 0 a 7
 var NOMBRE_PROP = "Casa Lomas de Ahuatlán";
 var PRECIO_PROP = "3,200,000";
 var WA_NUM      = "527779855687"; // WhatsApp con lada país, sin +
 var WA_LABEL    = "Contactar a Enrique · 777 985 5687";
-var ADM_PW      = "neri2026";   // ← CAMBIA ESTA CONTRASEÑA
+var ADM_PW      = "neri2025";   // ← CAMBIA ESTA CONTRASEÑA
 var STORAGE_KEY = "metodo_neri_portal_progreso_v2";
 
 // Carga cambios guardados desde el panel oculto.
-// Esto permite que el avance se conserve al recargar el mismo navegador.
+// OJO: esto solo conserva cambios en ESTE navegador. Para que lo vea el cliente, descarga el HTML actualizado y súbelo de nuevo a Vercel.
 (function cargarPortalGuardado(){
   try{
     var saved = localStorage.getItem(STORAGE_KEY);
@@ -623,7 +628,51 @@ function applyAdmin(){
 
   closeAdmin();
   render();
-  showToast("✓ Portal guardado · Fase " + (FASE_ACTUAL+1));
+  showToast("✓ Vista actualizada · descarga y resube a Vercel");
+}
+
+
+function getConfigBlock(){
+  return 'var FOLIO       = "' + FOLIO.replace(/"/g,'\\"') + '";\n' +
+         'var FASE_ACTUAL = ' + FASE_ACTUAL + '; // 0 a 7\n' +
+         'var NOMBRE_PROP = "' + NOMBRE_PROP.replace(/"/g,'\\"') + '";\n' +
+         'var PRECIO_PROP = "' + PRECIO_PROP.replace(/"/g,'\\"') + '";';
+}
+
+function buildUpdatedHtmlSource(){
+  var source = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+  source = source
+    .replace(/var FOLIO\s*=\s*"[^"]*";/, 'var FOLIO       = "' + FOLIO.replace(/"/g,'\\"') + '";')
+    .replace(/var FASE_ACTUAL\s*=\s*\d+;\s*\/\/ 0 a 7/, 'var FASE_ACTUAL = ' + FASE_ACTUAL + '; // 0 a 7')
+    .replace(/var NOMBRE_PROP\s*=\s*"[^"]*";/, 'var NOMBRE_PROP = "' + NOMBRE_PROP.replace(/"/g,'\\"') + '";')
+    .replace(/var PRECIO_PROP\s*=\s*"[^"]*";/, 'var PRECIO_PROP = "' + PRECIO_PROP.replace(/"/g,'\\"') + '";');
+  return source;
+}
+
+function downloadUpdatedHtml(){
+  applyAdmin();
+  var html = buildUpdatedHtmlSource();
+  var safeFolio = (FOLIO || 'portal-progreso').replace(/[^a-z0-9\-]+/gi,'-');
+  var blob = new Blob([html], {type:'text/html;charset=utf-8'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = safeFolio + '.html';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  showToast('HTML listo para subir a Vercel');
+}
+
+function copyUpdatedBlock(){
+  applyAdmin();
+  var block = getConfigBlock();
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(block).then(function(){ showToast('Bloque copiado'); });
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = block; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+    showToast('Bloque copiado');
+  }
 }
 
 function closeAdmin(){
@@ -654,5 +703,5 @@ if(new URLSearchParams(window.location.search).get("admin")==="neri"){
 
 render();
 </script>
-</body>
-</html>
+
+</body></html>
