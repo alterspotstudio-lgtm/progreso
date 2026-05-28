@@ -461,15 +461,16 @@ function getFolioFromURL(){
 
 function normalizarFaseDesdeAirtable(fase){
   if(typeof fase === "number") return Math.max(0, Math.min(7, fase));
+  if(typeof fase === "string") fase = fase.trim();
   var mapa = {
     "Apartado":0,
-    "Revisión de compra":1,
-    "Preparando documentos":2,
-    "Acuerdo de compra":3,
-    "Revisión en notaría":4,
-    "Últimas confirmaciones":5,
-    "Día de firma":6,
-    "Entrega de llaves":7
+    "Revisión de compra":1,"Revision de compra":1,"revision de compra":1,
+    "Preparando documentos":2,"preparando documentos":2,
+    "Acuerdo de compra":3,"acuerdo de compra":3,
+    "Revisión en notaría":4,"Revision en notaria":4,"revisión en notaría":4,"revision en notaria":4,
+    "Últimas confirmaciones":5,"Ultimas confirmaciones":5,"últimas confirmaciones":5,"ultimas confirmaciones":5,
+    "Día de firma":6,"Dia de firma":6,"día de firma":6,"dia de firma":6,
+    "Entrega de llaves":7,"entrega de llaves":7
   };
   return mapa[fase] !== undefined ? mapa[fase] : FASE_ACTUAL;
 }
