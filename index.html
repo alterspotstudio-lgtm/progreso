@@ -233,7 +233,7 @@ body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;ma
 <button class="adm-btn" onclick="applyAdmin()">Aplicar cambios →</button>
 <button class="adm-btn secondary" onclick="downloadUpdatedHtml()">Descargar </button>
 <button class="adm-btn secondary" onclick="copyUpdatedBlock()">Copiar bloque editable</button>
-<div class="adm-help">Al aplicar cambios, este portal manda la actualización a Make/Airtable usando el folio. El cliente ve el avance entrando al mismo link con ?folio=FOLIO.</div>
+<div class="adm-help">Para que el cliente vea cambios en su celular: aplica cambios, descarga este  y súbelo otra vez a Vercel con el mismo nombre/ruta.</div>
 </div>
 </div>
 </div>
@@ -422,7 +422,6 @@ var STORAGE_KEY = "metodo_neri_portal_progreso_v2";
     var saved = localStorage.getItem(STORAGE_KEY);
     if(!saved) return;
     var data = JSON.parse(saved);
-    console.log("NERI DEBUG:", JSON.stringify(data));
     if(data.folio) FOLIO = data.folio;
     if(typeof data.fase === "number" && data.fase >= 0 && data.fase <= 7) FASE_ACTUAL = data.fase;
     if(data.propiedad) NOMBRE_PROP = data.propiedad;
@@ -455,7 +454,6 @@ var USAR_AIRTABLE = true; // Cambia a true cuando ya tengas el webhook de Make a
 var API_PROGRESO_URL = "https://hook.us2.make.com/35zjbrnctro9ev2evshs23yn2zec4oql"; // Ej: https://hook.us1.make.com/xxxxx
 var FOLIO_PARAM = "folio"; // nombre del parámetro en el link: ?folio=EN-0001
 var MENSAJE_WHATSAPP_ACTUALIZACION = "Hola, tu portal privado de seguimiento fue actualizado. Puedes revisar el avance en el mismo link.";
-var ENVIAR_CAMBIOS_A_MAKE = true; // true = el panel oculto manda actualización a Make/Airtable
 
 function getFolioFromURL(){
   return new URLSearchParams(window.location.search).get(FOLIO_PARAM);
@@ -463,18 +461,24 @@ function getFolioFromURL(){
 
 function normalizarFaseDesdeAirtable(fase){
   if(typeof fase === "number") return Math.max(0, Math.min(7, fase));
-  if(typeof fase === "string") fase = fase.trim();
+  if(typeof fase !== "string") return FASE_ACTUAL;
+  var f = fase.trim().toLowerCase()
+    .replace(/ó/g,"o").replace(/ò/g,"o")
+    .replace(/í/g,"i").replace(/ì/g,"i")
+    .replace(/ú/g,"u").replace(/ù/g,"u")
+    .replace(/é/g,"e").replace(/è/g,"e")
+    .replace(/á/g,"a").replace(/à/g,"a");
   var mapa = {
-    "Apartado":0,
-    "Revisión de compra":1,"Revision de compra":1,"revision de compra":1,
-    "Preparando documentos":2,"preparando documentos":2,
-    "Acuerdo de compra":3,"acuerdo de compra":3,
-    "Revisión en notaría":4,"Revision en notaria":4,"revisión en notaría":4,"revision en notaria":4,
-    "Últimas confirmaciones":5,"Ultimas confirmaciones":5,"últimas confirmaciones":5,"ultimas confirmaciones":5,
-    "Día de firma":6,"Dia de firma":6,"día de firma":6,"dia de firma":6,
-    "Entrega de llaves":7,"entrega de llaves":7
+    "apartado":0,
+    "revision de compra":1,
+    "preparando documentos":2,
+    "acuerdo de compra":3,
+    "revision en notaria":4,
+    "ultimas confirmaciones":5,
+    "dia de firma":6,
+    "entrega de llaves":7
   };
-  return mapa[fase] !== undefined ? mapa[fase] : FASE_ACTUAL;
+  return mapa[f] !== undefined ? mapa[f] : FASE_ACTUAL;
 }
 
 async function cargarDesdeAirtable(){
@@ -487,21 +491,17 @@ async function cargarDesdeAirtable(){
     if(!res.ok) throw new Error("No se encontró el expediente");
     var data = await res.json();
 
-    console.log("NERI DEBUG:", JSON.stringify(data));
     if(data.folio) FOLIO = data.folio;
     if(data.propiedad) NOMBRE_PROP = data.propiedad;
     if(data.precio) PRECIO_PROP = String(data.precio).replace(/[^0-9]/g,"").replace(/\B(?=(\d{3})+(?!\d))/g,",") || data.precio;
-    if(data.fase !== undefined && data.fase !== null && data.fase !== "") FASE_ACTUAL = normalizarFaseDesdeAirtable(data.fase);
+    if(data.fase !== undefined) FASE_ACTUAL = normalizarFaseDesdeAirtable(data.fase);
     if(data.asesor) ASESOR_NOMBRE = data.asesor;
     if(data.whatsapp) WA_NUM = String(data.whatsapp).replace(/[^0-9]/g,"");
     if(data.waLabel) WA_LABEL = data.waLabel;
 
     // Espacio futuro: si Airtable trae pendientes/proximoPaso personalizados,
     // aquí se pueden sobrescribir los textos de la fase actual sin cambiar diseño.
-    if(data.pendientes){
-      var pend = Array.isArray(data.pendientes) ? data.pendientes : String(data.pendientes).split(/\n|,/).map(function(s){return s.trim();}).filter(function(s){return s.length>0;});
-      if(pend.length>0) fases[FASE_ACTUAL].pending = pend;
-    }
+    if(data.pendientes && Array.isArray(data.pendientes)) fases[FASE_ACTUAL].pending = data.pendientes;
     if(data.proximoPaso) fases[FASE_ACTUAL].next = data.proximoPaso;
     if(data.mensajeActualizacion) MENSAJE_WHATSAPP_ACTUALIZACION = data.mensajeActualizacion;
 
@@ -682,44 +682,7 @@ function buildFaseGrid(){
   });
 }
 
-function crearPayloadProgreso(){
-  var fase = fases[FASE_ACTUAL] || fases[0];
-  return {
-    accion: "actualizar_progreso",
-    origen: "portal_progreso_metodo_neri",
-    folio: FOLIO,
-    propiedad: NOMBRE_PROP,
-    precio: PRECIO_PROP,
-    fase: FASE_ACTUAL,
-    faseNumero: FASE_ACTUAL + 1,
-    faseNombre: fase.n,
-    porcentaje: fase.pct,
-    whatsapp: WA_NUM,
-    asesor: ASESOR_NOMBRE,
-    mensajeActualizacion: MENSAJE_WHATSAPP_ACTUALIZACION,
-    actualizado: new Date().toISOString()
-  };
-}
-
-async function enviarActualizacionAMake(){
-  if(!USAR_AIRTABLE || !ENVIAR_CAMBIOS_A_MAKE || !API_PROGRESO_URL){
-    return { ok:true, omitido:true };
-  }
-  var payload = crearPayloadProgreso();
-  var res = await fetch(API_PROGRESO_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
-    cache: "no-store"
-  });
-  var texto = await res.text();
-  if(!res.ok){
-    throw new Error("Make respondió " + res.status + ": " + texto);
-  }
-  return { ok:true, respuesta:texto };
-}
-
-async function applyAdmin(){
+function applyAdmin(){
   var folio  = document.getElementById("eFollio").value.trim();
   var prop   = document.getElementById("eProp").value.trim();
   var precio = document.getElementById("ePrecio").value.trim();
@@ -746,16 +709,8 @@ async function applyAdmin(){
     return;
   }
 
+  closeAdmin();
   render();
-
-  try{
-    await enviarActualizacionAMake();
-    closeAdmin();
-    showToast("Actualizado y enviado a Make");
-  }catch(e){
-    console.error("No se pudo enviar a Make", e);
-    showToast("Se guardó aquí, pero Make no respondió");
-  }
   
 }
 
@@ -777,8 +732,8 @@ function buildUpdatedHtmlSource(){
   return source;
 }
 
-async function downloadUpdatedHtml(){
-  await applyAdmin();
+function downloadUpdatedHtml(){
+  applyAdmin();
   var html = buildUpdatedHtmlSource();
   var safeFolio = (FOLIO || 'portal-progreso').replace(/[^a-z0-9\-]+/gi,'-');
   var blob = new Blob([html], {type:'text/html;charset=utf-8'});
@@ -791,8 +746,8 @@ async function downloadUpdatedHtml(){
   
 }
 
-async function copyUpdatedBlock(){
-  await applyAdmin();
+function copyUpdatedBlock(){
+  applyAdmin();
   var block = getConfigBlock();
   if(navigator.clipboard && navigator.clipboard.writeText){
     navigator.clipboard.writeText(block).then(function(){ showToast('Bloque copiado'); });
