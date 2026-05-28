@@ -233,7 +233,7 @@ body{font-family:"Montserrat",system-ui,sans-serif;color:#fff;max-width:480px;ma
 <button class="adm-btn" onclick="applyAdmin()">Aplicar cambios →</button>
 <button class="adm-btn secondary" onclick="downloadUpdatedHtml()">Descargar </button>
 <button class="adm-btn secondary" onclick="copyUpdatedBlock()">Copiar bloque editable</button>
-<div class="adm-help">Para que el cliente vea cambios en su celular: aplica cambios, descarga este  y súbelo otra vez a Vercel con el mismo nombre/ruta.</div>
+<div class="adm-help">Al aplicar cambios, este portal manda la actualización a Make/Airtable usando el folio. El cliente ve el avance entrando al mismo link con ?folio=FOLIO.</div>
 </div>
 </div>
 </div>
@@ -455,6 +455,7 @@ var USAR_AIRTABLE = true; // Cambia a true cuando ya tengas el webhook de Make a
 var API_PROGRESO_URL = "https://hook.us2.make.com/35zjbrnctro9ev2evshs23yn2zec4oql"; // Ej: https://hook.us1.make.com/xxxxx
 var FOLIO_PARAM = "folio"; // nombre del parámetro en el link: ?folio=EN-0001
 var MENSAJE_WHATSAPP_ACTUALIZACION = "Hola, tu portal privado de seguimiento fue actualizado. Puedes revisar el avance en el mismo link.";
+var ENVIAR_CAMBIOS_A_MAKE = true; // true = el panel oculto manda actualización a Make/Airtable
 
 function getFolioFromURL(){
   return new URLSearchParams(window.location.search).get(FOLIO_PARAM);
@@ -498,8 +499,7 @@ async function cargarDesdeAirtable(){
     // Espacio futuro: si Airtable trae pendientes/proximoPaso personalizados,
     // aquí se pueden sobrescribir los textos de la fase actual sin cambiar diseño.
     if(data.pendientes){
-      var pend = Array.isArray(data.pendientes) ? data.pendientes : String(data.pendientes).split(/
-|,/).map(function(s){return s.trim();}).filter(function(s){return s.length>0;});
+      var pend = Array.isArray(data.pendientes) ? data.pendientes : String(data.pendientes).split(/\n|,/).map(function(s){return s.trim();}).filter(function(s){return s.length>0;});
       if(pend.length>0) fases[FASE_ACTUAL].pending = pend;
     }
     if(data.proximoPaso) fases[FASE_ACTUAL].next = data.proximoPaso;
@@ -682,7 +682,44 @@ function buildFaseGrid(){
   });
 }
 
-function applyAdmin(){
+function crearPayloadProgreso(){
+  var fase = fases[FASE_ACTUAL] || fases[0];
+  return {
+    accion: "actualizar_progreso",
+    origen: "portal_progreso_metodo_neri",
+    folio: FOLIO,
+    propiedad: NOMBRE_PROP,
+    precio: PRECIO_PROP,
+    fase: FASE_ACTUAL,
+    faseNumero: FASE_ACTUAL + 1,
+    faseNombre: fase.n,
+    porcentaje: fase.pct,
+    whatsapp: WA_NUM,
+    asesor: ASESOR_NOMBRE,
+    mensajeActualizacion: MENSAJE_WHATSAPP_ACTUALIZACION,
+    actualizado: new Date().toISOString()
+  };
+}
+
+async function enviarActualizacionAMake(){
+  if(!USAR_AIRTABLE || !ENVIAR_CAMBIOS_A_MAKE || !API_PROGRESO_URL){
+    return { ok:true, omitido:true };
+  }
+  var payload = crearPayloadProgreso();
+  var res = await fetch(API_PROGRESO_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload),
+    cache: "no-store"
+  });
+  var texto = await res.text();
+  if(!res.ok){
+    throw new Error("Make respondió " + res.status + ": " + texto);
+  }
+  return { ok:true, respuesta:texto };
+}
+
+async function applyAdmin(){
   var folio  = document.getElementById("eFollio").value.trim();
   var prop   = document.getElementById("eProp").value.trim();
   var precio = document.getElementById("ePrecio").value.trim();
@@ -709,8 +746,16 @@ function applyAdmin(){
     return;
   }
 
-  closeAdmin();
   render();
+
+  try{
+    await enviarActualizacionAMake();
+    closeAdmin();
+    showToast("Actualizado y enviado a Make");
+  }catch(e){
+    console.error("No se pudo enviar a Make", e);
+    showToast("Se guardó aquí, pero Make no respondió");
+  }
   
 }
 
@@ -732,8 +777,8 @@ function buildUpdatedHtmlSource(){
   return source;
 }
 
-function downloadUpdatedHtml(){
-  applyAdmin();
+async function downloadUpdatedHtml(){
+  await applyAdmin();
   var html = buildUpdatedHtmlSource();
   var safeFolio = (FOLIO || 'portal-progreso').replace(/[^a-z0-9\-]+/gi,'-');
   var blob = new Blob([html], {type:'text/html;charset=utf-8'});
@@ -746,8 +791,8 @@ function downloadUpdatedHtml(){
   
 }
 
-function copyUpdatedBlock(){
-  applyAdmin();
+async function copyUpdatedBlock(){
+  await applyAdmin();
   var block = getConfigBlock();
   if(navigator.clipboard && navigator.clipboard.writeText){
     navigator.clipboard.writeText(block).then(function(){ showToast('Bloque copiado'); });
