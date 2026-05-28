@@ -422,6 +422,7 @@ var STORAGE_KEY = "metodo_neri_portal_progreso_v2";
     var saved = localStorage.getItem(STORAGE_KEY);
     if(!saved) return;
     var data = JSON.parse(saved);
+    console.log("NERI DEBUG:", JSON.stringify(data));
     if(data.folio) FOLIO = data.folio;
     if(typeof data.fase === "number" && data.fase >= 0 && data.fase <= 7) FASE_ACTUAL = data.fase;
     if(data.propiedad) NOMBRE_PROP = data.propiedad;
@@ -485,17 +486,22 @@ async function cargarDesdeAirtable(){
     if(!res.ok) throw new Error("No se encontró el expediente");
     var data = await res.json();
 
+    console.log("NERI DEBUG:", JSON.stringify(data));
     if(data.folio) FOLIO = data.folio;
     if(data.propiedad) NOMBRE_PROP = data.propiedad;
     if(data.precio) PRECIO_PROP = String(data.precio).replace(/[^0-9]/g,"").replace(/\B(?=(\d{3})+(?!\d))/g,",") || data.precio;
-    if(data.fase !== undefined) FASE_ACTUAL = normalizarFaseDesdeAirtable(data.fase);
+    if(data.fase !== undefined && data.fase !== null && data.fase !== "") FASE_ACTUAL = normalizarFaseDesdeAirtable(data.fase);
     if(data.asesor) ASESOR_NOMBRE = data.asesor;
     if(data.whatsapp) WA_NUM = String(data.whatsapp).replace(/[^0-9]/g,"");
     if(data.waLabel) WA_LABEL = data.waLabel;
 
     // Espacio futuro: si Airtable trae pendientes/proximoPaso personalizados,
     // aquí se pueden sobrescribir los textos de la fase actual sin cambiar diseño.
-    if(data.pendientes && Array.isArray(data.pendientes)) fases[FASE_ACTUAL].pending = data.pendientes;
+    if(data.pendientes){
+      var pend = Array.isArray(data.pendientes) ? data.pendientes : String(data.pendientes).split(/
+|,/).map(function(s){return s.trim();}).filter(function(s){return s.length>0;});
+      if(pend.length>0) fases[FASE_ACTUAL].pending = pend;
+    }
     if(data.proximoPaso) fases[FASE_ACTUAL].next = data.proximoPaso;
     if(data.mensajeActualizacion) MENSAJE_WHATSAPP_ACTUALIZACION = data.mensajeActualizacion;
 
