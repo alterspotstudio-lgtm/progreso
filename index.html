@@ -413,23 +413,9 @@ var PRECIO_PROP = "3,900,000";
 var WA_NUM      = "527779855687"; // WhatsApp con lada país, sin +
 var WA_LABEL    = "Contactar a Enrique · 777 985 5687";
 var ADM_PW      = "neri2025";   // ← CAMBIA ESTA CONTRASEÑA
-var STORAGE_KEY = "metodo_neri_portal_progreso_v2";
 
-// Carga cambios guardados desde el panel oculto.
-// OJO: esto solo conserva cambios en ESTE navegador. Para que lo vea el cliente, descarga el  y súbelo de nuevo a Vercel.
-(function cargarPortalGuardado(){
-  try{
-    var saved = localStorage.getItem(STORAGE_KEY);
-    if(!saved) return;
-    var data = JSON.parse(saved);
-    if(data.folio) FOLIO = data.folio;
-    if(typeof data.fase === "number" && data.fase >= 0 && data.fase <= 7) FASE_ACTUAL = data.fase;
-    if(data.propiedad) NOMBRE_PROP = data.propiedad;
-    if(data.precio) PRECIO_PROP = data.precio;
-  }catch(e){
-    console.warn("No se pudo cargar el avance guardado", e);
-  }
-})();
+
+
 
 
 /* ╔══════════════════════════════════════════════════════════════════════╗
@@ -450,6 +436,9 @@ var STORAGE_KEY = "metodo_neri_portal_progreso_v2";
    ║  IMPORTANTE: NO pegues el token de Airtable en este HTML.            ║
    ║  El token va en Make. El HTML solo lleva la URL del webhook.          ║
    ╚══════════════════════════════════════════════════════════════════════╝ */
+// Limpia cualquier caché local viejo — los datos ahora vienen de Airtable en tiempo real
+try{ localStorage.clear(); }catch(e){}
+
 var USAR_AIRTABLE = true; // Cambia a true cuando ya tengas el webhook de Make activo.
 var API_PROGRESO_URL = "https://hook.us2.make.com/35zjbrnctro9ev2evshs23yn2zec4oql"; // Ej: https://hook.us1.make.com/xxxxx
 var FOLIO_PARAM = "folio"; // nombre del parámetro en el link: ?folio=EN-0001
@@ -693,21 +682,6 @@ function applyAdmin(){
   NOMBRE_PROP = prop;
   PRECIO_PROP = precio ? Number(precio.replace(/[^0-9]/g,"")).toLocaleString("es-MX") : precio;
   FASE_ACTUAL = faseEdit;
-
-  try{
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({
-      folio:FOLIO,
-      propiedad:NOMBRE_PROP,
-      precio:PRECIO_PROP,
-      fase:FASE_ACTUAL,
-      actualizado:new Date().toISOString()
-    }));
-  }catch(e){
-    console.warn("No se pudo guardar el avance", e);
-    showToast("Se actualizó, pero no se pudo guardar");
-    render();
-    return;
-  }
 
   closeAdmin();
   render();
