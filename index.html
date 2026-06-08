@@ -4,1181 +4,329 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Portal de Operación · Método NERI</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;500;600;700&family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  --black:#09090A;
-  --black-2:#111113;
-  --black-3:#18181B;
-  --gold:#C6A86B;
-  --gold-light:#E2C98A;
-  --gold-dim:rgba(198,168,107,.10);
-  --gold-border:rgba(198,168,107,.20);
-  --gold-glow:rgba(198,168,107,.06);
-  --white:#FFFFFF;
-  --w60:rgba(255,255,255,.60);
-  --w35:rgba(255,255,255,.35);
-  --w20:rgba(255,255,255,.20);
-  --w10:rgba(255,255,255,.10);
-  --w05:rgba(255,255,255,.05);
-  --w02:rgba(255,255,255,.02);
-  --red:#E85D5D;
-  --red-dim:rgba(232,93,93,.12);
-  --green:#4CAF50;
-  --green-dim:rgba(76,175,80,.10);
-  --amber:#F5A623;
-  --amber-dim:rgba(245,166,35,.10);
+  --black:#09090A; --black-2:#111113; --black-3:#161618;
+  --gold:#C6A86B; --gold-light:#E2C98A; --gold-deep:#8B6914;
+  --gold-dim:rgba(198,168,107,.10); --gold-border:rgba(198,168,107,.20); --gold-glow:rgba(198,168,107,.06);
+  --white:#FFFFFF; --w70:rgba(255,255,255,.70); --w50:rgba(255,255,255,.50); --w35:rgba(255,255,255,.35);
+  --w20:rgba(255,255,255,.20); --w10:rgba(255,255,255,.10); --w05:rgba(255,255,255,.05);
+  --green:#4CAF50; --green-dim:rgba(76,175,80,.10);
 }
-
 html,body{background:var(--black);min-height:100vh;overflow-x:hidden;font-family:"Montserrat",sans-serif;color:var(--white)}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opacity:.025;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 
-/* ═══ SELECTOR DE ROL ═══ */
-.role-gate{
-  position:fixed;inset:0;z-index:9000;
-  background:var(--black);
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
-  padding:40px 24px;
-  transition:opacity .5s ease,transform .5s ease;
-}
-.role-gate.exit{opacity:0;transform:scale(.96);pointer-events:none}
-.rg-eyebrow{font-size:9px;letter-spacing:5px;color:rgba(198,168,107,.45);text-transform:uppercase;font-weight:700;margin-bottom:32px;text-align:center}
-.rg-title{font-family:"Bebas Neue",sans-serif;font-size:52px;letter-spacing:4px;color:var(--white);text-align:center;line-height:.95;margin-bottom:8px}
-.rg-title em{color:var(--gold)}
-.rg-sub{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:18px;color:var(--w35);margin-bottom:52px;text-align:center}
-.rg-cards{display:flex;flex-direction:column;gap:10px;width:100%;max-width:340px}
-.rg-card{
-  border:1px solid var(--gold-border);
-  background:var(--gold-glow);
-  padding:18px 22px;
-  cursor:pointer;
-  transition:all .25s;
-  position:relative;
-  overflow:hidden;
-}
-.rg-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--gold);opacity:0;transition:opacity .25s}
-.rg-card:hover{background:rgba(198,168,107,.12);border-color:rgba(198,168,107,.4)}
-.rg-card:hover::before{opacity:1}
-.rg-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px}
-.rg-card-label{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);font-weight:700}
-.rg-card-arrow{color:var(--gold);opacity:.5;font-size:14px}
-.rg-card-name{font-family:"Bebas Neue",sans-serif;font-size:22px;letter-spacing:2px;color:var(--white)}
-.rg-card-desc{font-size:10px;font-weight:300;color:var(--w35);line-height:1.5;margin-top:4px}
-.rg-folio{margin-top:32px;font-size:10px;color:var(--w20);letter-spacing:2px}
-.rg-folio strong{color:rgba(198,168,107,.5)}
+.shell{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;position:relative;z-index:1}
 
-/* ═══ GRAIN OVERLAY ═══ */
-body::after{
-  content:"";position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.028;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-}
+/* ── states ── */
+.state{flex:1;display:none;flex-direction:column;align-items:center;justify-content:center;padding:60px 28px;text-align:center}
+.state.on{display:flex}
+.spinner{width:42px;height:42px;border-radius:50%;border:1.5px solid var(--w10);border-top-color:var(--gold);animation:spin 1s linear infinite;margin-bottom:24px}
+@keyframes spin{to{transform:rotate(360deg)}}
+.state-eyebrow{font-size:9px;letter-spacing:5px;color:rgba(198,168,107,.45);text-transform:uppercase;font-weight:700;margin-bottom:14px}
+.state-msg{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:19px;color:var(--w50);line-height:1.5;max-width:300px}
 
-/* ═══ PORTAL PRINCIPAL ═══ */
-.portal{display:none;max-width:480px;margin:0 auto;min-height:100vh;flex-direction:column}
-.portal.active{display:flex}
+/* ── header ── */
+.head{position:sticky;top:0;z-index:30;background:rgba(9,9,10,.94);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--w05);padding:14px 24px 12px;display:flex;align-items:center;justify-content:space-between}
+.head-brand{font-size:8px;letter-spacing:5px;color:rgba(198,168,107,.5);text-transform:uppercase;font-weight:700;margin-bottom:3px}
+.head-prop{font-family:"Bebas Neue",sans-serif;font-size:21px;letter-spacing:2px;line-height:1;color:var(--white)}
+.head-folio{font-family:"DM Mono",monospace;font-size:9px;letter-spacing:2px;color:var(--w20);margin-top:3px}
+.head-badge{font-size:8px;letter-spacing:2.5px;text-transform:uppercase;font-weight:700;padding:6px 11px;border:1px solid var(--gold-border);color:var(--gold);background:var(--gold-dim);white-space:nowrap}
+.head-badge.done{border-color:rgba(76,175,80,.35);color:var(--green);background:var(--green-dim)}
 
-/* HEADER */
-.p-header{
-  position:sticky;top:0;z-index:100;
-  background:rgba(9,9,10,.96);
-  backdrop-filter:blur(20px);
-  border-bottom:1px solid var(--w05);
-  padding:12px 20px 10px;
-  display:flex;align-items:center;justify-content:space-between;
-}
-.ph-left{}
-.ph-brand{font-size:8px;letter-spacing:5px;color:rgba(198,168,107,.45);text-transform:uppercase;font-weight:700;margin-bottom:2px}
-.ph-name{font-family:"Bebas Neue",sans-serif;font-size:22px;letter-spacing:3px;color:var(--white);line-height:1}
-.ph-role{font-size:8px;color:var(--w20);font-weight:300;letter-spacing:1px;margin-top:1px}
-.ph-badge{
-  font-size:8px;letter-spacing:3px;text-transform:uppercase;font-weight:700;
-  padding:5px 10px;border:1px solid var(--gold-border);
-  color:var(--gold);background:var(--gold-dim);
-}
-.ph-badge.red{border-color:rgba(232,93,93,.3);color:var(--red);background:var(--red-dim)}
+.view{display:none;flex-direction:column;flex:1;animation:rise .5s cubic-bezier(.16,1,.3,1) both}
+.view.on{display:flex}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 
-/* LIVE TICKER */
-.live-ticker{
-  background:rgba(198,168,107,.04);
-  border-bottom:1px solid var(--gold-border);
-  padding:8px 20px;
-  display:flex;align-items:center;gap:10px;
-  overflow:hidden;
-}
-.lt-dot{width:5px;height:5px;border-radius:50%;background:var(--gold);flex-shrink:0;animation:ltpulse 2s ease-in-out infinite}
-@keyframes ltpulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}
-.lt-text{font-size:8px;letter-spacing:3px;color:rgba(198,168,107,.5);text-transform:uppercase;font-weight:700;white-space:nowrap;animation:tickScroll 20s linear infinite}
-@keyframes tickScroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+/* ── celebration ── */
+.fanfare{margin:0;padding:16px 24px;background:linear-gradient(180deg,rgba(198,168,107,.14),transparent);
+  border-bottom:1px solid var(--gold-border);text-align:center;animation:glow 2.4s ease-in-out infinite}
+@keyframes glow{0%,100%{background:linear-gradient(180deg,rgba(198,168,107,.10),transparent)}50%{background:linear-gradient(180deg,rgba(198,168,107,.18),transparent)}}
+.fanfare-eye{font-size:8px;letter-spacing:4px;color:var(--gold);text-transform:uppercase;font-weight:700;margin-bottom:5px}
+.fanfare-txt{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:18px;color:var(--gold-light);line-height:1.4}
 
-/* SLIDES */
-.slide{display:none;flex-direction:column;flex:1;animation:slideIn .35s ease forwards}
-.slide.active{display:flex}
-@keyframes slideIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+/* ── hero circle ── */
+.hero{display:flex;flex-direction:column;align-items:center;padding:30px 24px 22px;border-bottom:1px solid var(--w05);position:relative}
+.hero::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 220px 160px at center 38%,rgba(198,168,107,.07),transparent 70%)}
+.ring-wrap{position:relative;width:188px;height:188px}
+.ring-svg{transform:rotate(-90deg);width:188px;height:188px;overflow:visible}
+.ring-track{fill:none;stroke:rgba(255,255,255,.05);stroke-width:5}
+.ring-halo{fill:none;stroke:rgba(198,168,107,.08);stroke-width:15;stroke-linecap:round;transition:stroke-dashoffset 1.5s cubic-bezier(.16,1,.3,1)}
+.ring-fill{fill:none;stroke:url(#grad);stroke-width:5;stroke-linecap:round;transition:stroke-dashoffset 1.5s cubic-bezier(.16,1,.3,1)}
+.ring-mid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.ring-pct{font-family:"Bebas Neue",sans-serif;font-size:54px;letter-spacing:2px;color:var(--gold);line-height:.9}
+.ring-cap{font-size:7px;letter-spacing:4px;color:rgba(198,168,107,.45);text-transform:uppercase;font-weight:700}
+.ring-deco{position:absolute;inset:-12px;border-radius:50%;border:1px solid rgba(198,168,107,.08);animation:pulse 3.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:0;transform:scale(.96)}55%{opacity:1;transform:scale(1)}}
 
-/* PROP BANNER */
-.prop-banner{
-  padding:14px 20px;
-  background:var(--gold-glow);
-  border-bottom:1px solid var(--gold-border);
-  display:flex;align-items:center;justify-content:space-between;
-}
-.pb-left{}
-.pb-tag{font-size:7px;letter-spacing:3px;color:rgba(198,168,107,.4);text-transform:uppercase;font-weight:700;margin-bottom:3px}
-.pb-name{font-size:11px;letter-spacing:1px;color:var(--w60);font-weight:500;text-transform:uppercase}
-.pb-price{font-family:"Bebas Neue",sans-serif;font-size:24px;letter-spacing:1px;color:var(--gold)}
+.fase-head{padding:18px 24px 2px;width:100%}
+.fase-eye{font-size:8px;letter-spacing:3px;color:rgba(198,168,107,.5);text-transform:uppercase;font-weight:700;margin-bottom:5px}
+.fase-name{font-family:"Bebas Neue",sans-serif;font-size:30px;letter-spacing:1.5px;line-height:1;color:var(--white)}
+.fase-name b{color:var(--gold);font-weight:400}
+.fase-copy{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:16px;color:var(--w50);line-height:1.5;margin-top:9px}
 
-/* CÍRCULO HERO */
-.circle-section{
-  display:flex;flex-direction:column;align-items:center;
-  padding:28px 20px 20px;
-  border-bottom:1px solid var(--w05);
-  position:relative;
-}
-.circle-section::before{
-  content:"";position:absolute;inset:0;
-  background:radial-gradient(ellipse 200px 150px at center 40%,rgba(198,168,107,.06),transparent 70%);
-  pointer-events:none;
-}
-.circle-wrap{position:relative;width:176px;height:176px}
-.c-svg{transform:rotate(-90deg);width:176px;height:176px;overflow:visible}
-.c-track{fill:none;stroke:rgba(255,255,255,.04);stroke-width:5}
-.c-glow{fill:none;stroke:rgba(198,168,107,.08);stroke-width:16;stroke-linecap:round;stroke-dasharray:475;stroke-dashoffset:475;transition:stroke-dashoffset 1.4s cubic-bezier(.16,1,.3,1)}
-.c-fill{fill:none;stroke:url(#gGold);stroke-width:5;stroke-linecap:round;stroke-dasharray:475;stroke-dashoffset:475;transition:stroke-dashoffset 1.4s cubic-bezier(.16,1,.3,1)}
-.c-inner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
-.c-pct{font-family:"Bebas Neue",sans-serif;font-size:50px;letter-spacing:2px;color:var(--gold);line-height:1}
-.c-label{font-size:7px;letter-spacing:4px;color:rgba(198,168,107,.4);text-transform:uppercase;font-weight:700}
-.c-ring1{position:absolute;inset:-10px;border-radius:50%;border:1px solid rgba(198,168,107,.10);animation:ringPulse 3s ease-in-out infinite}
-.c-ring2{position:absolute;inset:-20px;border-radius:50%;border:1px solid rgba(198,168,107,.05);animation:ringPulse 3s ease-in-out infinite .9s}
-@keyframes ringPulse{0%,100%{opacity:0;transform:scale(.95)}60%{opacity:1;transform:scale(1)}}
+/* ── stats ── */
+.stats{display:flex;gap:1px;background:var(--w05);margin:18px 24px 0;border:1px solid var(--w05)}
+.stat{flex:1;padding:13px 8px;text-align:center;background:var(--black)}
+.stat-num{font-family:"Bebas Neue",sans-serif;font-size:26px;letter-spacing:1px;color:var(--gold);line-height:1}
+.stat-lbl{font-size:7px;letter-spacing:2px;color:var(--w35);text-transform:uppercase;font-weight:600;margin-top:5px}
 
-/* FASE INFO */
-.fase-block{padding:16px 20px 0;width:100%}
-.fase-eyebrow{font-size:8px;letter-spacing:3px;color:rgba(198,168,107,.45);text-transform:uppercase;font-weight:700;margin-bottom:4px}
-.fase-title{font-family:"Bebas Neue",sans-serif;font-size:26px;letter-spacing:2px;color:var(--white);line-height:1;margin-bottom:10px}
-.fase-title span{color:var(--gold)}
-.fase-bar{height:3px;background:rgba(255,255,255,.04);border-radius:2px;margin-bottom:6px;overflow:visible;position:relative}
-.fase-bar-fill{height:100%;background:linear-gradient(90deg,#8B6914,#C6A86B,#E2C98A);border-radius:2px;min-width:6px;box-shadow:0 0 12px rgba(198,168,107,.4);transition:width 1.4s cubic-bezier(.16,1,.3,1);position:relative}
-.fase-bar-dot{position:absolute;right:-5px;top:50%;transform:translateY(-50%);width:9px;height:9px;border-radius:50%;background:var(--gold);animation:dotPulse 2s ease-in-out infinite}
-@keyframes dotPulse{0%,100%{box-shadow:0 0 4px rgba(198,168,107,.9),0 0 12px rgba(198,168,107,.4)}50%{box-shadow:none}}
-
-/* MENSAJE EMOCIONAL — HERO (arriba del círculo) */
-.emo-hero{
-  margin:0 20px 20px;
-  padding:14px 18px;
-  border:1px solid var(--gold-border);
-  background:rgba(198,168,107,.03);
-  position:relative;
-  overflow:hidden;
-}
-.emo-hero::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--gold),var(--gold-light))}
-.eh-label{font-size:7px;letter-spacing:4px;color:rgba(198,168,107,.4);text-transform:uppercase;font-weight:700;margin-bottom:6px}
-.eh-text{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:17px;color:var(--w60);line-height:1.55}
-
-/* STATUS ROW */
-.status-row{
-  margin:12px 20px 0;
-  padding:10px 14px;
-  border:1px solid var(--w05);
-  display:flex;align-items:center;gap:10px;
-}
-.sr-dot{width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px rgba(198,168,107,.7);animation:dotPulse 2s infinite flex-shrink:0}
-.sr-text{font-size:9px;letter-spacing:2px;color:var(--w20);text-transform:uppercase;font-weight:600}
-.sr-text strong{color:rgba(198,168,107,.7)}
-.sr-folio{margin-left:auto;font-size:8px;letter-spacing:2px;color:var(--w10);font-weight:300;font-family:"Bebas Neue",sans-serif;letter-spacing:3px}
-
-/* CALM NOTE */
-.calm-note{
-  margin:14px 20px 0;
-  padding:10px 14px;
-  background:var(--gold-glow);
-  font-size:10px;color:rgba(198,168,107,.45);font-weight:300;font-style:italic;
-  line-height:1.6;text-align:center;
-  border-radius:2px;
-}
-
-/* NAV BOTTOM */
-.slide-nav{padding:20px 20px 28px;margin-top:auto}
-.nav-btn{
-  width:100%;padding:14px;
-  border:.5px solid var(--gold-border);
-  background:transparent;color:var(--gold);
-  font-family:"Montserrat",sans-serif;
-  font-size:9px;letter-spacing:4px;text-transform:uppercase;font-weight:700;
-  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;
-  transition:all .2s;
-}
-.nav-btn:active{background:var(--gold-dim)}
-.nav-btn.back{border-color:var(--w05);color:var(--w20);margin-bottom:10px;font-size:8px}
-
-/* ═══ SLIDE 2: TIMELINE ═══ */
-.tl-section{padding:20px 20px 8px}
-.tl-eyebrow{font-size:8px;letter-spacing:4px;color:var(--w20);text-transform:uppercase;font-weight:700;margin-bottom:18px}
-.tl-item{display:flex;gap:14px}
-.tl-spine{display:flex;flex-direction:column;align-items:center;width:24px;flex-shrink:0}
-.tl-node{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;z-index:1}
-.n-done{background:rgba(198,168,107,.08);border:1px solid rgba(198,168,107,.4)}
-.n-active{background:var(--gold);border:1px solid var(--gold);animation:nodeGlow 2.5s ease-in-out infinite}
-@keyframes nodeGlow{0%,100%{box-shadow:0 0 0 0 rgba(198,168,107,.5)}55%{box-shadow:0 0 0 8px rgba(198,168,107,0)}}
-.n-pending{background:var(--w02);border:1px solid var(--w05)}
-.tl-line{flex:1;width:1px;margin:2px 0}
-.line-done{background:rgba(198,168,107,.2)}
+/* ── timeline ── */
+.tl{padding:24px 24px 12px}
+.tl-title{font-size:8px;letter-spacing:3px;color:var(--w35);text-transform:uppercase;font-weight:700;margin-bottom:18px}
+.tl-item{display:flex;gap:14px;position:relative}
+.tl-spine{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+.tl-node{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;z-index:1;transition:all .4s}
+.n-done{background:var(--gold-dim);border:1px solid var(--gold-border)}
+.n-active{background:var(--gold);box-shadow:0 0 0 4px rgba(198,168,107,.14)}
+.n-pending{background:var(--black-3);border:1px solid var(--w10)}
+.tl-line{width:1px;flex:1;min-height:26px}
+.line-done{background:linear-gradient(180deg,var(--gold-border),var(--gold-border))}
 .line-pending{background:var(--w05)}
-.tl-content{padding-bottom:18px;flex:1;min-width:0}
-.tl-pct{font-size:7px;letter-spacing:2px;color:var(--w20);font-weight:700;margin-bottom:2px}
-.tl-name{font-size:12px;font-weight:600;color:var(--w20)}
-.tl-name.active{color:var(--white)}
-.tl-name.done{color:rgba(198,168,107,.55)}
-.tl-checks{margin-top:8px;display:none}
-.tl-checks.show{display:block}
-.tl-chk{display:flex;align-items:center;gap:8px;padding:3px 0;font-size:10px;color:var(--w35);font-weight:300}
-.chk-ico{width:14px;height:14px;border-radius:50%;background:rgba(198,168,107,.1);border:.5px solid rgba(198,168,107,.35);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:7px;color:var(--gold)}
-.next-block{margin-top:12px;padding:10px 12px;background:var(--gold-dim);border:.5px solid var(--gold-border)}
-.next-label{font-size:7px;letter-spacing:3px;color:rgba(198,168,107,.5);text-transform:uppercase;font-weight:700;margin-bottom:7px}
-.next-item{font-size:10px;color:var(--w35);font-weight:300;line-height:1.7;padding-left:4px}
-.next-item::before{content:"·  ";color:rgba(198,168,107,.5)}
-.next-step{margin-top:8px;padding:10px 12px;border-left:2px solid rgba(198,168,107,.2);background:var(--w02)}
-.next-step-label{font-size:7px;letter-spacing:3px;color:rgba(198,168,107,.4);text-transform:uppercase;font-weight:700;margin-bottom:5px}
-.next-step-text{font-size:10px;color:var(--w35);font-weight:300;line-height:1.7;font-style:italic}
+.tl-body{padding-bottom:22px;flex:1}
+.tl-pct{font-family:"DM Mono",monospace;font-size:9px;letter-spacing:1px;color:var(--w20);margin-bottom:2px}
+.tl-label{font-size:12px;letter-spacing:.3px;color:var(--w35);font-weight:500}
+.tl-label.active{color:var(--gold);font-weight:600}
+.tl-label.done{color:var(--w70)}
+.tl-detail{font-size:11px;font-weight:300;color:var(--w50);line-height:1.55;margin-top:7px}
+.tl-next{margin-top:10px;padding:10px 12px;border-left:2px solid var(--gold-border);background:var(--gold-glow)}
+.tl-next-lbl{font-size:7px;letter-spacing:3px;color:rgba(198,168,107,.5);text-transform:uppercase;font-weight:700;margin-bottom:4px}
+.tl-next-txt{font-size:11.5px;font-weight:300;color:var(--w70);line-height:1.5}
+.tl-pend{margin-top:10px}
+.tl-pend-lbl{font-size:7px;letter-spacing:3px;color:var(--w35);text-transform:uppercase;font-weight:700;margin-bottom:6px}
+.tl-pend-item{font-size:11.5px;font-weight:300;color:var(--w70);line-height:1.7;padding-left:14px;position:relative}
+.tl-pend-item::before{content:"·";position:absolute;left:2px;color:var(--gold)}
 
-/* BOTTOM NOTE + WA */
-.bottom-note{margin:8px 20px 14px;padding:14px 16px;border-left:2px solid rgba(198,168,107,.25);background:var(--gold-glow)}
-.bn-label{font-size:7px;letter-spacing:3px;color:rgba(198,168,107,.4);text-transform:uppercase;font-weight:700;margin-bottom:7px}
-.bn-text{font-size:11px;font-weight:300;color:var(--w35);line-height:1.8;font-style:italic}
-.wa-row{padding:0 20px 14px}
-.wa-btn{display:flex;align-items:center;justify-content:center;gap:10px;background:rgba(13,31,13,.7);border:.5px solid rgba(30,74,30,.9);color:#4caf50;padding:14px;font-size:9px;letter-spacing:3px;text-transform:uppercase;font-weight:700;width:100%;cursor:pointer;font-family:"Montserrat",sans-serif}
-.footer{padding:12px 20px 20px;border-top:1px solid var(--w05);display:flex;align-items:center;justify-content:space-between}
-.ft-method{font-size:7px;letter-spacing:4px;color:rgba(198,168,107,.2);text-transform:uppercase;font-weight:700}
-.ft-location{font-size:7px;color:var(--w10);font-weight:300;margin-top:2px}
-
-/* ═══ PORTAL ASESOR ═══ */
-.asesor-portal{display:none;max-width:480px;margin:0 auto;min-height:100vh;flex-direction:column}
-.asesor-portal.active{display:flex}
-
-/* ALERTA BANNER — asesor */
-.alerta-banner{
-  padding:12px 20px;
-  background:var(--red-dim);
-  border-bottom:1px solid rgba(232,93,93,.25);
-  display:flex;align-items:center;gap:10px;
-  animation:alertFlash 3s ease-in-out infinite;
-}
-@keyframes alertFlash{0%,100%{background:rgba(232,93,93,.12)}50%{background:rgba(232,93,93,.18)}}
-.ab-dot{width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 10px rgba(232,93,93,.8);flex-shrink:0;animation:redPulse 1.5s ease-in-out infinite}
-@keyframes redPulse{0%,100%{box-shadow:0 0 4px rgba(232,93,93,.9),0 0 14px rgba(232,93,93,.4)}50%{box-shadow:0 0 2px rgba(232,93,93,.4)}}
-.ab-text{font-size:8px;letter-spacing:3px;color:rgba(232,93,93,.8);text-transform:uppercase;font-weight:700}
-.ab-amount{margin-left:auto;font-family:"Bebas Neue",sans-serif;font-size:16px;letter-spacing:2px;color:var(--red)}
-
-/* DASHBOARD ASESOR */
-.dashboard{padding:20px}
-.dash-eyebrow{font-size:8px;letter-spacing:5px;color:rgba(198,168,107,.45);text-transform:uppercase;font-weight:700;margin-bottom:6px}
-.dash-title{font-family:"Bebas Neue",sans-serif;font-size:36px;letter-spacing:3px;color:var(--white);margin-bottom:20px;line-height:1}
-
-/* MONEY ZONES */
-.money-zones{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
-.mz{padding:14px 16px;border:1px solid;position:relative;overflow:hidden;cursor:pointer;transition:all .2s}
-.mz::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;border-radius:0}
-.mz-red{border-color:rgba(232,93,93,.25);background:var(--red-dim)}
-.mz-red::before{background:var(--red)}
-.mz-red:hover{background:rgba(232,93,93,.18)}
-.mz-green{border-color:rgba(76,175,80,.25);background:var(--green-dim)}
-.mz-green::before{background:var(--green)}
-.mz-green:hover{background:rgba(76,175,80,.16)}
-.mz-amber{border-color:rgba(245,166,35,.25);background:var(--amber-dim)}
-.mz-amber::before{background:var(--amber)}
-.mz-amber:hover{background:rgba(245,166,35,.16)}
-.mz-gold{border-color:var(--gold-border);background:var(--gold-dim)}
-.mz-gold::before{background:var(--gold)}
-.mz-gold:hover{background:rgba(198,168,107,.15)}
-.mz-label{font-size:7px;letter-spacing:3px;text-transform:uppercase;font-weight:700;margin-bottom:6px}
-.mz-red .mz-label{color:rgba(232,93,93,.65)}
-.mz-green .mz-label{color:rgba(76,175,80,.65)}
-.mz-amber .mz-label{color:rgba(245,166,35,.65)}
-.mz-gold .mz-label{color:rgba(198,168,107,.65)}
-.mz-amount{font-family:"Bebas Neue",sans-serif;font-size:26px;letter-spacing:1px}
-.mz-red .mz-amount{color:var(--red)}
-.mz-green .mz-amount{color:var(--green)}
-.mz-amber .mz-amount{color:var(--amber)}
-.mz-gold .mz-amount{color:var(--gold)}
-.mz-sub{font-size:9px;font-weight:300;margin-top:3px}
-.mz-red .mz-sub{color:rgba(232,93,93,.45)}
-.mz-green .mz-sub{color:rgba(76,175,80,.45)}
-.mz-amber .mz-sub{color:rgba(245,166,35,.45)}
-.mz-gold .mz-sub{color:rgba(198,168,107,.45)}
-.mz-full{grid-column:1/-1}
-
-/* OPERACIONES LIST */
-.ops-section{margin-bottom:20px}
-.ops-title{font-size:8px;letter-spacing:4px;color:var(--w20);text-transform:uppercase;font-weight:700;margin-bottom:12px}
-.op-card{
-  border:1px solid var(--w05);
-  background:var(--black-2);
-  margin-bottom:8px;
-  cursor:pointer;
-  transition:border-color .2s;
-  overflow:hidden;
-  position:relative;
-}
-.op-card:hover{border-color:var(--gold-border)}
-.op-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px}
-.op-urgente::before{background:var(--red);animation:urgentBar 1.5s ease-in-out infinite}
-@keyframes urgentBar{0%,100%{opacity:1}50%{opacity:.4}}
-.op-atencion::before{background:var(--amber)}
-.op-ok::before{background:var(--green)}
-.op-card-inner{padding:14px 16px 14px 19px}
-.op-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}
-.op-folio{font-size:8px;letter-spacing:3px;color:var(--w20);font-family:"Bebas Neue",sans-serif;letter-spacing:4px}
-.op-dias{font-size:8px;font-weight:700;letter-spacing:1px}
-.op-dias.red{color:var(--red)}
-.op-dias.amber{color:var(--amber)}
-.op-dias.green{color:rgba(76,175,80,.7)}
-.op-name{font-size:12px;font-weight:600;color:var(--w60);margin-bottom:3px}
-.op-fase{font-size:9px;color:var(--w20);font-weight:300;margin-bottom:8px}
-.op-alerta{
-  font-size:10px;font-weight:500;line-height:1.5;
-  padding:8px 10px;
-  border-radius:2px;
-}
-.op-alerta.red{background:var(--red-dim);color:rgba(232,93,93,.8);border:.5px solid rgba(232,93,93,.2)}
-.op-alerta.amber{background:var(--amber-dim);color:rgba(245,166,35,.8);border:.5px solid rgba(245,166,35,.2)}
-.op-alerta.green{background:var(--green-dim);color:rgba(76,175,80,.8);border:.5px solid rgba(76,175,80,.2)}
-.op-jugada{margin-top:8px;padding:8px 10px;border-left:2px solid rgba(198,168,107,.2);background:var(--gold-glow)}
-.op-jugada-label{font-size:7px;letter-spacing:3px;color:rgba(198,168,107,.4);text-transform:uppercase;font-weight:700;margin-bottom:4px}
-.op-jugada-text{font-size:10px;color:var(--w35);font-weight:300;font-style:italic;line-height:1.5}
-.op-bar{height:2px;background:rgba(255,255,255,.04);position:relative}
-.op-bar-fill{height:100%;transition:width .5s ease}
-
-/* DIAGNÓSTICO */
-.diag-section{margin-bottom:20px}
-.diag-card{
-  border:1px solid var(--w05);
-  background:var(--black-2);
-  padding:16px;
-  margin-bottom:8px;
-}
-.diag-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
-.diag-name{font-size:12px;font-weight:600;color:var(--w60)}
-.diag-score{font-family:"Bebas Neue",sans-serif;font-size:18px;letter-spacing:2px;padding:3px 10px;font-weight:700}
-.score-hot{background:var(--red-dim);color:var(--red);border:.5px solid rgba(232,93,93,.3)}
-.score-warm{background:var(--amber-dim);color:var(--amber);border:.5px solid rgba(245,166,35,.3)}
-.score-cold{background:var(--w05);color:var(--w35);border:.5px solid var(--w10)}
-.diag-detail{font-size:10px;color:var(--w35);font-weight:300;line-height:1.6}
-.diag-riesgo{font-size:10px;font-weight:500;margin-top:8px;padding:6px 10px;background:var(--red-dim);color:rgba(232,93,93,.7);border:.5px solid rgba(232,93,93,.15)}
-
-/* SIGUIENTE JUGADA HERO */
-.jugada-hero{
-  margin-bottom:20px;
-  border:1px solid var(--gold-border);
-  background:var(--gold-glow);
-  padding:20px;
-  position:relative;
-  overflow:hidden;
-}
-.jugada-hero::before{content:"";position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent)}
-.jh-label{font-size:7px;letter-spacing:5px;color:rgba(198,168,107,.45);text-transform:uppercase;font-weight:700;margin-bottom:10px}
-.jh-title{font-family:"Bebas Neue",sans-serif;font-size:20px;letter-spacing:2px;color:var(--white);margin-bottom:6px}
-.jh-text{font-size:12px;font-weight:300;color:var(--w60);line-height:1.7;font-style:italic}
-
-/* SWITCH ROL */
-.switch-rol{
-  margin:0 20px 20px;
-  padding:12px 16px;
-  border:1px solid var(--w05);
-  background:var(--w02);
-  display:flex;align-items:center;gap:12px;
-  cursor:pointer;
-  transition:border-color .2s;
-}
-.switch-rol:hover{border-color:var(--gold-border)}
-.switch-rol-text{font-size:9px;letter-spacing:3px;color:var(--w20);text-transform:uppercase;font-weight:600}
-.switch-rol-arrow{margin-left:auto;color:rgba(198,168,107,.4);font-size:14px}
-
-/* TOAST */
-.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(60px);background:var(--gold);color:var(--black);font-size:9px;font-weight:800;letter-spacing:2px;padding:9px 20px;z-index:9999;opacity:0;transition:all .3s;white-space:nowrap;pointer-events:none}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
-
-/* TRIGGER ADMIN */
-.adm-trigger{position:fixed;bottom:0;right:0;width:44px;height:44px;z-index:500;cursor:pointer;background:transparent;border:none}
-
-/* ADM OVERLAY */
-.adm-overlay{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.96);display:flex;align-items:center;justify-content:center;padding:24px;opacity:0;pointer-events:none;transition:opacity .25s}
-.adm-overlay.open{opacity:1;pointer-events:all}
-.adm-card{background:#09090A;border:1px solid rgba(198,168,107,.2);border-top:2px solid var(--gold);width:100%;max-width:380px;max-height:88vh;overflow-y:auto}
-.adm-head{padding:14px 18px;border-bottom:1px solid var(--gold-border);display:flex;align-items:center;gap:10px}
-.adm-led{width:6px;height:6px;border-radius:50%;background:var(--gold);box-shadow:0 0 6px rgba(198,168,107,.8)}
-.adm-htitle{font-size:8px;letter-spacing:5px;color:rgba(198,168,107,.6);text-transform:uppercase;font-weight:700;flex:1}
-.adm-x{background:none;border:none;color:var(--w20);font-size:18px;cursor:pointer;padding:0 2px;font-family:inherit;line-height:1}
-.adm-body{padding:18px 18px 22px}
-.adm-sec{font-size:8px;letter-spacing:3px;color:rgba(198,168,107,.35);text-transform:uppercase;font-weight:700;margin:0 0 12px}
-.adm-row{margin-bottom:12px}
-.adm-lbl{font-size:8px;letter-spacing:2px;color:rgba(198,168,107,.4);text-transform:uppercase;font-weight:700;margin-bottom:5px;display:block}
-.adm-inp{width:100%;background:rgba(255,255,255,.03);border:1px solid rgba(198,168,107,.15);color:var(--white);font-family:"Montserrat",sans-serif;font-size:13px;padding:10px 12px;outline:none;transition:border-color .2s}
-.adm-inp:focus{border-color:rgba(198,168,107,.5)}
-.adm-div{height:1px;background:rgba(198,168,107,.08);margin:16px 0}
-.fase-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px}
-.fb{padding:9px 7px;background:var(--w02);border:1px solid var(--w05);color:var(--w20);font-family:"Montserrat",sans-serif;font-size:8px;font-weight:600;letter-spacing:.3px;cursor:pointer;text-align:center;line-height:1.4;transition:all .15s}
-.fb:hover{border-color:var(--gold-border);color:rgba(198,168,107,.6)}
-.fb.sel{background:var(--gold-dim);border-color:var(--gold);color:var(--gold)}
-.fb-pct{font-size:7px;display:block;margin-top:1px;opacity:.55}
-.adm-btn{width:100%;margin-top:16px;padding:13px;background:var(--gold);color:var(--black);font-family:"Montserrat",sans-serif;font-size:9px;font-weight:800;letter-spacing:4px;text-transform:uppercase;border:none;cursor:pointer;transition:opacity .15s}
-.adm-btn:active{opacity:.8}
-.adm-btn.sec{background:transparent;color:var(--gold);border:1px solid rgba(198,168,107,.35);margin-top:8px}
-.adm-help{font-size:10px;color:var(--w20);font-weight:300;line-height:1.55;margin-top:10px;border-left:2px solid rgba(198,168,107,.2);padding-left:10px}
-.adm-err{font-size:10px;color:var(--red);text-align:center;margin-top:8px;min-height:16px}
+/* ── footer / wa ── */
+.foot{margin-top:auto;padding:18px 24px 30px}
+.wa{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;padding:15px;
+  border:1px solid var(--gold-border);background:var(--gold-dim);color:var(--gold);
+  font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;text-decoration:none;
+  transition:all .25s;cursor:pointer}
+.wa:hover{background:rgba(198,168,107,.16);border-color:rgba(198,168,107,.4)}
+.wa svg{width:15px;height:15px;fill:currentColor}
+.foot-note{text-align:center;font-family:"DM Mono",monospace;font-size:8px;letter-spacing:1.5px;color:var(--w20);margin-top:16px}
+.foot-note b{color:rgba(198,168,107,.5);font-weight:400}
 </style>
 </head>
 <body>
+<div class="shell">
 
-<div class="toast" id="toast"></div>
-<button class="adm-trigger" aria-hidden="true" onclick="tryAdmin()"></button>
-
-<!-- ═══════════════════════════════════
-     SELECTOR DE ROL
-═══════════════════════════════════ -->
-<div class="role-gate" id="roleGate">
-  <div class="rg-eyebrow">Método NERI · Portal de Operación</div>
-  <div class="rg-title">¿Quién<br><em>eres?</em></div>
-  <div class="rg-sub">Cada parte del proceso tiene su propia vista</div>
-  <div class="rg-cards">
-    <div class="rg-card" onclick="enterPortal('comprador')">
-      <div class="rg-card-top">
-        <div class="rg-card-label">Experiencia 01</div>
-        <div class="rg-card-arrow">→</div>
-      </div>
-      <div class="rg-card-name">COMPRADOR</div>
-      <div class="rg-card-desc">Estás adquiriendo una propiedad. Ve el avance de tu operación.</div>
-    </div>
-    <div class="rg-card" onclick="enterPortal('vendedor')">
-      <div class="rg-card-top">
-        <div class="rg-card-label">Experiencia 02</div>
-        <div class="rg-card-arrow">→</div>
-      </div>
-      <div class="rg-card-name">PROPIETARIO</div>
-      <div class="rg-card-desc">Tu propiedad está en proceso de venta. Monitorea cada etapa.</div>
-    </div>
-    <div class="rg-card" onclick="enterPortal('asesor')">
-      <div class="rg-card-top">
-        <div class="rg-card-label">Cabina de operación</div>
-        <div class="rg-card-arrow">→</div>
-      </div>
-      <div class="rg-card-name">ASESOR</div>
-      <div class="rg-card-desc">Panel de control. Dinero en riesgo, alertas y siguiente jugada.</div>
-    </div>
+  <!-- LOADING -->
+  <div class="state on" id="stLoad">
+    <div class="spinner"></div>
+    <div class="state-eyebrow">Método Neri</div>
+    <div class="state-msg">Consultando el avance de tu operación…</div>
   </div>
-  <div class="rg-folio">Folio activo: <strong id="rgFolio">EN-2506-0001</strong></div>
-</div>
 
-<!-- ADM OVERLAY -->
-<div class="adm-overlay" id="admOverlay">
-<div class="adm-card">
-<div class="adm-head">
-  <div class="adm-led"></div>
-  <div class="adm-htitle">Panel · Método Neri</div>
-  <button class="adm-x" onclick="closeAdmin()">✕</button>
-</div>
-<div class="adm-body" id="admBodyLogin">
-  <div class="adm-sec">Acceso de asesor</div>
-  <div class="adm-row">
-    <label class="adm-lbl">Contraseña</label>
-    <input class="adm-inp" id="admPw" type="password" placeholder="••••••" onkeydown="if(event.key==='Enter')checkPw()">
+  <!-- ERROR -->
+  <div class="state" id="stError">
+    <div class="state-eyebrow">Método Neri</div>
+    <div class="state-msg" id="errMsg">No encontramos esta operación. Verifica el enlace que te compartió tu asesor.</div>
   </div>
-  <button class="adm-btn" onclick="checkPw()">Ingresar →</button>
-  <div class="adm-err" id="admErr"></div>
-</div>
-<div class="adm-body" id="admBodyEdit" style="display:none">
-  <div class="adm-sec">Datos del expediente</div>
-  <div class="adm-row"><label class="adm-lbl">Folio</label><input class="adm-inp" id="eFollio" placeholder="EN-2506-0001"></div>
-  <div class="adm-row"><label class="adm-lbl">Propiedad</label><input class="adm-inp" id="eProp" placeholder="Casa Vista Hermosa"></div>
-  <div class="adm-row"><label class="adm-lbl">Precio</label><input class="adm-inp" id="ePrecio" placeholder="3900000"></div>
-  <div class="adm-div"></div>
-  <div class="adm-sec">Fase actual</div>
-  <div class="fase-grid" id="faseGrid"></div>
-  <button class="adm-btn" onclick="applyAdmin()">Aplicar →</button>
-  <button class="adm-btn sec" onclick="downloadHtml()">Descargar HTML</button>
-  <div class="adm-help">Aplica, descarga y sube a Vercel para que el cliente vea los cambios.</div>
-</div>
-</div>
-</div>
 
-<!-- ═══════════════════════════════════
-     PORTAL COMPRADOR
-═══════════════════════════════════ -->
-<div class="portal" id="portalComprador">
+  <!-- HEADER -->
+  <div class="head" id="head" style="display:none">
+    <div>
+      <div class="head-brand">Método Neri</div>
+      <div class="head-prop" id="hProp">—</div>
+      <div class="head-folio" id="hFolio">—</div>
+    </div>
+    <div class="head-badge" id="hBadge">En proceso</div>
+  </div>
 
-  <!-- SLIDE 1 -->
-  <div class="slide active" id="cs1">
-    <div class="p-header">
-      <div class="ph-left">
-        <div class="ph-brand">Método NERI</div>
-        <div class="ph-name">Enrique Neri</div>
-        <div class="ph-role">Asesor Inmobiliario · Cuernavaca</div>
-      </div>
-      <div class="ph-badge" id="cBadge">En proceso</div>
+  <!-- VIEW -->
+  <div class="view" id="view">
+
+    <div class="fanfare" id="fanfare" style="display:none">
+      <div class="fanfare-eye">Apartada</div>
+      <div class="fanfare-txt" id="fanfareTxt">Tu propiedad acaba de ser apartada. Comienza el proceso de compra.</div>
     </div>
 
-    <div class="live-ticker">
-      <div class="lt-dot"></div>
-      <div class="lt-text" id="cTicker">Tu operación avanza · Seguimiento activo · El sistema trabaja por ti · Tu operación avanza · Seguimiento activo · El sistema trabaja por ti ·&nbsp;</div>
-    </div>
-
-    <!-- MENSAJE EMOCIONAL HERO — PRIMERO -->
-    <div class="emo-hero" style="margin:16px 20px 0">
-      <div class="eh-label">Tu proceso</div>
-      <div class="eh-text" id="cEmoText">"Tu operación ha iniciado. La propiedad ya está reservada para ti."</div>
-    </div>
-
-    <div class="prop-banner" style="margin-top:12px">
-      <div class="pb-left">
-        <div class="pb-tag">Propiedad en proceso</div>
-        <div class="pb-name" id="cPropNombre">Casa Vista Hermosa</div>
-      </div>
-      <div class="pb-price">$<span id="cPropPrecio">3,900,000</span></div>
-    </div>
-
-    <!-- CÍRCULO -->
-    <div class="circle-section">
-      <div class="circle-wrap">
-        <svg class="c-svg" viewBox="0 0 176 176">
-          <defs>
-            <linearGradient id="gGold" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#8B6914"/>
-              <stop offset="50%" stop-color="#C6A86B"/>
-              <stop offset="100%" stop-color="#E2C98A"/>
-            </linearGradient>
-          </defs>
-          <circle class="c-track" cx="88" cy="88" r="75.5"/>
-          <circle class="c-glow" cx="88" cy="88" r="75.5" id="cGlow"/>
-          <circle class="c-fill" cx="88" cy="88" r="75.5" id="cFill"/>
+    <div class="hero">
+      <div class="ring-wrap">
+        <div class="ring-deco"></div>
+        <svg class="ring-svg" viewBox="0 0 188 188">
+          <defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#8B6914"/><stop offset="55%" stop-color="#C6A86B"/><stop offset="100%" stop-color="#E2C98A"/>
+          </linearGradient></defs>
+          <circle class="ring-track" cx="94" cy="94" r="84"/>
+          <circle class="ring-halo" id="ringHalo" cx="94" cy="94" r="84"/>
+          <circle class="ring-fill" id="ringFill" cx="94" cy="94" r="84"/>
         </svg>
-        <div class="c-inner">
-          <div class="c-pct" id="cPct">5%</div>
-          <div class="c-label">avance</div>
-        </div>
-        <div class="c-ring1"></div>
-        <div class="c-ring2"></div>
-      </div>
-    </div>
-
-    <div class="fase-block">
-      <div class="fase-eyebrow" id="cFaseEye">Fase 1 de 8</div>
-      <div class="fase-title" id="cFaseTitle">Apartado<span>.</span></div>
-      <div class="fase-bar"><div class="fase-bar-fill" id="cBarFill" style="width:5%"><div class="fase-bar-dot"></div></div></div>
-      <div style="font-size:10px;color:var(--w35);font-weight:300;font-style:italic;line-height:1.6;padding-bottom:16px;border-bottom:1px solid var(--w02)" id="cCopy">"La propiedad se encuentra en proceso de reserva privada."</div>
-    </div>
-
-    <div class="calm-note">Todo avanza correctamente. Te avisaremos cuando la siguiente etapa esté lista.</div>
-
-    <div class="status-row">
-      <div class="sr-dot"></div>
-      <div class="sr-text"><strong id="cEstado">Tu compra avanza</strong></div>
-      <div class="sr-folio" id="cFolioDisplay">EN-2506-0001</div>
-    </div>
-
-    <div class="slide-nav">
-      <button class="nav-btn" onclick="goPortalSlide('c',2)">Ver etapas del proceso →</button>
-      <button class="nav-btn back" onclick="volverGate()">← Cambiar vista</button>
-    </div>
-  </div>
-
-  <!-- SLIDE 2 -->
-  <div class="slide" id="cs2">
-    <div class="p-header">
-      <div class="ph-left">
-        <div class="ph-brand">Método NERI</div>
-        <div class="ph-name">Enrique Neri</div>
-        <div class="ph-role">Asesor Inmobiliario · Cuernavaca</div>
-      </div>
-      <div class="ph-badge" id="cBadge2">En proceso</div>
-    </div>
-    <div class="live-ticker">
-      <div class="lt-dot"></div>
-      <div class="lt-text">Tu camino hacia la escritura · Proceso documentado · Cada etapa tiene seguimiento ·&nbsp;Tu camino hacia la escritura · Proceso documentado · Cada etapa tiene seguimiento ·&nbsp;</div>
-    </div>
-    <div class="tl-section">
-      <div class="tl-eyebrow">Tu camino hacia la escritura</div>
-      <div id="cTlWrap"></div>
-    </div>
-    <div class="bottom-note">
-      <div class="bn-label">Nota de proceso</div>
-      <div class="bn-text">"Cada etapa está siendo acompañada cuidadosamente para que avances con tranquilidad y claridad."</div>
-    </div>
-    <div class="wa-row">
-      <button class="wa-btn" onclick="openWA()">✉&nbsp;&nbsp;Contactar a Enrique</button>
-    </div>
-    <div class="footer">
-      <div class="ft-method">Método NERI</div>
-      <div class="ft-location">Cuernavaca · México</div>
-    </div>
-    <div class="slide-nav" style="padding-top:0;margin-top:0">
-      <button class="nav-btn back" onclick="goPortalSlide('c',1)">← Volver al resumen</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════
-     PORTAL VENDEDOR
-═══════════════════════════════════ -->
-<div class="portal" id="portalVendedor">
-
-  <!-- SLIDE 1 -->
-  <div class="slide active" id="vs1">
-    <div class="p-header">
-      <div class="ph-left">
-        <div class="ph-brand">Método NERI</div>
-        <div class="ph-name">Enrique Neri</div>
-        <div class="ph-role">Asesor Inmobiliario · Cuernavaca</div>
-      </div>
-      <div class="ph-badge" id="vBadge">Tu propiedad activa</div>
-    </div>
-
-    <div class="live-ticker">
-      <div class="lt-dot"></div>
-      <div class="lt-text" id="vTicker">Tu propiedad está siendo trabajada · Posicionamiento activo · El proceso avanza · Tu propiedad está siendo trabajada · Posicionamiento activo · El proceso avanza ·&nbsp;</div>
-    </div>
-
-    <div class="emo-hero" style="margin:16px 20px 0">
-      <div class="eh-label">Estado de tu propiedad</div>
-      <div class="eh-text" id="vEmoText">"Tu propiedad ya está en proceso activo. El sistema trabaja para posicionarla correctamente."</div>
-    </div>
-
-    <div class="prop-banner" style="margin-top:12px">
-      <div class="pb-left">
-        <div class="pb-tag">Propiedad en venta</div>
-        <div class="pb-name" id="vPropNombre">Casa Vista Hermosa</div>
-      </div>
-      <div class="pb-price">$<span id="vPropPrecio">3,900,000</span></div>
-    </div>
-
-    <div class="circle-section">
-      <div class="circle-wrap">
-        <svg class="c-svg" viewBox="0 0 176 176">
-          <defs>
-            <linearGradient id="gGold2" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stop-color="#8B6914"/>
-              <stop offset="50%" stop-color="#C6A86B"/>
-              <stop offset="100%" stop-color="#E2C98A"/>
-            </linearGradient>
-          </defs>
-          <circle class="c-track" cx="88" cy="88" r="75.5"/>
-          <circle class="c-glow" cx="88" cy="88" r="75.5" id="vGlow"/>
-          <circle class="c-fill" cx="88" cy="88" r="75.5" id="vFill" style="stroke:url(#gGold2)"/>
-        </svg>
-        <div class="c-inner">
-          <div class="c-pct" id="vPct">5%</div>
-          <div class="c-label">proceso</div>
-        </div>
-        <div class="c-ring1"></div>
-        <div class="c-ring2"></div>
-      </div>
-    </div>
-
-    <div class="fase-block">
-      <div class="fase-eyebrow" id="vFaseEye">Fase 1 de 8</div>
-      <div class="fase-title" id="vFaseTitle">Captación<span>.</span></div>
-      <div class="fase-bar"><div class="fase-bar-fill" id="vBarFill" style="width:5%"><div class="fase-bar-dot"></div></div></div>
-      <div style="font-size:10px;color:var(--w35);font-weight:300;font-style:italic;line-height:1.6;padding-bottom:16px;border-bottom:1px solid var(--w02)" id="vCopy">"Tu propiedad está siendo integrada al sistema de posicionamiento."</div>
-    </div>
-
-    <div class="calm-note">Estamos trabajando en tu propiedad. No necesitas hacer nada en este momento.</div>
-
-    <div class="status-row">
-      <div class="sr-dot"></div>
-      <div class="sr-text"><strong id="vEstado">Propiedad en proceso</strong></div>
-      <div class="sr-folio" id="vFolioDisplay">EN-2506-0001</div>
-    </div>
-
-    <!-- STATS VENDEDOR -->
-    <div style="margin:14px 20px 0;display:grid;grid-template-columns:1fr 1fr;gap:8px">
-      <div style="padding:12px 14px;border:1px solid var(--w05);background:var(--w02)">
-        <div style="font-size:7px;letter-spacing:3px;color:var(--w20);text-transform:uppercase;font-weight:700;margin-bottom:5px">Días activos</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:var(--white)" id="vDias">12</div>
-      </div>
-      <div style="padding:12px 14px;border:1px solid var(--w05);background:var(--w02)">
-        <div style="font-size:7px;letter-spacing:3px;color:var(--w20);text-transform:uppercase;font-weight:700;margin-bottom:5px">Interesados</div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:2px;color:var(--gold)">3</div>
-      </div>
-    </div>
-
-    <div class="slide-nav">
-      <button class="nav-btn" onclick="goPortalSlide('v',2)">Ver etapas de venta →</button>
-      <button class="nav-btn back" onclick="volverGate()">← Cambiar vista</button>
-    </div>
-  </div>
-
-  <!-- SLIDE 2 vendedor -->
-  <div class="slide" id="vs2">
-    <div class="p-header">
-      <div class="ph-left">
-        <div class="ph-brand">Método NERI</div>
-        <div class="ph-name">Enrique Neri</div>
-        <div class="ph-role">Asesor Inmobiliario · Cuernavaca</div>
-      </div>
-    </div>
-    <div class="tl-section">
-      <div class="tl-eyebrow">El proceso de venta de tu propiedad</div>
-      <div id="vTlWrap"></div>
-    </div>
-    <div class="bottom-note">
-      <div class="bn-label">Tu compromiso</div>
-      <div class="bn-text">"Nunca estarás sin información. Cada avance en tu venta queda documentado y visible para ti."</div>
-    </div>
-    <div class="wa-row">
-      <button class="wa-btn" onclick="openWA()">✉&nbsp;&nbsp;Hablar con mi asesor</button>
-    </div>
-    <div class="footer">
-      <div class="ft-method">Método NERI</div>
-      <div class="ft-location">Cuernavaca · México</div>
-    </div>
-    <div class="slide-nav" style="padding-top:0;margin-top:0">
-      <button class="nav-btn back" onclick="goPortalSlide('v',1)">← Volver al resumen</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════
-     PORTAL ASESOR
-═══════════════════════════════════ -->
-<div class="asesor-portal" id="portalAsesor">
-  <div class="p-header">
-    <div class="ph-left">
-      <div class="ph-brand">Método NERI · Cabina</div>
-      <div class="ph-name">Enrique Neri</div>
-      <div class="ph-role">Panel interno · Solo para el asesor</div>
-    </div>
-    <div class="ph-badge red">⚡ 2 alertas</div>
-  </div>
-
-  <!-- ALERTA BANNER -->
-  <div class="alerta-banner">
-    <div class="ab-dot"></div>
-    <div class="ab-text">Dinero en riesgo ahora</div>
-    <div class="ab-amount">$7.8M</div>
-  </div>
-
-  <div class="dashboard">
-    <div class="dash-eyebrow">Dashboard · Hoy</div>
-    <div class="dash-title">HOY SE GANA<br>O SE PIERDE.</div>
-
-    <!-- ZONAS DE DINERO -->
-    <div class="money-zones">
-      <div class="mz mz-red" onclick="showToast('2 operaciones pueden caerse esta semana')">
-        <div class="mz-label">En riesgo</div>
-        <div class="mz-amount">$7.8M</div>
-        <div class="mz-sub">2 operaciones críticas</div>
-      </div>
-      <div class="mz mz-green" onclick="showToast('3 clientes listos para avanzar ahora')">
-        <div class="mz-label">Dinero cerca</div>
-        <div class="mz-amount">$12.4M</div>
-        <div class="mz-sub">3 listos para avanzar</div>
-      </div>
-      <div class="mz mz-amber mz-full" onclick="showToast('4 leads buenos sin seguimiento esta semana')">
-        <div class="mz-label">Dinero dormido · Actúa hoy</div>
-        <div class="mz-amount">$18.2M</div>
-        <div class="mz-sub">4 leads HOT sin contacto en +3 días · Se están enfriando</div>
-      </div>
-    </div>
-
-    <!-- SIGUIENTE JUGADA -->
-    <div class="jugada-hero">
-      <div class="jh-label">Siguiente jugada prioritaria</div>
-      <div class="jh-title">MARIANA RAMOS · HOY</div>
-      <div class="jh-text">"No le mandes precio todavía. Primero envíale la Brújula Bancaria. No entiende los gastos iniciales y eso va a parar la operación antes del apartado."</div>
-    </div>
-
-    <!-- OPERACIONES -->
-    <div class="ops-section">
-      <div class="ops-title">Operaciones activas · Ordenadas por urgencia</div>
-
-      <div class="op-card op-urgente">
-        <div class="op-bar"><div class="op-bar-fill" style="width:60%;background:var(--red);opacity:.3"></div></div>
-        <div class="op-card-inner">
-          <div class="op-top">
-            <div class="op-folio">EN-2506-0001</div>
-            <div class="op-dias red">⚠ 8 días detenido</div>
-          </div>
-          <div class="op-name">Casa Vista Hermosa · Mariana Ramos</div>
-          <div class="op-fase">Revisión en notaría · $3,900,000</div>
-          <div class="op-alerta red">Comprador sin claridad de desembolso inicial. Riesgo alto de caída antes de firma.</div>
-          <div class="op-jugada">
-            <div class="op-jugada-label">Siguiente jugada</div>
-            <div class="op-jugada-text">Enviar Brújula Bancaria hoy. No agendar visita hasta confirmar comprensión de gastos.</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="op-card op-urgente">
-        <div class="op-bar"><div class="op-bar-fill" style="width:30%;background:var(--red);opacity:.3"></div></div>
-        <div class="op-card-inner">
-          <div class="op-top">
-            <div class="op-folio">EN-2506-0003</div>
-            <div class="op-dias red">⚠ 6 días sin acción</div>
-          </div>
-          <div class="op-name">Torre Lomas 4B · Grupo Harber</div>
-          <div class="op-fase">Preparando documentos · $3,900,000</div>
-          <div class="op-alerta red">Propietario con precio emocional. Sin respuesta al análisis de mercado enviado.</div>
-          <div class="op-jugada">
-            <div class="op-jugada-label">Siguiente jugada</div>
-            <div class="op-jugada-text">Llamar hoy. No hablar de precio. Mostrar comparables activos. El argumento es el mercado, no la promesa.</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="op-card op-atencion">
-        <div class="op-bar"><div class="op-bar-fill" style="width:75%;background:var(--amber);opacity:.3"></div></div>
-        <div class="op-card-inner">
-          <div class="op-top">
-            <div class="op-folio">EN-2506-0007</div>
-            <div class="op-dias amber">↑ 3 días · Atiende</div>
-          </div>
-          <div class="op-name">Residencial El Pedregal · Familia Torres</div>
-          <div class="op-fase">Últimas confirmaciones · $5,600,000</div>
-          <div class="op-alerta amber">Falta confirmación de avalúo. Sin esto no se puede programar la firma.</div>
-          <div class="op-jugada">
-            <div class="op-jugada-label">Siguiente jugada</div>
-            <div class="op-jugada-text">Pedir estatus del avalúo directamente con el banco. No esperar al cliente para esto.</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="op-card op-ok">
-        <div class="op-bar"><div class="op-bar-fill" style="width:90%;background:var(--green);opacity:.3"></div></div>
-        <div class="op-card-inner">
-          <div class="op-top">
-            <div class="op-folio">EN-2506-0012</div>
-            <div class="op-dias green">✓ Avanzando bien</div>
-          </div>
-          <div class="op-name">Casa Miraval · Roberto Leyva</div>
-          <div class="op-fase">Día de firma · $2,800,000</div>
-          <div class="op-alerta green">Documentación completa. Firma programada para el viernes. Sin pendientes.</div>
+        <div class="ring-mid">
+          <div class="ring-pct" id="ringPct">0%</div>
+          <div class="ring-cap" id="ringCap">Avance</div>
         </div>
       </div>
     </div>
 
-    <!-- DIAGNÓSTICO -->
-    <div class="diag-section">
-      <div class="ops-title">Diagnóstico comercial · Leads activos</div>
-
-      <div class="diag-card">
-        <div class="diag-top">
-          <div class="diag-name">Mariana Ramos</div>
-          <div class="diag-score score-hot">HOT</div>
-        </div>
-        <div class="diag-detail">Compradora bancaria. Quiere seguridad, miedo a equivocarse. Propiedad norte Cuernavaca $3.2M–$4M. Lista para visita pero no entiende gastos iniciales.</div>
-        <div class="diag-riesgo">⚠ Riesgo: puede parar antes del apartado si no se aclara el desembolso inicial.</div>
-      </div>
-
-      <div class="diag-card">
-        <div class="diag-top">
-          <div class="diag-name">Carlos Mendoza</div>
-          <div class="diag-score score-warm">WARM</div>
-        </div>
-        <div class="diag-detail">Comprador contado. Precio objetivo $4.5M. Busca zona Rancho Cortés. En proceso de decisión. Necesita argumento de plusvalía antes de agendar.</div>
-      </div>
-
-      <div class="diag-card">
-        <div class="diag-top">
-          <div class="diag-name">Lucía Paredes</div>
-          <div class="diag-score score-cold">COLD</div>
-        </div>
-        <div class="diag-detail">Solo curioseando. Sin claridad financiera. No invertir visita todavía. Mandar mensaje de seguimiento ligero en 2 semanas.</div>
-      </div>
+    <div class="fase-head">
+      <div class="fase-eye" id="faseEye">Etapa actual</div>
+      <div class="fase-name" id="faseName">—<b>.</b></div>
+      <div class="fase-copy" id="faseCopy"></div>
     </div>
 
-  </div>
+    <div class="stats" id="stats"></div>
 
-  <div class="switch-rol" onclick="volverGate()">
-    <div class="switch-rol-text">Cambiar a vista de cliente</div>
-    <div class="switch-rol-arrow">→</div>
+    <div class="tl">
+      <div class="tl-title" id="tlTitle">Recorrido</div>
+      <div id="tlWrap"></div>
+    </div>
+
+    <div class="foot">
+      <a class="wa" id="waBtn" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.945C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 018.413 3.488 11.824 11.824 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.51 5.26l-.999 3.648 3.978-1.043 .001-.001 .999-.911z"/></svg>
+        <span id="waLabel">Contactar a mi asesor</span>
+      </a>
+      <div class="foot-note">Operación · <b id="fFolio">—</b></div>
+    </div>
+
   </div>
 </div>
 
 <script>
-var FOLIO       = "EN-2506-0001";
-var FASE_ACTUAL = 4;
-var NOMBRE_PROP = "Casa Vista Hermosa";
-var PRECIO_PROP = "3,900,000";
-var WA_NUM      = "527779855687";
-var ADM_PW      = "neri2025";
-var CIRC        = 474.4;
+var WEBHOOK = "https://hook.us2.make.com/35zjbrnctro9ev2evshs23yn2zec4oql";
+var CIRC = 2 * Math.PI * 84;
 
-var fases = [
-  {n:"Apartado",pct:5,
-   copy:'"La propiedad se encuentra en proceso de reserva privada."',
-   emo:'"Tu operación ha iniciado. La propiedad ya está reservada para ti."',
-   vEmo:'"Tu propiedad ya fue apartada. El proceso formal ha comenzado."',
-   vCopy:'"El comprador ha reservado tu propiedad. Iniciamos el expediente."',
-   pending:["Carta de apartado firmada","Datos del comprador recibidos"],
-   next:"Iniciaremos la revisión de tu capacidad de compra para avanzar.",
-   checks:["Apartado recibido","Publicidad pausada","Vendedor notificado","Integración documental iniciada"]},
-  {n:"Revisión de compra",pct:15,
-   copy:'"Estamos revisando la viabilidad de tu compra para preparar la siguiente etapa."',
-   emo:'"Tu operación avanza. Estamos revisando tu escenario de compra con total cuidado."',
-   vEmo:'"Estamos verificando que el comprador tenga la solidez financiera para cerrar."',
-   vCopy:'"Revisión de viabilidad de compra en proceso."',
-   pending:["Revisión de viabilidad","Validación del escenario"],
-   next:"Una vez confirmado el camino de compra, avanzaremos a documentos.",
-   checks:["Revisión de viabilidad","Validación del escenario","Confirmaciones iniciales"]},
-  {n:"Preparando documentos",pct:30,
-   copy:'"Estamos integrando cuidadosamente cada documento para que todo avance."',
-   emo:'"Tus documentos están siendo revisados con precisión. Cada detalle importa."',
-   vEmo:'"Se está integrando la documentación necesaria de ambas partes."',
-   vCopy:'"Expediente documental en integración activa."',
-   pending:["INE vigente","Comprobante de domicilio reciente"],
-   next:"Con los documentos completos, procederemos al acuerdo de compra.",
-   checks:["INE y actas","Escrituras","Predial y boletas","RFC","Estado civil"]},
-  {n:"Acuerdo de compra",pct:45,
-   copy:'"Se están formalizando las condiciones acordadas entre ambas partes."',
-   emo:'"Las condiciones de tu compra están siendo formalizadas. Un paso decisivo."',
-   vEmo:'"Las condiciones de venta están siendo formalizadas. Un paso importante."',
-   vCopy:'"Redacción y revisión del acuerdo de compra en proceso."',
-   pending:["Revisión del contrato","Firma del acuerdo"],
-   next:"Con el acuerdo firmado, el expediente ingresará a notaría.",
-   checks:["Redacción","Revisión jurídica","Firmas de ambas partes"]},
-  {n:"Revisión en notaría",pct:60,
-   copy:'"La notaría ya se encuentra revisando tu proceso para preparar la siguiente etapa."',
-   emo:'"La notaría está trabajando en tu expediente. Estás muy cerca del cierre."',
-   vEmo:'"La notaría revisa el expediente completo. Tu venta está muy cerca."',
-   vCopy:'"Revisión legal y validación notarial en proceso."',
-   pending:["Documentación en notaría","Revisión legal de propiedad"],
-   next:"La notaría validará el expediente y programará la firma.",
-   checks:["Documentación enviada","Revisión legal","Validaciones oficiales"]},
-  {n:"Últimas confirmaciones",pct:75,
-   copy:'"Estamos muy cerca de la firma. Solo faltan algunas confirmaciones importantes."',
-   emo:'"Casi llegamos. Las últimas piezas están siendo afinadas con cuidado."',
-   vEmo:'"Las confirmaciones finales están en proceso. Tu venta está a punto de cerrarse."',
-   vCopy:'"Confirmaciones finales y coordinación para firma."',
-   pending:["Confirmaciones finales","Confirmación de recursos"],
-   next:"Con las confirmaciones listas, coordinaremos la fecha de firma.",
-   checks:["Confirmaciones finales","Confirmación de recursos","Coordinación"]},
-  {n:"Día de firma",pct:90,
-   copy:'"La fecha de firma está confirmada. Tu nuevo capítulo está a punto de comenzar."',
-   emo:'"La firma está confirmada. Hoy es un día importante en tu historia."',
-   vEmo:'"La firma está programada. Tu propiedad está a punto de ser transferida."',
-   vCopy:'"Firma notarial programada y confirmada."',
-   pending:["Identificación oficial vigente","Condiciones confirmadas"],
-   next:"Después de la firma, coordinaremos la entrega formal de la propiedad.",
-   checks:["Firma programada","Documentos listos","Preparación de entrega"]},
-  {n:"Entrega de llaves",pct:100,
-   copy:'"Tu propiedad ha sido entregada. La operación ha concluido exitosamente."',
-   emo:'"Felicidades. Tu propiedad es tuya. Fue un honor acompañarte en este proceso."',
-   vEmo:'"La venta concluyó exitosamente. Gracias por confiar en el proceso."',
-   vCopy:'"Entrega de propiedad completada. Operación cerrada."',
-   pending:[],next:"",
-   checks:["Entrega de llaves","Confirmación de posesión","Cierre operativo"]}
+/* Plantillas del sistema (no son datos personales). */
+var FASES_COMERCIALIZACION = [
+  {n:"Propiedad creada",pct:0,copy:"Tu propiedad ingresó al sistema. Comenzamos a prepararla con cuidado.",next:"Validaremos la información y los documentos de tu propiedad."},
+  {n:"Información validada",pct:15,copy:"Revisamos y confirmamos cada dato de tu propiedad.",next:"Iniciamos la integración del expediente documental."},
+  {n:"Expediente iniciado",pct:30,copy:"Estamos integrando la documentación de tu propiedad.",next:"Agendaremos la sesión de fotografía y video."},
+  {n:"Producción agendada",pct:45,copy:"La producción profesional de tu propiedad está agendada.",next:"Realizamos la sesión con estándares de calidad."},
+  {n:"Producción realizada",pct:60,copy:"El material visual de tu propiedad ya está listo.",next:"Publicamos y posicionamos tu propiedad en el mercado."},
+  {n:"Publicación activa",pct:75,copy:"Tu propiedad ya está publicada y posicionándose.",next:"Atraemos y filtramos compradores calificados."},
+  {n:"En comercialización",pct:90,copy:"Tu propiedad está en el mercado atrayendo interesados.",next:"Cuando llegue un apartado, iniciaremos el proceso de compra."}
+];
+var FASES_COMPRA = [
+  {n:"Apartado",pct:5,copy:"La propiedad fue reservada. El proceso formal ha comenzado.",next:"Revisaremos la viabilidad de compra para avanzar.",checks:["Apartado recibido","Publicidad pausada","Expediente iniciado"]},
+  {n:"Revisión de compra",pct:15,copy:"Revisamos el escenario de compra con total cuidado.",next:"Confirmado el camino, avanzamos a documentos.",checks:["Revisión de viabilidad","Validación del escenario"]},
+  {n:"Preparando documentos",pct:30,copy:"Integramos cada documento para que todo avance.",next:"Con los documentos completos, procede el acuerdo.",checks:["Identificaciones","Escrituras","Estado civil"]},
+  {n:"Acuerdo de compra",pct:45,copy:"Se formalizan las condiciones entre ambas partes.",next:"Con el acuerdo firmado, el expediente entra a notaría.",checks:["Redacción","Revisión jurídica","Firmas"]},
+  {n:"Revisión en notaría",pct:60,copy:"La notaría revisa el expediente para preparar la firma.",next:"La notaría validará y programará la firma.",checks:["Documentación enviada","Revisión legal"]},
+  {n:"Últimas confirmaciones",pct:75,copy:"Afinamos las últimas piezas antes de la firma.",next:"Coordinamos la fecha de firma.",checks:["Confirmaciones finales","Confirmación de recursos"]},
+  {n:"Día de firma",pct:90,copy:"La firma está confirmada. Un día importante.",next:"Coordinaremos la entrega de la propiedad.",checks:["Firma programada","Documentos listos"]},
+  {n:"Entrega de llaves",pct:100,copy:"La propiedad ha sido entregada. La operación concluyó.",next:"",checks:["Entrega de llaves","Cierre operativo"]}
 ];
 
-var faseVendedor = [
-  {n:"Captación activa",pct:10,copy:'"Tu propiedad está siendo integrada al sistema de posicionamiento."',emo:'"Tu propiedad ya está en proceso activo. El sistema trabaja para posicionarla correctamente."'},
-  {n:"Producción inmobiliaria",pct:20,copy:'"Estamos preparando el material visual y comercial de tu propiedad."',emo:'"Fotografía, video y materiales están siendo producidos con estándares de calidad."'},
-  {n:"Publicación y posicionamiento",pct:35,copy:'"Tu propiedad ya está publicada y siendo posicionada estratégicamente."',emo:'"Tu propiedad está en el mercado. Estamos midiendo el interés y filtrando compradores."'},
-  {n:"Compradores calificados",pct:50,copy:'"Estamos atendiendo interesados calificados para tu propiedad."',emo:'"Hay compradores serios evaluando tu propiedad. Cada uno pasa por un filtro de calidad."'},
-  {n:"Negociación activa",pct:65,copy:'"Las condiciones de venta están siendo negociadas."',emo:'"Estamos trabajando para que la venta se cierre en las mejores condiciones para ti."'},
-  {n:"Expediente notarial",pct:80,copy:'"La documentación está siendo preparada para la firma notarial."',emo:'"El proceso legal está en marcha. Tu venta está muy cerca de ser oficial."'},
-  {n:"Firma en puerta",pct:92,copy:'"La firma está programada. Tu venta está a punto de concluir."',emo:'"Un paso más. La firma de escrituras está confirmada."'},
-  {n:"Escriturado",pct:100,copy:'"La venta de tu propiedad ha concluido exitosamente."',emo:'"Felicidades. Tu propiedad fue vendida correctamente y con el acompañamiento que merecías."'}
-];
+function $(id){return document.getElementById(id);}
+function show(id){["stLoad","stError"].forEach(function(s){$(s).classList.remove("on");});if(id)$(id).classList.add("on");}
+function getFolio(){var m=location.search.match(/[?&]folio=([^&]+)/);return m?decodeURIComponent(m[1]):"";}
 
-function renderCircle(fillId, glowId, pct, circumference){
-  var offset = circumference - (circumference * pct / 100);
-  var f = document.getElementById(fillId);
-  var g = document.getElementById(glowId);
-  if(f){ setTimeout(function(){ f.style.strokeDashoffset = offset; }, 200); }
-  if(g){ setTimeout(function(){ g.style.strokeDashoffset = offset; }, 200); }
+function idxByName(arr,name){for(var i=0;i<arr.length;i++){if(arr[i].n.toLowerCase()===String(name||"").toLowerCase())return i;}return 0;}
+
+function setRing(pct){
+  var off=CIRC-(CIRC*pct/100);
+  $("ringPct").textContent=Math.round(pct)+"%";
+  setTimeout(function(){$("ringFill").style.strokeDashoffset=off;$("ringHalo").style.strokeDashoffset=off;},250);
 }
 
-function renderComprador(){
-  var f = fases[FASE_ACTUAL];
-  var offset = CIRC - (CIRC * f.pct / 100);
-  document.getElementById("cPct").textContent = f.pct + "%";
-  document.getElementById("cFaseEye").textContent = "Fase " + (FASE_ACTUAL+1) + " de 8";
-  document.getElementById("cFaseTitle").innerHTML = f.n + '<span>.</span>';
-  document.getElementById("cBarFill").style.width = f.pct + "%";
-  document.getElementById("cCopy").textContent = f.copy;
-  document.getElementById("cEmoText").textContent = f.emo;
-  document.getElementById("cEstado").textContent = f.pct === 100 ? "Proceso completado ✓" : "Tu compra avanza";
-  document.getElementById("cFolioDisplay").textContent = FOLIO;
-  document.getElementById("cBadge").textContent = f.pct === 100 ? "Completado" : "En proceso";
-  document.getElementById("rgFolio").textContent = FOLIO;
-  document.getElementById("cPropNombre").textContent = NOMBRE_PROP;
-  document.getElementById("cPropPrecio").textContent = PRECIO_PROP;
-  setTimeout(function(){
-    document.getElementById("cFill").style.strokeDashoffset = offset;
-    document.getElementById("cGlow").style.strokeDashoffset = offset;
-  }, 300);
-  buildTimeline("cTlWrap", fases, FASE_ACTUAL);
-}
-
-function renderVendedor(){
-  var fi = Math.min(FASE_ACTUAL, faseVendedor.length-1);
-  var f = faseVendedor[fi];
-  var offset = CIRC - (CIRC * f.pct / 100);
-  document.getElementById("vPct").textContent = f.pct + "%";
-  document.getElementById("vFaseEye").textContent = "Fase " + (fi+1) + " de 8";
-  document.getElementById("vFaseTitle").innerHTML = f.n + '<span>.</span>';
-  document.getElementById("vBarFill").style.width = f.pct + "%";
-  document.getElementById("vCopy").textContent = f.copy;
-  document.getElementById("vEmoText").textContent = f.emo;
-  document.getElementById("vEstado").textContent = "Propiedad en proceso";
-  document.getElementById("vFolioDisplay").textContent = FOLIO;
-  document.getElementById("vPropNombre").textContent = NOMBRE_PROP;
-  document.getElementById("vPropPrecio").textContent = PRECIO_PROP;
-  setTimeout(function(){
-    document.getElementById("vFill").style.strokeDashoffset = offset;
-    document.getElementById("vGlow").style.strokeDashoffset = offset;
-  }, 300);
-  buildTimeline("vTlWrap", faseVendedor, fi);
-}
-
-function buildTimeline(wrapperId, fasesArr, actualIdx){
-  var wrap = document.getElementById(wrapperId);
-  if(!wrap) return;
-  wrap.innerHTML = "";
-  fasesArr.forEach(function(fase, i){
-    var done = i < actualIdx, active = i === actualIdx, last = i === fasesArr.length - 1;
-    var item = document.createElement("div"); item.className = "tl-item";
-    var spine = document.createElement("div"); spine.className = "tl-spine";
-    var node = document.createElement("div");
-    node.className = "tl-node " + (done ? "n-done" : active ? "n-active" : "n-pending");
-    if(done) node.innerHTML = '<span style="font-size:10px;color:#C6A86B">✓</span>';
-    else if(active) node.innerHTML = '<div style="width:7px;height:7px;border-radius:50%;background:#09090A"></div>';
-    else node.innerHTML = '<span style="font-size:7px;color:rgba(255,255,255,.15);font-weight:700">' + (i+1) + '</span>';
+function buildTimeline(fases,actualIdx){
+  var wrap=$("tlWrap");wrap.innerHTML="";
+  fases.forEach(function(f,i){
+    var done=i<actualIdx,active=i===actualIdx,last=i===fases.length-1;
+    var item=document.createElement("div");item.className="tl-item";
+    var spine=document.createElement("div");spine.className="tl-spine";
+    var node=document.createElement("div");
+    node.className="tl-node "+(done?"n-done":active?"n-active":"n-pending");
+    node.innerHTML=done?'<span style="font-size:10px;color:#C6A86B">✓</span>':active?'<span style="width:7px;height:7px;border-radius:50%;background:#09090A;display:block"></span>':'<span style="font-size:8px;color:rgba(255,255,255,.2);font-weight:700">'+(i+1)+'</span>';
     spine.appendChild(node);
-    if(!last){ var line = document.createElement("div"); line.className = "tl-line " + (done ? "line-done" : "line-pending"); spine.appendChild(line); }
-    var content = document.createElement("div"); content.className = "tl-content";
-    content.innerHTML = '<div class="tl-pct">' + fase.pct + '%</div><div class="tl-name' + (active ? " active" : done ? " done" : "") + '">' + fase.n + '</div>';
-    if(active && fase.checks){
-      var cl = document.createElement("div"); cl.className = "tl-checks show";
-      fase.checks.forEach(function(ch){ cl.innerHTML += '<div class="tl-chk"><div class="chk-ico">✓</div>' + ch + '</div>'; });
-      content.appendChild(cl);
-      if(fase.pending && fase.pending.length > 0){
-        var pb = document.createElement("div"); pb.className = "next-block";
-        pb.innerHTML = '<div class="next-label">Pendiente para continuar</div>';
-        fase.pending.forEach(function(p){ pb.innerHTML += '<div class="next-item">' + p + '</div>'; });
-        content.appendChild(pb);
-      }
-      if(fase.next){ var ns = document.createElement("div"); ns.className = "next-step"; ns.innerHTML = '<div class="next-step-label">Próximo paso</div><div class="next-step-text">' + fase.next + '</div>'; content.appendChild(ns); }
+    if(!last){var line=document.createElement("div");line.className="tl-line "+(done?"line-done":"line-pending");spine.appendChild(line);}
+    var body=document.createElement("div");body.className="tl-body";
+    body.innerHTML='<div class="tl-pct">'+f.pct+'%</div><div class="tl-label '+(active?"active":done?"done":"")+'">'+f.n+'</div>';
+    if(active){
+      if(f.copy){var d=document.createElement("div");d.className="tl-detail";d.textContent=f.copy;body.appendChild(d);}
+      if(window.__PEND&&window.__PEND.length){var pb=document.createElement("div");pb.className="tl-pend";pb.innerHTML='<div class="tl-pend-lbl">Pendientes</div>';window.__PEND.forEach(function(p){pb.innerHTML+='<div class="tl-pend-item">'+p+'</div>';});body.appendChild(pb);}
+      var nextTxt=window.__NEXT||f.next;
+      if(nextTxt){var ns=document.createElement("div");ns.className="tl-next";ns.innerHTML='<div class="tl-next-lbl">Próximo paso</div><div class="tl-next-txt">'+nextTxt+'</div>';body.appendChild(ns);}
     }
-    item.appendChild(spine); item.appendChild(content); wrap.appendChild(item);
+    item.appendChild(spine);item.appendChild(body);wrap.appendChild(item);
   });
 }
 
-var currentPortal = null;
+function daysSince(iso){if(!iso)return 0;var d=new Date(iso);if(isNaN(d))return 0;return Math.max(0,Math.floor((Date.now()-d.getTime())/86400000));}
+function splitPend(s){if(!s)return [];return String(s).split(/[\n,]+/).map(function(x){return x.trim();}).filter(Boolean);}
 
-function enterPortal(tipo){
-  var gate = document.getElementById("roleGate");
-  gate.classList.add("exit");
-  setTimeout(function(){
-    gate.style.display = "none";
-    currentPortal = tipo;
-    if(tipo === "comprador"){
-      document.getElementById("portalComprador").classList.add("active");
-      renderComprador();
-    } else if(tipo === "vendedor"){
-      document.getElementById("portalVendedor").classList.add("active");
-      renderVendedor();
-    } else if(tipo === "asesor"){
-      document.getElementById("portalAsesor").classList.add("active");
-    }
-  }, 500);
+function render(d){
+  $("hProp").textContent=d.propiedad||"Tu propiedad";
+  $("hFolio").textContent=d.folio||"";
+  $("fFolio").textContent=d.folio||"";
+
+  // WhatsApp
+  var wa=(d.whatsapp||"").replace(/[^0-9]/g,"");
+  if(wa){
+    var msg=encodeURIComponent("Hola"+(d.asesor?" "+d.asesor:"")+", me gustaría saber el avance de mi operación. Folio: "+(d.folio||""));
+    $("waBtn").href="https://wa.me/"+wa+"?text="+msg;
+    $("waLabel").textContent=d.waLabel||("Contactar a "+(d.asesor||"mi asesor"));
+    $("waBtn").style.display="";
+  } else { $("waBtn").style.display="none"; }
+
+  var esCompra=(d.capitulo==="compra");
+  window.__PEND=esCompra?splitPend(d.pendientes):[];
+  window.__NEXT=esCompra?(d.proximoPaso||""):"";
+
+  if(esCompra){
+    var fases=FASES_COMPRA, idx=idxByName(fases,d.fase), f=fases[idx];
+    var pct=(d.pctCompra!==undefined&&d.pctCompra!=="")?Number(d.pctCompra):f.pct;
+    var fin=(idx===fases.length-1);
+    $("ringCap").textContent="Compra";
+    $("faseEye").textContent="Fase "+(idx+1)+" de "+fases.length+" · Compra";
+    $("faseName").innerHTML=f.n+'<b>.</b>';
+    $("faseCopy").textContent=f.copy;
+    $("hBadge").textContent=fin?"Completado":"En proceso";
+    $("hBadge").className="head-badge"+(fin?" done":"");
+    $("tlTitle").textContent="Recorrido de compra";
+    if(idx===0){$("fanfare").style.display="";}
+    $("stats").style.display="none";
+    setRing(pct); buildTimeline(fases,idx);
+  } else {
+    var fasesC=FASES_COMERCIALIZACION, idxC=idxByName(fasesC,d.etapa), fc=fasesC[idxC];
+    var pctC=(d.pctComercializacion!==undefined&&d.pctComercializacion!=="")?Number(d.pctComercializacion):fc.pct;
+    $("ringCap").textContent="Comercialización";
+    $("faseEye").textContent="Etapa "+(idxC+1)+" de "+fasesC.length+" · Comercialización";
+    $("faseName").innerHTML=fc.n+'<b>.</b>';
+    $("faseCopy").textContent=fc.copy;
+    $("hBadge").textContent="En proceso";
+    $("hBadge").className="head-badge";
+    $("tlTitle").textContent="Recorrido de tu propiedad";
+    // stats vivos
+    var dias=daysSince(d.fechaAlta), inter=Number(d.interesados||0);
+    $("stats").innerHTML=
+      '<div class="stat"><div class="stat-num">'+dias+'</div><div class="stat-lbl">Días activos</div></div>'+
+      '<div class="stat"><div class="stat-num">'+inter+'</div><div class="stat-lbl">Interesados</div></div>'+
+      '<div class="stat"><div class="stat-num">'+(d.estado||"Activa")+'</div><div class="stat-lbl">Estado</div></div>';
+    $("stats").querySelectorAll(".stat-num")[2].style.fontSize="13px";
+    $("stats").querySelectorAll(".stat-num")[2].style.fontFamily="Montserrat";
+    $("stats").querySelectorAll(".stat-num")[2].style.fontWeight="600";
+    $("stats").querySelectorAll(".stat-num")[2].style.letterSpacing="1px";
+    $("stats").style.display="flex";
+    setRing(pctC); buildTimeline(fasesC,idxC);
+  }
+
+  show(null);
+  $("head").style.display="flex";
+  $("view").classList.add("on");
 }
 
-function volverGate(){
-  document.getElementById("portalComprador").classList.remove("active");
-  document.getElementById("portalVendedor").classList.remove("active");
-  document.getElementById("portalAsesor").classList.remove("active");
-  var gate = document.getElementById("roleGate");
-  gate.style.display = "flex";
-  gate.classList.remove("exit");
-  currentPortal = null;
+function load(){
+  var folio=getFolio();
+  if(!folio){show("stError");$("errMsg").textContent="Falta el folio en el enlace. Pide a tu asesor que te comparta el link completo.";return;}
+  fetch(WEBHOOK+"?folio="+encodeURIComponent(folio))
+    .then(function(r){return r.text();})
+    .then(function(t){
+      var d;try{d=JSON.parse(t);}catch(e){d=null;}
+      if(!d||!d.propiedad){show("stError");return;}
+      render(d);
+    })
+    .catch(function(){show("stError");$("errMsg").textContent="No pudimos consultar tu operación en este momento. Intenta de nuevo en unos minutos.";});
 }
-
-function goPortalSlide(prefix, num){
-  var slides = document.querySelectorAll("#portal" + (prefix==="c"?"Comprador":"Vendedor") + " .slide");
-  slides.forEach(function(s){ s.classList.remove("active"); });
-  var target = document.getElementById(prefix + "s" + num);
-  if(target){ target.classList.add("active"); window.scrollTo(0,0); }
-}
-
-function openWA(){
-  var msg = encodeURIComponent("Hola Enrique, me gustaría saber el avance de mi proceso. Folio: " + FOLIO);
-  window.open("https://wa.me/" + WA_NUM + "?text=" + msg, "_blank");
-}
-
-/* ADMIN */
-var admUnlocked = false;
-var faseEdit = FASE_ACTUAL;
-
-function tryAdmin(){
-  document.getElementById("admOverlay").classList.add("open");
-  if(admUnlocked){ showEditPanel(); }
-  else{ document.getElementById("admBodyLogin").style.display="block"; document.getElementById("admBodyEdit").style.display="none"; setTimeout(function(){ document.getElementById("admPw").focus(); }, 200); }
-}
-
-function checkPw(){
-  var pw = document.getElementById("admPw").value;
-  if(pw === ADM_PW){ admUnlocked = true; document.getElementById("admErr").textContent = ""; document.getElementById("admPw").value = ""; showEditPanel(); }
-  else{ document.getElementById("admErr").textContent = "Contraseña incorrecta"; document.getElementById("admPw").value = ""; document.getElementById("admPw").focus(); }
-}
-
-function showEditPanel(){
-  document.getElementById("admBodyLogin").style.display="none";
-  document.getElementById("admBodyEdit").style.display="block";
-  document.getElementById("eFollio").value = FOLIO;
-  document.getElementById("eProp").value = NOMBRE_PROP;
-  document.getElementById("ePrecio").value = PRECIO_PROP;
-  faseEdit = FASE_ACTUAL;
-  buildFaseGrid();
-}
-
-function buildFaseGrid(){
-  var g = document.getElementById("faseGrid"); g.innerHTML = "";
-  fases.forEach(function(f, i){
-    var b = document.createElement("button"); b.className = "fb" + (i === faseEdit ? " sel" : "");
-    b.innerHTML = f.n + '<span class="fb-pct">' + f.pct + '%</span>';
-    b.onclick = function(){ faseEdit = i; document.querySelectorAll(".fb").forEach(function(x){ x.classList.remove("sel"); }); b.classList.add("sel"); };
-    g.appendChild(b);
-  });
-}
-
-function applyAdmin(){
-  var folio = document.getElementById("eFollio").value.trim();
-  var prop = document.getElementById("eProp").value.trim();
-  var precio = document.getElementById("ePrecio").value.trim();
-  if(!folio || !prop){ showToast("Completa folio y propiedad"); return; }
-  FOLIO = folio;
-  NOMBRE_PROP = prop;
-  PRECIO_PROP = precio ? Number(precio.replace(/[^0-9]/g,"")).toLocaleString("es-MX") : precio;
-  FASE_ACTUAL = faseEdit;
-  closeAdmin();
-  if(currentPortal === "comprador") renderComprador();
-  else if(currentPortal === "vendedor") renderVendedor();
-  document.getElementById("rgFolio").textContent = FOLIO;
-  showToast("Cambios aplicados · " + FOLIO);
-}
-
-function downloadHtml(){
-  applyAdmin();
-  var html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
-  html = html
-    .replace(/var FOLIO\s*=\s*"[^"]*";/, 'var FOLIO       = "' + FOLIO + '";')
-    .replace(/var FASE_ACTUAL\s*=\s*\d+;/, 'var FASE_ACTUAL = ' + FASE_ACTUAL + ';')
-    .replace(/var NOMBRE_PROP\s*=\s*"[^"]*";/, 'var NOMBRE_PROP = "' + NOMBRE_PROP + '";')
-    .replace(/var PRECIO_PROP\s*=\s*"[^"]*";/, 'var PRECIO_PROP = "' + PRECIO_PROP + '";');
-  var blob = new Blob([html], {type:"text/html;charset=utf-8"});
-  var a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = (FOLIO || "portal-neri") + ".html";
-  document.body.appendChild(a); a.click();
-  setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 500);
-}
-
-function closeAdmin(){ document.getElementById("admOverlay").classList.remove("open"); }
-
-function showToast(msg){
-  var t = document.getElementById("toast");
-  t.textContent = msg; t.classList.add("show");
-  setTimeout(function(){ t.classList.remove("show"); }, 2500);
-}
+load();
 </script>
 </body>
 </html>
