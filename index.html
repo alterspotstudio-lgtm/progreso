@@ -30,7 +30,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opa
 .state-msg{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:19px;color:var(--w50);line-height:1.5;max-width:300px}
 
 /* ── header ── */
-.head{position:sticky;top:0;z-index:30;background:rgba(9,9,10,.94);backdrop-filter:blur(20px);
+.head{position:sticky;top:0;z-index:30;background:rgba(9,9,10,.97);
   border-bottom:1px solid var(--w05);padding:14px 24px 12px;display:flex;align-items:center;justify-content:space-between}
 .head-brand{font-size:8px;letter-spacing:5px;color:rgba(198,168,107,.5);text-transform:uppercase;font-weight:700;margin-bottom:3px}
 .head-prop{font-family:"Bebas Neue",sans-serif;font-size:21px;letter-spacing:2px;line-height:1;color:var(--white)}
@@ -69,6 +69,10 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opa
 .fase-name{font-family:"Bebas Neue",sans-serif;font-size:30px;letter-spacing:1.5px;line-height:1;color:var(--white)}
 .fase-name b{color:var(--gold);font-weight:400}
 .fase-copy{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:16px;color:var(--w50);line-height:1.5;margin-top:9px}
+.detail-toggle{margin:18px 24px 0;width:calc(100% - 48px);padding:13px;border:1px solid var(--gold-border);background:var(--gold-dim);color:var(--gold);font-size:9px;letter-spacing:3px;text-transform:uppercase;font-weight:800;cursor:pointer}
+.detail-toggle:hover{background:rgba(198,168,107,.16)}
+.detail-box{display:none}
+.detail-box.on{display:block}
 
 /* ── stats ── */
 .stats{display:flex;gap:1px;background:var(--w05);margin:18px 24px 0;border:1px solid var(--w05)}
@@ -192,40 +196,96 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opa
 
 <script>
 var WEBHOOK = "https://hook.us2.make.com/35zjbrnctro9ev2evshs23yn2zec4oql";
+// Contrato listo para Make/Airtable: folio, vistaPortal(vendedor|comprador), propiedad, asesor, whatsappAsesor, etapaVendedor/etapaComprador, pctVendedor/pctComprador, estadoVisual, pendientesVendedor/pendientesComprador, proximoPasoVendedor/proximoPasoComprador.
 var CIRC = 2 * Math.PI * 84;
 
-/* Plantillas del sistema (no son datos personales). */
-var FASES_COMERCIALIZACION = [
-  {n:"Propiedad creada",pct:0,copy:"Tu propiedad ingresó al sistema. Comenzamos a prepararla con cuidado.",next:"Validaremos la información y los documentos de tu propiedad."},
-  {n:"Información validada",pct:15,copy:"Revisamos y confirmamos cada dato de tu propiedad.",next:"Iniciamos la integración del expediente documental."},
-  {n:"Expediente iniciado",pct:30,copy:"Estamos integrando la documentación de tu propiedad.",next:"Agendaremos la sesión de fotografía y video."},
-  {n:"Producción agendada",pct:45,copy:"La producción profesional de tu propiedad está agendada.",next:"Realizamos la sesión con estándares de calidad."},
-  {n:"Producción realizada",pct:60,copy:"El material visual de tu propiedad ya está listo.",next:"Publicamos y posicionamos tu propiedad en el mercado."},
-  {n:"Publicación activa",pct:75,copy:"Tu propiedad ya está publicada y posicionándose.",next:"Atraemos y filtramos compradores calificados."},
-  {n:"En comercialización",pct:90,copy:"Tu propiedad está en el mercado atrayendo interesados.",next:"Cuando llegue un apartado, iniciaremos el proceso de compra."}
+/*
+  COLUMNA VERTEBRAL DEL PORTAL · MÉTODO NERI
+  Regla operativa confirmada:
+  - Vendedor: arranca solo cuando firma venta exclusiva o venta directa. Antes es lead curioso.
+  - Comprador: arranca solo en apartado. Antes es captación/asesoría, no portal formal.
+  - Un solo portal: la intranet/Make decide si pinta vista vendedor o vista comprador.
+  - El portal solo muestra datos que vengan de Airtable/Make; no escribe, no simula, no inventa.
+*/
+
+var FASES_VENDEDOR = [
+  {n:"Acuerdo de venta firmado",pct:0,copy:"La operación inicia formalmente. Ya existe compromiso de venta exclusiva o venta directa.",next:"Solicitar y validar la documentación inicial de la propiedad.",responsable:"Asesor + vendedor",tiempo:"Mismo día a 1 día"},
+  {n:"Documentación de propiedad solicitada",pct:8,copy:"Se pidió al vendedor la documentación base para revisar si la propiedad puede venderse sin riesgo.",next:"Recibir documentos y detectar bloqueos antes de publicar.",responsable:"Vendedor",tiempo:"1 a 3 días"},
+  {n:"Expediente de propiedad en revisión",pct:18,copy:"El asesor revisa escritura, predial, agua, régimen, adeudos y datos comerciales antes de avanzar.",next:"Completar o corregir documentos faltantes.",responsable:"Asesor + vendedor",tiempo:"3 a 10 días"},
+  {n:"Propiedad lista para publicar",pct:30,copy:"La propiedad cuenta con base documental suficiente para salir al mercado con cuidado.",next:"Preparar ficha técnica, fotos, video, descripción y estrategia de publicación.",responsable:"Asesor",tiempo:"1 a 3 días"},
+  {n:"Publicación y promoción activa",pct:42,copy:"La propiedad ya está visible y en promoción. Se registran interesados y actividad comercial.",next:"Filtrar leads compradores y evitar visitas sin claridad financiera.",responsable:"Asesor",tiempo:"7 a 60 días, según mercado"},
+  {n:"Compradores en filtro",pct:52,copy:"Los interesados se están calificando para saber si pueden comprar y si vale la pena avanzar.",next:"Agendar visita solo con comprador viable o iniciar diagnóstico financiero.",responsable:"Asesor",tiempo:"Mismo día a 2 días por lead"},
+  {n:"Visitas y seguimiento",pct:60,copy:"Se controla quién visitó, qué objeciones hubo y cuál es la siguiente acción.",next:"Definir oferta, segunda visita o descarte en menos de 24 horas.",responsable:"Asesor",tiempo:"1 a 5 días por visita"},
+  {n:"Oferta o negociación",pct:68,copy:"Se definen condiciones antes de aceptar un apartado: precio, forma de pago, fechas, penalizaciones y entrega.",next:"Formalizar apartado solo si las condiciones están claras.",responsable:"Asesor + comprador + vendedor",tiempo:"1 a 5 días"},
+  {n:"Apartado aceptado",pct:76,copy:"La propiedad sale del mercado bajo condiciones firmadas y se mueve a expediente final.",next:"Integrar expediente final del vendedor y comprador para notaría o crédito.",responsable:"Asesor + comprador + vendedor",tiempo:"1 a 3 días"},
+  {n:"Expediente final del vendedor",pct:84,copy:"Se completa la documentación personal, fiscal y bancaria del vendedor para escriturar.",next:"Enviar expediente completo a notaría y validar riesgos fiscales.",responsable:"Vendedor · Control asesor",tiempo:"3 a 10 días"},
+  {n:"Notaría, certificados e impuestos",pct:91,copy:"La notaría revisa capacidad legal, gravámenes, adeudos, impuestos y proyecto de escritura.",next:"Programar firma cuando el expediente y pagos estén listos.",responsable:"Notaría · Acompaña asesor",tiempo:"7 a 20 días con expediente completo"},
+  {n:"Firma de escritura",pct:96,copy:"La compraventa se formaliza legalmente con comprador, vendedor, notaría y crédito si aplica.",next:"Confirmar pago y coordinar entrega de la propiedad.",responsable:"Notaría + partes",tiempo:"1 día"},
+  {n:"Pago y entrega",pct:99,copy:"Se ejecuta o confirma el pago y se entrega posesión física de la propiedad según acuerdo.",next:"Cerrar expediente, documentos finales, comisión y seguimiento postventa.",responsable:"Asesor + vendedor + comprador",tiempo:"Mismo día a 72 horas, según forma de pago"},
+  {n:"Postcierre",pct:100,copy:"La operación queda cerrada y documentada. Se da seguimiento a inscripción, expediente y referidos.",next:"",responsable:"Asesor + notaría",tiempo:"30 a 90 días para documentos finales"}
 ];
-var FASES_COMPRA = [
-  {n:"Apartado",pct:5,copy:"La propiedad fue reservada. El proceso formal ha comenzado.",next:"Revisaremos la viabilidad de compra para avanzar.",checks:["Apartado recibido","Publicidad pausada","Expediente iniciado"]},
-  {n:"Revisión de compra",pct:15,copy:"Revisamos el escenario de compra con total cuidado.",next:"Confirmado el camino, avanzamos a documentos.",checks:["Revisión de viabilidad","Validación del escenario"]},
-  {n:"Preparando documentos",pct:30,copy:"Integramos cada documento para que todo avance.",next:"Con los documentos completos, procede el acuerdo.",checks:["Identificaciones","Escrituras","Estado civil"]},
-  {n:"Acuerdo de compra",pct:45,copy:"Se formalizan las condiciones entre ambas partes.",next:"Con el acuerdo firmado, el expediente entra a notaría.",checks:["Redacción","Revisión jurídica","Firmas"]},
-  {n:"Revisión en notaría",pct:60,copy:"La notaría revisa el expediente para preparar la firma.",next:"La notaría validará y programará la firma.",checks:["Documentación enviada","Revisión legal"]},
-  {n:"Últimas confirmaciones",pct:75,copy:"Afinamos las últimas piezas antes de la firma.",next:"Coordinamos la fecha de firma.",checks:["Confirmaciones finales","Confirmación de recursos"]},
-  {n:"Día de firma",pct:90,copy:"La firma está confirmada. Un día importante.",next:"Coordinaremos la entrega de la propiedad.",checks:["Firma programada","Documentos listos"]},
-  {n:"Entrega de llaves",pct:100,copy:"La propiedad ha sido entregada. La operación concluyó.",next:"",checks:["Entrega de llaves","Cierre operativo"]}
+
+var FASES_COMPRADOR = [
+  {n:"Apartado aceptado",pct:0,copy:"La propiedad quedó reservada bajo condiciones firmadas. Desde aquí inicia tu proceso formal de compra.",next:"Integrar expediente del comprador y confirmar forma de pago.",responsable:"Comprador + asesor",tiempo:"1 a 3 días"},
+  {n:"Expediente del comprador",pct:15,copy:"Se reúne tu documentación personal, fiscal y de compra para avanzar con seguridad.",next:"Validar crédito, recurso propio o esquema de pago definido.",responsable:"Comprador · Control asesor",tiempo:"2 a 30 días, según forma de pago"},
+  {n:"Crédito, recurso o avalúo",pct:32,copy:"Se confirma que el dinero puede llegar a la operación y que la propiedad cumple con el esquema de pago.",next:"Preparar instrucción o expediente completo para notaría.",responsable:"Comprador + banco/Infonavit/broker/notaría",tiempo:"3 a 45 días, según forma de pago"},
+  {n:"Notaría en revisión",pct:52,copy:"La notaría revisa documentos, forma de pago, impuestos, gravámenes y proyecto de escritura.",next:"Atender observaciones y preparar fecha de firma.",responsable:"Notaría · Acompaña asesor",tiempo:"7 a 20 días con expediente completo"},
+  {n:"Certificados e impuestos",pct:68,copy:"Se integran certificados, constancias, cálculos y pagos necesarios para llegar a firma.",next:"Confirmar que todo esté listo para firmar.",responsable:"Notaría + municipio/catastro/agua/registro",tiempo:"Según dependencia y gestoría"},
+  {n:"Firma de escritura",pct:84,copy:"La compraventa se formaliza legalmente ante notaría.",next:"Confirmar pago o dispersión y coordinar entrega de la propiedad.",responsable:"Notaría + comprador + vendedor",tiempo:"1 día"},
+  {n:"Pago y entrega",pct:96,copy:"Se confirma el pago y se coordina entrega de llaves, controles, medidores, inventario y posesión física.",next:"Cerrar expediente y dar seguimiento a documentos finales.",responsable:"Asesor + comprador + vendedor",tiempo:"Mismo día a 72 horas, según acuerdo"},
+  {n:"Postcierre",pct:100,copy:"La compra queda cerrada y documentada. Continúa el seguimiento de inscripción y documentos finales.",next:"",responsable:"Asesor + notaría",tiempo:"30 a 90 días para documentos finales"}
 ];
 
 function $(id){return document.getElementById(id);}
 function show(id){["stLoad","stError"].forEach(function(s){$(s).classList.remove("on");});if(id)$(id).classList.add("on");}
-function getFolio(){var m=location.search.match(/[?&]folio=([^&]+)/);return m?decodeURIComponent(m[1]):"";}
-
-function idxByName(arr,name){for(var i=0;i<arr.length;i++){if(arr[i].n.toLowerCase()===String(name||"").toLowerCase())return i;}return 0;}
-
+function getParam(k){var m=location.search.match(new RegExp("[?&]"+k+"=([^&]+)"));return m?decodeURIComponent(m[1]):"";}
+function getFolio(){return getParam("folio");}
+function esc(v){return String(v===undefined||v===null?"":v).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c];});}
+function norm(v){return String(v||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();}
+function isNum(v){return v!==undefined&&v!==null&&v!==""&&!isNaN(Number(v));}
+function pick(){for(var i=0;i<arguments.length;i++){if(arguments[i]!==undefined&&arguments[i]!==null&&arguments[i]!=="")return arguments[i];}return "";}
+function idxByName(arr,name){var n=norm(name);if(!n)return -1;for(var i=0;i<arr.length;i++){if(norm(arr[i].n)===n)return i;}return -1;}
+function resolveVista(d){
+  var q=norm(getParam("vista")||getParam("tipo")||getParam("rol"));
+  var v=norm(pick(q,d.vistaPortal,d.rolPortal,d.vista,d.capitulo));
+  if(v.indexOf("compr")>-1||v==="compra")return "comprador";
+  if(v.indexOf("vended")>-1||v.indexOf("comercial")>-1||v.indexOf("propiedad")>-1)return "vendedor";
+  if(d.etapaCompra||d.faseActualCompra)return "comprador";
+  if(d.etapaVendedor||d.etapa)return "vendedor";
+  return "";
+}
+function resolveStage(d,vista){
+  return pick(
+    vista==="vendedor"?pick(d.etapaVendedor,d.etapaPortalVendedor,d.etapa):"",
+    vista==="comprador"?pick(d.etapaComprador,d.etapaPortalComprador,d.etapaCompra,d.faseActual,d.fase):"",
+    d.etapaPortal,d.etapa_operativa,d.etapaActual,d.faseActual
+  );
+}
+function estadoTxt(v){
+  var e=norm(v);
+  if(e.indexOf("complet")>-1||e==="verde"||e==="ok")return "🟢 Completo";
+  if(e.indexOf("bloque")>-1||e==="rojo")return "🔴 Requiere atención";
+  if(e.indexOf("revision")>-1||e==="azul")return "🔵 Revisión del asesor";
+  if(e.indexOf("no iniciado")>-1||e==="negro")return "⚫ No iniciado";
+  if(e.indexOf("proceso")>-1||e==="amarillo")return "🟡 En proceso";
+  return v?String(v):"";
+}
+function pctFor(d,vista,f){
+  var p=pick(
+    vista==="vendedor"?pick(d.pctVendedor,d.porcentajeVendedor,d.avanceVendedor,d.pctComercializacion):"",
+    vista==="comprador"?pick(d.pctComprador,d.porcentajeComprador,d.avanceComprador,d.pctCompra):"",
+    d.porcentajePortal,d.pctPortal,d.avancePortal
+  );
+  if(isNum(p))return Math.max(0,Math.min(100,Number(p)));
+  return f.pct;
+}
 function setRing(pct){
   var off=CIRC-(CIRC*pct/100);
   $("ringPct").textContent=Math.round(pct)+"%";
   setTimeout(function(){$("ringFill").style.strokeDashoffset=off;$("ringHalo").style.strokeDashoffset=off;},250);
 }
+function daysSince(iso){if(!iso)return "—";var d=new Date(iso);if(isNaN(d))return "—";return Math.max(0,Math.floor((Date.now()-d.getTime())/86400000));}
+function splitPend(s){if(!s)return [];return String(s).split(/[\n,]+/).map(function(x){return x.trim();}).filter(Boolean);}
 
 function buildTimeline(fases,actualIdx){
   var wrap=$("tlWrap");wrap.innerHTML="";
@@ -239,94 +299,134 @@ function buildTimeline(fases,actualIdx){
     spine.appendChild(node);
     if(!last){var line=document.createElement("div");line.className="tl-line "+(done?"line-done":"line-pending");spine.appendChild(line);}
     var body=document.createElement("div");body.className="tl-body";
-    body.innerHTML='<div class="tl-pct">'+f.pct+'%</div><div class="tl-label '+(active?"active":done?"done":"")+'">'+f.n+'</div>';
+    body.innerHTML='<div class="tl-pct">'+esc(f.pct)+'%</div><div class="tl-label '+(active?"active":done?"done":"")+'">'+esc(f.n)+'</div>';
     if(active){
       if(f.copy){var d=document.createElement("div");d.className="tl-detail";d.textContent=f.copy;body.appendChild(d);}
-      if(window.__PEND&&window.__PEND.length){var pb=document.createElement("div");pb.className="tl-pend";pb.innerHTML='<div class="tl-pend-lbl">Pendientes</div>';window.__PEND.forEach(function(p){pb.innerHTML+='<div class="tl-pend-item">'+p+'</div>';});body.appendChild(pb);}
+      if(window.__META&&window.__META.length){
+        var mb=document.createElement("div");mb.className="tl-next";mb.innerHTML='<div class="tl-next-lbl">Control</div>';
+        window.__META.forEach(function(m){mb.innerHTML+='<div class="tl-next-txt">'+esc(m)+'</div>';});body.appendChild(mb);
+      }
+      if(window.__PEND&&window.__PEND.length){var pb=document.createElement("div");pb.className="tl-pend";pb.innerHTML='<div class="tl-pend-lbl">Pendientes</div>';window.__PEND.forEach(function(p){pb.innerHTML+='<div class="tl-pend-item">'+esc(p)+'</div>';});body.appendChild(pb);}
       var nextTxt=window.__NEXT||f.next;
-      if(nextTxt){var ns=document.createElement("div");ns.className="tl-next";ns.innerHTML='<div class="tl-next-lbl">Próximo paso</div><div class="tl-next-txt">'+nextTxt+'</div>';body.appendChild(ns);}
+      if(nextTxt){var ns=document.createElement("div");ns.className="tl-next";ns.innerHTML='<div class="tl-next-lbl">Próximo paso</div><div class="tl-next-txt">'+esc(nextTxt)+'</div>';body.appendChild(ns);}
     }
     item.appendChild(spine);item.appendChild(body);wrap.appendChild(item);
   });
 }
 
-function daysSince(iso){if(!iso)return 0;var d=new Date(iso);if(isNaN(d))return 0;return Math.max(0,Math.floor((Date.now()-d.getTime())/86400000));}
-function splitPend(s){if(!s)return [];return String(s).split(/[\n,]+/).map(function(x){return x.trim();}).filter(Boolean);}
+function setHeaderBadge(d,pct){
+  var e=estadoTxt(d.estadoVisual||d.estadoEtapa||d.estado);
+  var label=e||((pct>=100)?"🟢 Completo":"🟡 En proceso");
+  $("hBadge").textContent=label.replace(/[🟢🟡🔴⚫🔵]/g,"").trim();
+  $("hBadge").className="head-badge"+(pct>=100||norm(label).indexOf("completo")>-1?" done":"");
+}
+
+function renderStats(d,vista,pct){
+  var html="";
+  if(vista==="vendedor"){
+    var dias=daysSince(pick(d.fechaCompromiso,d.fechaAlta,d.fechaInicio));
+    var inter=pick(d.interesados,d.leadsCompradores,d.leads,"—");
+    var estado=pick(d.estadoOperacion,d.estado,"—");
+    if(dias!=="—"||inter!=="—"||estado!=="—"){
+      html='<div class="stat"><div class="stat-num">'+esc(dias)+'</div><div class="stat-lbl">Días activos</div></div>'+
+           '<div class="stat"><div class="stat-num">'+esc(inter)+'</div><div class="stat-lbl">Interesados</div></div>'+
+           '<div class="stat"><div class="stat-num">'+esc(estado)+'</div><div class="stat-lbl">Estado</div></div>';
+    }
+  }
+  if(html){$("stats").innerHTML=html;$("stats").style.display="flex";}else{$("stats").style.display="none";}
+  var nums=$("stats").querySelectorAll(".stat-num");
+  for(var i=0;i<nums.length;i++){
+    if(String(nums[i].textContent).length>5){nums[i].style.fontSize="13px";nums[i].style.fontFamily="Montserrat";nums[i].style.fontWeight="600";nums[i].style.letterSpacing="1px";}
+  }
+}
 
 function render(d){
-  $("hProp").textContent=d.propiedad||"Tu propiedad";
+  if(!d||!d.propiedad){show("stError");$("errMsg").textContent="No encontramos datos reales de esta operación. Verifica el folio o la respuesta de Make.";return;}
+
+  var vista=resolveVista(d);
+  var fases=vista==="comprador"?FASES_COMPRADOR:vista==="vendedor"?FASES_VENDEDOR:null;
+  if(!fases){show("stError");$("errMsg").textContent="La operación no trae vistaPortal válida: vendedor o comprador.";return;}
+  var stageName=resolveStage(d,vista);
+  var idx=idxByName(fases,stageName);
+  if(idx<0){show("stError");$("errMsg").textContent="La etapa enviada por Make no coincide con la columna vertebral del portal: "+stageName;return;}
+
+  var f=fases[idx];
+  var pct=pctFor(d,vista,f);
+  var tipo=pick(d.tipoOperacion,d.tipoVenta,d.convenioVenta,"");
+
+  $("hProp").textContent=d.propiedad||"";
   $("hFolio").textContent=d.folio||"";
   $("fFolio").textContent=d.folio||"";
+  setHeaderBadge(d,pct);
 
-  // WhatsApp
-  var wa=(d.whatsapp||"").replace(/[^0-9]/g,"");
+  var wa=(d.whatsapp||d.whatsappAsesor||"").replace(/[^0-9]/g,"");
   if(wa){
-    var msg=encodeURIComponent("Hola"+(d.asesor?" "+d.asesor:"")+", me gustaría saber el avance de mi operación. Folio: "+(d.folio||""));
+    var msg=encodeURIComponent("Hola"+(d.asesor?" "+d.asesor:"") + ", me gustaría saber el avance de mi operación. Folio: "+(d.folio||""));
     $("waBtn").href="https://wa.me/"+wa+"?text="+msg;
     $("waLabel").textContent=d.waLabel||("Contactar a "+(d.asesor||"mi asesor"));
     $("waBtn").style.display="";
   } else { $("waBtn").style.display="none"; }
 
-  var esCompra=(d.capitulo==="compra");
-  window.__PEND=esCompra?splitPend(d.pendientes):[];
-  window.__NEXT=esCompra?(d.proximoPaso||""):"";
+  var estado=estadoTxt(d.estadoVisual||d.estadoEtapa||"");
+  window.__META=[];
+  if(estado)window.__META.push("Estado visual: "+estado);
+  window.__META.push("Responsable: "+(pick(d.responsableActual,d.responsable,f.responsable)||"No definido"));
+  window.__META.push("Tiempo estimado: "+(pick(d.tiempoEstimado,d.tiempo,f.tiempo)||"No definido"));
+  if(tipo)window.__META.push("Tipo de compromiso: "+tipo);
+  if(d.fechaLimite)window.__META.push("Fecha límite: "+d.fechaLimite);
 
-  if(esCompra){
-    var fases=FASES_COMPRA, idx=idxByName(fases,d.fase), f=fases[idx];
-    var pct=(d.pctCompra!==undefined&&d.pctCompra!=="")?Number(d.pctCompra):f.pct;
-    var fin=(idx===fases.length-1);
-    $("ringCap").textContent="Compra";
-    $("faseEye").textContent="Fase "+(idx+1)+" de "+fases.length+" · Compra";
-    $("faseName").innerHTML=f.n+'<b>.</b>';
-    $("faseCopy").textContent=f.copy;
-    $("hBadge").textContent=fin?"Completado":"En proceso";
-    $("hBadge").className="head-badge"+(fin?" done":"");
-    $("tlTitle").textContent="Recorrido de compra";
-    if(idx===0){$("fanfare").style.display="";}
-    $("stats").style.display="none";
-    setRing(pct); buildTimeline(fases,idx);
-  } else {
-    var fasesC=FASES_COMERCIALIZACION, idxC=idxByName(fasesC,d.etapa), fc=fasesC[idxC];
-    var pctC=(d.pctComercializacion!==undefined&&d.pctComercializacion!=="")?Number(d.pctComercializacion):fc.pct;
-    $("ringCap").textContent="Comercialización";
-    $("faseEye").textContent="Etapa "+(idxC+1)+" de "+fasesC.length+" · Comercialización";
-    $("faseName").innerHTML=fc.n+'<b>.</b>';
-    $("faseCopy").textContent=fc.copy;
-    $("hBadge").textContent="En proceso";
-    $("hBadge").className="head-badge";
-    $("tlTitle").textContent="Recorrido de tu propiedad";
-    // stats vivos
-    var dias=daysSince(d.fechaAlta), inter=Number(d.interesados||0);
-    $("stats").innerHTML=
-      '<div class="stat"><div class="stat-num">'+dias+'</div><div class="stat-lbl">Días activos</div></div>'+
-      '<div class="stat"><div class="stat-num">'+inter+'</div><div class="stat-lbl">Interesados</div></div>'+
-      '<div class="stat"><div class="stat-num">'+(d.estado||"Activa")+'</div><div class="stat-lbl">Estado</div></div>';
-    $("stats").querySelectorAll(".stat-num")[2].style.fontSize="13px";
-    $("stats").querySelectorAll(".stat-num")[2].style.fontFamily="Montserrat";
-    $("stats").querySelectorAll(".stat-num")[2].style.fontWeight="600";
-    $("stats").querySelectorAll(".stat-num")[2].style.letterSpacing="1px";
-    $("stats").style.display="flex";
-    setRing(pctC); buildTimeline(fasesC,idxC);
-  }
+  window.__PEND=splitPend(pick(
+    vista==="vendedor"?d.pendientesVendedor:"",
+    vista==="comprador"?d.pendientesComprador:"",
+    d.pendientes
+  ));
+  window.__NEXT=pick(
+    vista==="vendedor"?d.proximoPasoVendedor:"",
+    vista==="comprador"?d.proximoPasoComprador:"",
+    d.proximoPaso
+  );
+
+  $("ringCap").textContent=vista==="comprador"?"Compra":"Venta";
+  $("faseEye").textContent=(vista==="comprador"?"Fase ":"Etapa ")+(idx+1)+" de "+fases.length+" · "+(vista==="comprador"?"Comprador":"Vendedor");
+  $("faseName").innerHTML=esc(f.n)+'<b>.</b>';
+  $("faseCopy").textContent=f.copy;
+  $("tlTitle").textContent=vista==="comprador"?"Detalle del comprador":"Detalle del vendedor";
+
+  if((vista==="comprador"&&norm(f.n).indexOf("apartado")>-1)||(vista==="vendedor"&&norm(f.n).indexOf("apartado")>-1)){
+    $("fanfare").style.display="";
+    $("fanfareTxt").textContent="La propiedad fue apartada. Desde aquí el avance depende de expedientes, crédito o recurso, notaría, firma y entrega.";
+  } else { $("fanfare").style.display="none"; }
+
+  renderStats(d,vista,pct);
+  $("detailBox").classList.remove("on");
+  $("detailToggle").textContent="Ver detalle del avance";
+  setRing(pct);
+  buildTimeline(fases,idx);
 
   show(null);
   $("head").style.display="flex";
   $("view").classList.add("on");
 }
 
+function toggleDetalle(){
+  var b=$("detailBox"), t=$("detailToggle");
+  var on=b.classList.toggle("on");
+  t.textContent=on?"Ocultar detalle del avance":"Ver detalle del avance";
+}
+
 function load(){
   var folio=getFolio();
   if(!folio){show("stError");$("errMsg").textContent="Falta el folio en el enlace. Pide a tu asesor que te comparta el link completo.";return;}
-  fetch(WEBHOOK+"?folio="+encodeURIComponent(folio))
+  fetch(WEBHOOK+"?folio="+encodeURIComponent(folio)+(getParam("vista")?"&vista="+encodeURIComponent(getParam("vista")):""))
     .then(function(r){return r.text();})
     .then(function(t){
       var d;try{d=JSON.parse(t);}catch(e){d=null;}
-      if(!d||!d.propiedad){show("stError");return;}
       render(d);
     })
     .catch(function(){show("stError");$("errMsg").textContent="No pudimos consultar tu operación en este momento. Intenta de nuevo en unos minutos.";});
 }
 load();
+
 </script>
 </body>
 </html>
