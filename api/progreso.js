@@ -3,8 +3,8 @@
 // El webhook de Make NUNCA se expone al navegador del cliente.
 
 const MAKE_WEBHOOK = process.env.MAKE_PROGRESO_WEBHOOK;
-// Agrega la variable de entorno MAKE_PROGRESO_WEBHOOK en Vercel.
-// No pegues el webhook dentro de este archivo porque el repositorio es público.
+// Agrega la variable de entorno MAKE_PROGRESO_WEBHOOK en Vercel:
+// Valor: https://hook.us2.make.com/35zjbrnctro9ev2evshs23yn2zec4oql
 
 export default async function handler(req, res) {
   // Solo GET
@@ -34,10 +34,15 @@ export default async function handler(req, res) {
     try {
       data = JSON.parse(text);
     } catch {
-      return res.status(502).json({
-        error: 'Respuesta inesperada de Make',
-        raw: text.slice(0, 200)
-      });
+      // Make respondió pero no es JSON válido
+      return res.status(502).json({ error: 'Respuesta inesperada de Make', raw: text.slice(0, 200) });
+    }
+
+    // Si Make envuelve los datos en {ok:true, ...datos}, aplanar al nivel raíz
+    // para que el portal encuentre d.propiedad, d.folio, etc. directamente.
+    if (data && data.ok === true) {
+      const { ok, ...payload } = data;
+      data = payload;
     }
 
     res.setHeader('Content-Type', 'application/json');
