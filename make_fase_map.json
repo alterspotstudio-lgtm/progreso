@@ -1,0 +1,33 @@
+{
+  "_descripcion": "Módulo de mapeo de fases cortas (Airtable) a nombres largos (portal).",
+  "_instrucciones": [
+    "En tu escenario de Make que responde al portal de progreso:",
+    "1. Agrega un módulo 'Tools > Set variable' (o 'Set multiple variables') ANTES del módulo que arma la respuesta JSON.",
+    "2. Crea una variable llamada 'etapaLarga' usando la expresión switch() que aparece en 'expresion_make'.",
+    "3. En el módulo de respuesta final (Webhooks > Webhook response o HTTP > Create response),",
+    "   usa {{etapaLarga}} como valor de 'etapaComprador' o 'etapaVendedor' según la vista.",
+    "4. No toques ningún otro campo del escenario."
+  ],
+  "variable_destino": "etapaLarga",
+  "campo_fuente_airtable": "Fase Actual",
+  "expresion_make": "{{switch(1.`Fase Actual`; \"Apartado\"; \"Apartado aceptado\"; \"Expediente\"; \"Expediente del comprador\"; \"Valuación\"; \"Crédito, recurso o avalúo\"; \"Crédito\"; \"Notaría en revisión\"; \"Escrituración\"; \"Certificados e impuestos\"; \"Firma\"; \"Firma de escritura\"; \"Entrega\"; \"Pago y entrega\"; \"Completado\"; \"Postcierre\"; 1.`Fase Actual`)}}",
+  "nota_fallback": "El último argumento '1.`Fase Actual`' devuelve el valor original si no hay coincidencia — nunca rompe.",
+  "tabla_mapeo": {
+    "Apartado":      "Apartado aceptado",
+    "Expediente":    "Expediente del comprador",
+    "Valuación":     "Crédito, recurso o avalúo",
+    "Crédito":       "Notaría en revisión",
+    "Escrituración": "Certificados e impuestos",
+    "Firma":         "Firma de escritura",
+    "Entrega":       "Pago y entrega",
+    "Completado":    "Postcierre"
+  },
+  "campos_obligatorios_en_respuesta_json": {
+    "folio":        "{{1.Folio}}  — o el campo folio de tu tabla progreso",
+    "propiedad":    "{{1.Propiedad}}",
+    "vistaPortal":  "comprador  (texto fijo si el escenario es solo para compradores, o condición si maneja ambos)",
+    "etapaComprador": "{{etapaLarga}}",
+    "asesor":       "{{1.Asesor}}",
+    "whatsappAsesor": "{{1.`WhatsApp Asesor`}}"
+  }
+}

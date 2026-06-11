@@ -176,6 +176,9 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opa
       <div class="fase-copy" id="faseCopy"></div>
     </div>
 
+    <button id="detailToggle" class="detail-toggle" onclick="toggleDetalle()">Ver detalle del avance</button>
+    <div id="detailBox" class="detail-box"></div>
+
     <div class="stats" id="stats"></div>
 
     <div class="tl">
@@ -195,7 +198,9 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opa
 </div>
 
 <script>
-var WEBHOOK = "https://hook.us2.make.com/35zjbrnctro9ev2evshs23yn2zec4oql";
+// El webhook de Make vive en el servidor — no se expone al cliente.
+// La llamada va a /api/progreso (proxy Vercel) que internamente consulta Make.
+var API_PROGRESO = "/api/progreso";
 // Contrato listo para Make/Airtable: folio, vistaPortal(vendedor|comprador), propiedad, asesor, whatsappAsesor, etapaVendedor/etapaComprador, pctVendedor/pctComprador, estadoVisual, pendientesVendedor/pendientesComprador, proximoPasoVendedor/proximoPasoComprador.
 var CIRC = 2 * Math.PI * 84;
 
@@ -417,7 +422,7 @@ function toggleDetalle(){
 function load(){
   var folio=getFolio();
   if(!folio){show("stError");$("errMsg").textContent="Falta el folio en el enlace. Pide a tu asesor que te comparta el link completo.";return;}
-  fetch(WEBHOOK+"?folio="+encodeURIComponent(folio)+(getParam("vista")?"&vista="+encodeURIComponent(getParam("vista")):""))
+  fetch(API_PROGRESO+"?folio="+encodeURIComponent(folio)+(getParam("vista")?"&vista="+encodeURIComponent(getParam("vista")):""))
     .then(function(r){return r.text();})
     .then(function(t){
       var d;try{d=JSON.parse(t);}catch(e){d=null;}
