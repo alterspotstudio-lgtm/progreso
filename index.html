@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Portal de Operación · Método NERI</title>
+<title>Portal de Venta de tu Propiedad · Método NERI</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -80,6 +80,25 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opa
 .stat-num{font-family:"Bebas Neue",sans-serif;font-size:26px;letter-spacing:1px;color:var(--gold);line-height:1}
 .stat-lbl{font-size:7px;letter-spacing:2px;color:var(--w35);text-transform:uppercase;font-weight:600;margin-top:5px}
 
+/* ── acciones portal venta ── */
+.actions{display:none;padding:24px 24px 4px;border-top:1px solid var(--w05)}
+.actions.on{display:block}
+.actions-eye{font-size:8px;letter-spacing:3px;color:rgba(198,168,107,.5);text-transform:uppercase;font-weight:800;margin-bottom:8px}
+.actions-title{font-family:"Bebas Neue",sans-serif;font-size:28px;letter-spacing:1.5px;line-height:1;color:var(--white);margin-bottom:8px}
+.actions-copy{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:16px;color:var(--w50);line-height:1.5;margin-bottom:16px}
+.action-grid{display:grid;grid-template-columns:1fr;gap:12px}
+.action-card{border:1px solid var(--gold-border);background:linear-gradient(180deg,rgba(198,168,107,.08),rgba(255,255,255,.02));padding:16px;position:relative;overflow:hidden}
+.action-card::before{content:"";position:absolute;top:0;left:0;width:2px;height:100%;background:var(--gold)}
+.action-tag{font-size:7px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:800;margin-bottom:8px}
+.action-name{font-size:13px;font-weight:700;color:var(--white);letter-spacing:.2px;margin-bottom:7px}
+.action-text{font-size:12px;font-weight:300;color:var(--w70);line-height:1.65;margin-bottom:10px}
+.action-key{font-size:11.5px;color:var(--gold-light);line-height:1.55;margin:8px 0 12px;padding-left:10px;border-left:1px solid var(--gold-border)}
+.action-btn{display:flex;align-items:center;justify-content:center;width:100%;padding:13px;border:1px solid var(--gold-border);background:var(--gold-dim);color:var(--gold);font-size:8px;letter-spacing:2.5px;text-transform:uppercase;font-weight:800;text-decoration:none;transition:all .2s}
+.action-btn:hover{background:rgba(198,168,107,.16);border-color:rgba(198,168,107,.4)}
+.action-btn.disabled{border-color:var(--w10);background:rgba(255,255,255,.03);color:var(--w35);cursor:not-allowed}
+.action-note{font-size:10.5px;color:var(--w50);line-height:1.55;margin-top:9px}
+.action-status{display:inline-flex;margin-bottom:10px;padding:4px 8px;border:1px solid var(--w10);background:rgba(255,255,255,.03);font-size:7px;letter-spacing:1.8px;text-transform:uppercase;color:var(--w50);font-weight:800}
+
 /* ── timeline ── */
 .tl{padding:24px 24px 12px}
 .tl-title{font-size:8px;letter-spacing:3px;color:var(--w35);text-transform:uppercase;font-weight:700;margin-bottom:18px}
@@ -125,7 +144,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opa
   <div class="state on" id="stLoad">
     <div class="spinner"></div>
     <div class="state-eyebrow">Método Neri</div>
-    <div class="state-msg">Consultando el avance de tu operación…</div>
+    <div class="state-msg">Consultando el avance de venta de tu propiedad…</div>
   </div>
 
   <!-- ERROR -->
@@ -137,7 +156,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opa
   <!-- HEADER -->
   <div class="head" id="head" style="display:none">
     <div>
-      <div class="head-brand">Método Neri</div>
+      <div class="head-brand">Portal de Venta · Método Neri</div>
       <div class="head-prop" id="hProp">—</div>
       <div class="head-folio" id="hFolio">—</div>
     </div>
@@ -181,6 +200,8 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opa
 
     <div class="stats" id="stats"></div>
 
+    <div class="actions" id="accionesWrap"></div>
+
     <div class="tl">
       <div class="tl-title" id="tlTitle">Recorrido</div>
       <div id="tlWrap"></div>
@@ -191,7 +212,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opa
         <svg viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.945C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 018.413 3.488 11.824 11.824 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.51 5.26l-.999 3.648 3.978-1.043 .001-.001 .999-.911z"/></svg>
         <span id="waLabel">Contactar a mi asesor</span>
       </a>
-      <div class="foot-note">Operación · <b id="fFolio">—</b></div>
+      <div class="foot-note">Portal de venta · <b id="fFolio">—</b></div>
     </div>
 
   </div>
@@ -201,6 +222,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opa
 // El webhook de Make vive en el servidor — no se expone al cliente.
 // La llamada va a /api/progreso (proxy Vercel) que internamente consulta Make.
 var API_PROGRESO = "/api/progreso";
+var EXP_DOC_BASE = "https://expedientedocumentalpropietario.vercel.app/";
 // Contrato listo para Make/Airtable: folio, vistaPortal(vendedor|comprador), propiedad, asesor, whatsappAsesor, etapaVendedor/etapaComprador, pctVendedor/pctComprador, estadoVisual, pendientesVendedor/pendientesComprador, proximoPasoVendedor/proximoPasoComprador.
 var CIRC = 2 * Math.PI * 84;
 
@@ -291,6 +313,108 @@ function setRing(pct){
 }
 function daysSince(iso){if(!iso)return "—";var d=new Date(iso);if(isNaN(d))return "—";return Math.max(0,Math.floor((Date.now()-d.getTime())/86400000));}
 function splitPend(s){if(!s)return [];return String(s).split(/[\n,]+/).map(function(x){return x.trim();}).filter(Boolean);}
+function cleanPhone(v){return String(v||"").replace(/[^0-9]/g,"");}
+function field(d,names){
+  d=d||{};
+  for(var i=0;i<names.length;i++){
+    var k=names[i];
+    if(d[k]!==undefined&&d[k]!==null&&d[k]!=="")return d[k];
+  }
+  var keys=Object.keys(d);
+  for(var j=0;j<names.length;j++){
+    var target=norm(names[j]);
+    for(var n=0;n<keys.length;n++){
+      if(norm(keys[n])===target&&d[keys[n]]!==undefined&&d[keys[n]]!==null&&d[keys[n]]!=="")return d[keys[n]];
+    }
+  }
+  return "";
+}
+function addParams(base,params){
+  var q=[];
+  Object.keys(params).forEach(function(k){if(params[k])q.push(encodeURIComponent(k)+"="+encodeURIComponent(params[k]));});
+  return base+(base.indexOf("?")>-1?"&":"?")+q.join("&");
+}
+function isLink(v){v=String(v||"").trim();return /^https?:\/\//i.test(v)||v.charAt(0)==="/";}
+function getToken(d){
+  return pick(
+    getParam("token"),
+    field(d,["Token Expediente","tokenExpediente","token","Token"])
+  );
+}
+function resolveExpedienteLink(d){
+  var direct=field(d,[
+    "Link Expediente Documental","linkExpedienteDocumental","Link Expediente","linkExpediente",
+    "Expediente Documental","expedienteDocumental","URL Expediente","urlExpediente","portalExpediente"
+  ]);
+  if(direct&&isLink(direct))return String(direct).trim();
+  var folio=pick(field(d,["folio","Folio"]),getFolio());
+  var token=getToken(d);
+  if(folio&&token)return addParams(EXP_DOC_BASE,{folio:folio,token:token});
+  return "";
+}
+function resolveProduccionLink(d){
+  var direct=field(d,[
+    "Link Confirmacion Produccion","Link Confirmación Producción","linkConfirmacionProduccion",
+    "Link Cita Produccion","Link Cita Producción","linkCitaProduccion",
+    "Link Produccion","Link Producción","linkProduccion","URL Produccion","URL Producción",
+    "linkConfirmacion","Link Confirmacion","Link Confirmación","confirmacionUrl"
+  ]);
+  if(direct&&isLink(direct))return String(direct).trim();
+  return "";
+}
+function resolveProduccionWhatsapp(d){
+  var wa=cleanPhone(field(d,["whatsappAsesor","WhatsApp Asesor","telefonoAsesor","Teléfono Asesor","whatsapp","WhatsApp"]));
+  if(!wa)return "";
+  var asesor=field(d,["asesor","Asesor"])||"mi asesor";
+  var folio=pick(field(d,["folio","Folio"]),getFolio());
+  var msg="Hola "+asesor+", quiero confirmar la cita de foto y video de mi propiedad."+(folio?" Folio: "+folio:"");
+  return "https://wa.me/"+wa+"?text="+encodeURIComponent(msg);
+}
+function renderAcciones(d,vista){
+  var wrap=$("accionesWrap");
+  if(!wrap)return;
+  if(vista!=="vendedor"){wrap.className="actions";wrap.innerHTML="";return;}
+
+  var expLink=resolveExpedienteLink(d);
+  var prodLink=resolveProduccionLink(d)||resolveProduccionWhatsapp(d);
+  var prodEstado=field(d,["Estado Produccion","Estado Producción","estadoProduccion","Estado Cita Produccion","Estado Cita Producción"])||"Pendiente de confirmar";
+
+  var expBtn=expLink
+    ? '<a class="action-btn" href="'+esc(expLink)+'" target="_blank" rel="noopener">Subir mis documentos</a>'
+    : '<span class="action-btn disabled">Enlace seguro pendiente</span>';
+  var expNote=expLink
+    ? ''
+    : '<div class="action-note">Tu asesor debe compartirte el enlace completo para subir documentos de forma segura.</div>';
+
+  var prodBtn=prodLink
+    ? '<a class="action-btn" href="'+esc(prodLink)+'" target="_blank" rel="noopener">Confirmar cita de foto y video</a>'
+    : '<span class="action-btn disabled">Cita pendiente</span>';
+  var prodNote=prodLink
+    ? ''
+    : '<div class="action-note">Tu asesor debe proponerte la cita para poder confirmar la producción inmobiliaria.</div>';
+
+  wrap.className="actions on";
+  wrap.innerHTML=''+
+    '<div class="actions-eye">Portal de Venta</div>'+
+    '<div class="actions-title">Acciones para avanzar</div>'+
+    '<div class="actions-copy">Un solo portal para seguir tu venta, subir documentos y preparar la salida al mercado.</div>'+
+    '<div class="action-grid">'+
+      '<div class="action-card">'+
+        '<div class="action-tag">Expediente documental</div>'+
+        '<div class="action-name">Documentos de la propiedad</div>'+
+        '<div class="action-text">Desde aquí puedes subir los documentos necesarios para avanzar con la venta de tu propiedad.</div>'+
+        expBtn+expNote+
+      '</div>'+
+      '<div class="action-card">'+
+        '<div class="action-tag">Producción inmobiliaria</div>'+
+        '<div class="action-name">Foto y video de la propiedad</div>'+
+        '<span class="action-status">'+esc(prodEstado)+'</span>'+
+        '<div class="action-text">Para preparar correctamente la salida al mercado necesitamos confirmar la cita de producción inmobiliaria de la estrella del proceso: la propiedad.</div>'+
+        '<div class="action-key">Sin esta cita todavía no podemos publicar correctamente la propiedad.</div>'+
+        prodBtn+prodNote+
+      '</div>'+
+    '</div>';
+}
 
 function buildTimeline(fases,actualIdx){
   var wrap=$("tlWrap");wrap.innerHTML="";
@@ -395,7 +519,7 @@ function render(d){
   $("faseEye").textContent=(vista==="comprador"?"Fase ":"Etapa ")+(idx+1)+" de "+fases.length+" · "+(vista==="comprador"?"Comprador":"Vendedor");
   $("faseName").innerHTML=esc(f.n)+'<b>.</b>';
   $("faseCopy").textContent=f.copy;
-  $("tlTitle").textContent=vista==="comprador"?"Detalle del comprador":"Detalle del vendedor";
+  $("tlTitle").textContent=vista==="comprador"?"Detalle del comprador":"Proceso de venta";
 
   if((vista==="comprador"&&norm(f.n).indexOf("apartado")>-1)||(vista==="vendedor"&&norm(f.n).indexOf("apartado")>-1)){
     $("fanfare").style.display="";
@@ -403,6 +527,7 @@ function render(d){
   } else { $("fanfare").style.display="none"; }
 
   renderStats(d,vista,pct);
+  renderAcciones(d,vista);
   $("detailBox").classList.remove("on");
   $("detailToggle").textContent="Ver detalle del avance";
   setRing(pct);
