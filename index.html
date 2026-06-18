@@ -347,7 +347,19 @@ function resolveExpedienteLink(d){
     "Expediente Documental","expedienteDocumental","URL Expediente","urlExpediente","portalExpediente"
   ]);
   if(direct&&isLink(direct))return String(direct).trim();
-  var folio=pick(field(d,["folio","Folio"]),getFolio());
+
+  /*
+    El folio del portal de progreso puede ser distinto al folio seguro del expediente.
+    Por eso aceptamos folioExpediente como llave documental, sin cambiar Airtable ni Make.
+    Si no viene, se mantiene el comportamiento anterior con el folio del portal.
+  */
+  var folio=pick(
+    getParam("folioExpediente"),
+    getParam("folio_documental"),
+    field(d,["Folio Expediente","folioExpediente","Folio Expediente Documental","folioExpedienteDocumental","Folio Documental","folioDocumental"]),
+    field(d,["folio","Folio"]),
+    getFolio()
+  );
   var token=getToken(d);
   if(folio&&token)return addParams(EXP_DOC_BASE,{folio:folio,token:token});
   return "";
