@@ -224,6 +224,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opa
 // La llamada va a /api/progreso (proxy Vercel) que internamente consulta Make.
 var API_PROGRESO = "/api/progreso";
 var EXP_DOC_BASE = "https://expedientedocumentalpropietario.vercel.app/";
+var CONFIRMACION_BASE = "https://intranetmetodonerirealtor.vercel.app/Confirmacion.html";
 // Contrato listo para Make/Airtable: folio, vistaPortal(vendedor|comprador), propiedad, asesor, whatsappAsesor, etapaVendedor/etapaComprador, pctVendedor/pctComprador, estadoVisual, pendientesVendedor/pendientesComprador, proximoPasoVendedor/proximoPasoComprador.
 var CIRC = 2 * Math.PI * 84;
 
@@ -365,14 +366,46 @@ function resolveExpedienteLink(d){
   if(folio&&token)return addParams(EXP_DOC_BASE,{folio:folio,token:token});
   return "";
 }
+function isEventoFolio(v){
+  v=String(v||"").trim();
+  return /^EV-[A-Z]+-\d{4}-\d{3,}$/i.test(v) || /^EV-PROD/i.test(v);
+}
+function linkConfirmacionEvento(folioEvento){
+  if(!folioEvento)return "";
+  return addParams(CONFIRMACION_BASE,{evento:String(folioEvento).trim()});
+}
 function resolveProduccionLink(d){
   var direct=field(d,[
     "Link Confirmacion Produccion","Link Confirmación Producción","linkConfirmacionProduccion",
     "Link Cita Produccion","Link Cita Producción","linkCitaProduccion",
     "Link Produccion","Link Producción","linkProduccion","URL Produccion","URL Producción",
-    "linkConfirmacion","Link Confirmacion","Link Confirmación","confirmacionUrl"
+    "linkConfirmacion","Link Confirmacion","Link Confirmación","confirmacionUrl",
+    "Link Evento Produccion","Link Evento Producción","linkEventoProduccion",
+    "Link Confirmacion Cita","Link Confirmación Cita","linkConfirmacionCita"
   ]);
-  if(direct&&isLink(direct))return String(direct).trim();
+  if(direct){
+    direct=String(direct).trim();
+    if(isLink(direct))return direct;
+    if(isEventoFolio(direct))return linkConfirmacionEvento(direct);
+  }
+
+  /*
+    El portal de venta debe abrir la pantalla viva Confirmacion.html, no WhatsApp.
+    Si Make/Airtable manda solo el folio del evento EV-PROD, construimos el link aquí
+    sin tocar Airtable ni el webhook.
+  */
+  var folioEvento=pick(
+    getParam("eventoProduccion"),
+    getParam("evento"),
+    field(d,[
+      "Folio Evento Produccion","Folio Evento Producción","folioEventoProduccion",
+      "Folio Cita Produccion","Folio Cita Producción","folioCitaProduccion",
+      "Evento Produccion","Evento Producción","eventoProduccion",
+      "Folio Evento","folioEvento","Evento","evento",
+      "Folio Produccion","Folio Producción","folioProduccion"
+    ])
+  );
+  if(isEventoFolio(folioEvento))return linkConfirmacionEvento(folioEvento);
   return "";
 }
 function resolveProduccionWhatsapp(d){
@@ -389,7 +422,7 @@ function renderAcciones(d,vista){
   if(vista!=="vendedor"){wrap.className="actions";wrap.innerHTML="";return;}
 
   var expLink=resolveExpedienteLink(d);
-  var prodLink=resolveProduccionLink(d)||resolveProduccionWhatsapp(d);
+  var prodLink=resolveProduccionLink(d);
   var prodEstado=field(d,["Estado Produccion","Estado Producción","estadoProduccion","Estado Cita Produccion","Estado Cita Producción"])||"Pendiente de confirmar";
 
   var expBtn=expLink
@@ -400,11 +433,11 @@ function renderAcciones(d,vista){
     : '<div class="action-note">Tu asesor debe compartirte el enlace completo para subir documentos de forma segura.</div>';
 
   var prodBtn=prodLink
-    ? '<a class="action-btn" href="'+esc(prodLink)+'" target="_blank" rel="noopener">Confirmar cita de foto y video</a>'
+    ? '<a class="action-btn" href="'+esc(prodLink)+'" target="_blank" rel="noopener">Proponer día y hora para foto y video</a>'
     : '<span class="action-btn disabled">Cita pendiente</span>';
   var prodNote=prodLink
     ? ''
-    : '<div class="action-note">Tu asesor debe proponerte la cita para poder confirmar la producción inmobiliaria.</div>';
+    : '<div class="action-note">Tu asesor debe generar el evento de producción para que puedas proponer día y hora desde esta pantalla.</div>';
 
   wrap.className="actions on";
   wrap.innerHTML=''+
