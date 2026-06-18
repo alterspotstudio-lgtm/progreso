@@ -101,6 +101,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opa
 
 /* ── timeline ── */
 .tl{padding:24px 24px 12px}
+.tl.collapsed{display:none}
 .tl-title{font-size:8px;letter-spacing:3px;color:var(--w35);text-transform:uppercase;font-weight:700;margin-bottom:18px}
 .tl-item{display:flex;gap:14px;position:relative}
 .tl-spine{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
@@ -195,14 +196,14 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opa
       <div class="fase-copy" id="faseCopy"></div>
     </div>
 
-    <button id="detailToggle" class="detail-toggle" onclick="toggleDetalle()">Ver detalle del avance</button>
+    <button id="detailToggle" class="detail-toggle" onclick="toggleDetalle()">Ver proceso completo</button>
     <div id="detailBox" class="detail-box"></div>
 
     <div class="stats" id="stats"></div>
 
     <div class="actions" id="accionesWrap"></div>
 
-    <div class="tl">
+    <div class="tl collapsed" id="timelineSection">
       <div class="tl-title" id="tlTitle">Recorrido</div>
       <div id="tlWrap"></div>
     </div>
@@ -540,8 +541,10 @@ function render(d){
 
   renderStats(d,vista,pct);
   renderAcciones(d,vista);
+  var timelineSection=$("timelineSection");
+  if(timelineSection)timelineSection.classList.add("collapsed");
   $("detailBox").classList.remove("on");
-  $("detailToggle").textContent="Ver detalle del avance";
+  $("detailToggle").textContent="Ver proceso completo";
   setRing(pct);
   buildTimeline(fases,idx);
 
@@ -551,9 +554,16 @@ function render(d){
 }
 
 function toggleDetalle(){
-  var b=$("detailBox"), t=$("detailToggle");
-  var on=b.classList.toggle("on");
-  t.textContent=on?"Ocultar detalle del avance":"Ver detalle del avance";
+  var t=$("detailToggle");
+  var tl=$("timelineSection");
+  if(!tl)return;
+  var collapsed=tl.classList.toggle("collapsed");
+  t.textContent=collapsed?"Ver proceso completo":"Ocultar proceso completo";
+  if(!collapsed){
+    setTimeout(function(){
+      try{tl.scrollIntoView({behavior:"smooth",block:"start"});}catch(_){location.hash="tlTitle";}
+    },80);
+  }
 }
 
 function load(){
