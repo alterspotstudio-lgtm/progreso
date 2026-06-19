@@ -3,8 +3,8 @@
 // El webhook de Make NUNCA se expone al navegador del cliente.
 
 const MAKE_WEBHOOK = process.env.MAKE_PROGRESO_WEBHOOK;
-// Agrega la variable de entorno MAKE_PROGRESO_WEBHOOK en Vercel:
-// Valor: https://hook.us2.make.com/35zjbrnctro9ev2evshs23yn2zec4oql
+// Configurar MAKE_PROGRESO_WEBHOOK únicamente en variables de entorno de Vercel.
+// No pegar aquí valores reales, URLs privadas, tokens ni credenciales.
 
 export default async function handler(req, res) {
   // Solo GET
