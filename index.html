@@ -225,6 +225,11 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opa
 var API_PROGRESO = "/api/progreso";
 var EXP_DOC_BASE = "https://expedientedocumentalpropietario.vercel.app/";
 var CONFIRMACION_BASE = "https://intranetmetodonerirealtor.vercel.app/Confirmacion.html";
+// ProponerCita.html es donde el cliente SÍ puede escribir día/hora y enviar
+// su propuesta (formulario real). Confirmacion.html es de solo lectura —
+// nunca tuvo forma de recibir una propuesta, por eso el botón de abajo
+// mandaba ahí y el cliente se topaba con la ficha final sin poder proponer.
+var PRODUCCION_BASE = "https://intranetmetodonerirealtor.vercel.app/ProponerCita.html";
 // Contrato listo para Make/Airtable: folio, vistaPortal(vendedor|comprador), propiedad, asesor, whatsappAsesor, etapaVendedor/etapaComprador, pctVendedor/pctComprador, estadoVisual, pendientesVendedor/pendientesComprador, proximoPasoVendedor/proximoPasoComprador.
 var CIRC = 2 * Math.PI * 84;
 
@@ -374,6 +379,10 @@ function linkConfirmacionEvento(folioEvento){
   if(!folioEvento)return "";
   return addParams(CONFIRMACION_BASE,{evento:String(folioEvento).trim()});
 }
+function linkProponerEvento(folioEvento){
+  if(!folioEvento)return "";
+  return addParams(PRODUCCION_BASE,{evento:String(folioEvento).trim()});
+}
 function resolveProduccionLink(d){
   var direct=field(d,[
     "Link Confirmacion Produccion","Link Confirmación Producción","linkConfirmacionProduccion",
@@ -390,10 +399,17 @@ function resolveProduccionLink(d){
   }
 
   /*
-    El portal de venta debe abrir la pantalla viva Confirmacion.html, no WhatsApp.
-    Si Make/Airtable manda solo el folio del evento EV-PROD, construimos el link aquí
-    sin tocar Airtable ni el webhook.
+    Antes esto SIEMPRE armaba un link a Confirmacion.html (pantalla de solo
+    lectura, sin formulario) — por eso el cliente nunca podía proponer día y
+    hora, le salía la ficha final vacía o sin acción posible.
+    Ahora: si el estado del evento ya es Confirmada/Realizada, sí mandamos a
+    Confirmacion.html (ahí corresponde). Si todavía no, mandamos a
+    ProponerCita.html, que sí tiene el formulario para escribir día, hora y
+    enviar la propuesta. No se toca Airtable ni el webhook — se arma aquí,
+    igual que ya hacía linkConfirmacionEvento.
   */
+  var estado=String(field(d,["Estado Produccion","Estado Producción","estadoProduccion","Estado Cita Produccion","Estado Cita Producción"])||"").trim().toLowerCase();
+  var yaConfirmada=(estado==="confirmada"||estado==="realizada");
   var folioEvento=pick(
     getParam("eventoProduccion"),
     getParam("evento"),
@@ -405,7 +421,7 @@ function resolveProduccionLink(d){
       "Folio Produccion","Folio Producción","folioProduccion"
     ])
   );
-  if(isEventoFolio(folioEvento))return linkConfirmacionEvento(folioEvento);
+  if(isEventoFolio(folioEvento))return yaConfirmada?linkConfirmacionEvento(folioEvento):linkProponerEvento(folioEvento);
   return "";
 }
 function resolveProduccionWhatsapp(d){
@@ -424,6 +440,7 @@ function renderAcciones(d,vista){
   var expLink=resolveExpedienteLink(d);
   var prodLink=resolveProduccionLink(d);
   var prodEstado=field(d,["Estado Produccion","Estado Producción","estadoProduccion","Estado Cita Produccion","Estado Cita Producción"])||"Pendiente de confirmar";
+  var prodYaConfirmada=/^(confirmada|realizada)$/i.test(String(prodEstado).trim());
 
   var expBtn=expLink
     ? '<a class="action-btn" href="'+esc(expLink)+'" target="_blank" rel="noopener">Subir mis documentos</a>'
@@ -432,8 +449,9 @@ function renderAcciones(d,vista){
     ? ''
     : '<div class="action-note">Tu asesor debe compartirte el enlace completo para subir documentos de forma segura.</div>';
 
+  var prodBtnTxt=prodYaConfirmada?'Ver mi confirmación':'Proponer día y hora para foto y video';
   var prodBtn=prodLink
-    ? '<a class="action-btn" href="'+esc(prodLink)+'" target="_blank" rel="noopener">Proponer día y hora para foto y video</a>'
+    ? '<a class="action-btn" href="'+esc(prodLink)+'" target="_blank" rel="noopener">'+esc(prodBtnTxt)+'</a>'
     : '<span class="action-btn disabled">Cita pendiente</span>';
   var prodNote=prodLink
     ? ''
