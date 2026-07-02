@@ -2,253 +2,629 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="robots" content="noindex">
-<title>Proponer cita · Método NERI</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital@1&family=Montserrat:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Portal de Venta de tu Propiedad · Método NERI</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
 <style>
-/* ════════════════════════════════════════════════════════════
-   ProponerCita.html — reemplazo del paso "cliente propone fecha
-   y hora" que antes vivía en progreso-zeta.vercel.app (repo
-   aparte, fuera de nuestro control). Esta página vive en el MISMO
-   repo que Confirmacion.html — mismo diseño, mismo folio de
-   evento, mismo webhook de lectura. Para escribir la propuesta usa
-   DIRECTO el webhook de Make 5431139 (el mismo que ya usaba
-   progreso-zeta) — no se creó nada nuevo en Make, solo se cambió
-   quién llama al webhook que ya funcionaba.
-   NO TOCAR sin entender: el webhook de lectura (WEBHOOK_LEE) y el
-   de escritura (WEBHOOK_PROPONE) son DOS webhooks distintos, de
-   DOS escenarios de Make distintos — no son intercambiables.
-   ════════════════════════════════════════════════════════════ */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  --black:#0A0A0A; --black-2:#111111; --black-3:#161616;
-  --gold:#C6A86B; --gold-light:#E2C98A; --gold-strong:rgba(198,168,107,.55);
-  --gold-dim:rgba(198,168,107,.08); --gold-border:rgba(198,168,107,.30);
-  --w100:#FFFFFF; --w70:rgba(255,255,255,.70); --w60:rgba(255,255,255,.60);
-  --w50:rgba(255,255,255,.50); --w35:rgba(255,255,255,.35); --w30:rgba(255,255,255,.30);
-  --w18:rgba(255,255,255,.18); --w8:rgba(255,255,255,.08); --w4:rgba(255,255,255,.04);
+  --black:#09090A; --black-2:#111113; --black-3:#161618;
+  --gold:#C6A86B; --gold-light:#E2C98A; --gold-deep:#8B6914;
+  --gold-dim:rgba(198,168,107,.10); --gold-border:rgba(198,168,107,.20); --gold-glow:rgba(198,168,107,.06);
+  --white:#FFFFFF; --w70:rgba(255,255,255,.70); --w50:rgba(255,255,255,.50); --w35:rgba(255,255,255,.35);
+  --w20:rgba(255,255,255,.20); --w10:rgba(255,255,255,.10); --w05:rgba(255,255,255,.05);
+  --green:#4CAF50; --green-dim:rgba(76,175,80,.10);
 }
-*{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased;}
-body{font-family:'Montserrat',sans-serif;background:var(--black);color:var(--w100);min-height:100vh;}
-.shell{max-width:680px;margin:0 auto;background:var(--black);min-height:100vh;display:flex;flex-direction:column;}
-.nav{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;}
-.nav-casa{width:30px;height:30px;display:block;color:var(--gold);}
-.nav-asesor{text-align:right;}
-.nav-name{font-size:13px;font-weight:600;color:var(--w100);}
-.nav-sub{font-size:10px;color:var(--w50);margin-top:1px;}
-.scr{display:none;flex:1;}
-.scr.active{display:flex;flex-direction:column;}
-#scr-loading{align-items:center;justify-content:center;gap:14px;padding:60px 22px;}
-.spinner{width:34px;height:34px;border:2px solid var(--w8);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;}
+html,body{background:var(--black);min-height:100vh;overflow-x:hidden;font-family:"Montserrat",sans-serif;color:var(--white)}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opacity:.025;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+
+.shell{max-width:480px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;position:relative;z-index:1}
+
+/* ── states ── */
+.state{flex:1;display:none;flex-direction:column;align-items:center;justify-content:center;padding:60px 28px;text-align:center}
+.state.on{display:flex}
+.spinner{width:42px;height:42px;border-radius:50%;border:1.5px solid var(--w10);border-top-color:var(--gold);animation:spin 1s linear infinite;margin-bottom:24px}
 @keyframes spin{to{transform:rotate(360deg)}}
-.load-txt{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--w35);font-weight:700;}
-#scr-error{align-items:center;justify-content:center;gap:14px;padding:60px 30px;text-align:center;}
-.err-icon{font-family:'Bebas Neue',sans-serif;font-size:54px;color:var(--gold);opacity:.5;}
-.err-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:var(--w100);}
-.err-sub{font-size:12px;color:var(--w60);line-height:1.6;max-width:300px;}
-.hero{padding:26px 20px 22px;}
-.hero-tag{display:inline-block;font-size:8px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);background:rgba(10,10,10,.55);border:1px solid var(--gold-border);padding:5px 11px;border-radius:3px;margin-bottom:14px;}
-.hero-info{border-left:2px solid var(--gold);padding-left:14px;}
-.hero-prop{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:1px;line-height:1;color:var(--w100);}
-.hero-frase{font-family:'Cormorant Garamond','Georgia',serif;font-style:italic;font-size:14px;color:var(--w70);margin-top:7px;line-height:1.45;}
-.body{padding:6px 20px 6px;display:flex;flex-direction:column;}
-.sec-label{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--gold);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
-.sec-label::after{content:'';flex:1;height:1px;background:var(--gold-dim);}
-.form-row{margin-bottom:16px;}
-.form-row.two{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.f-lbl{font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--w50);margin-bottom:7px;display:block;}
-.f-inp{width:100%;padding:12px 14px;background:var(--black-2);border:1px solid var(--w8);border-radius:4px;color:var(--w100);font-family:'Montserrat',sans-serif;font-size:14px;}
-.f-inp:focus{outline:none;border-color:var(--gold-border);}
-textarea.f-inp{resize:vertical;min-height:70px;font-size:13px;}
-.f-note{font-size:11px;color:var(--w35);line-height:1.5;margin-bottom:20px;}
-.f-hora-hint{font-size:10px;color:var(--gold);margin-top:6px;}
-.submit-btn{display:block;width:100%;padding:15px;background:var(--gold);color:var(--black);border:none;font-family:'Montserrat',sans-serif;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;border-radius:5px;cursor:pointer;transition:filter .15s;}
-.submit-btn:hover{filter:brightness(1.08);}
-.submit-btn:disabled{opacity:.5;cursor:default;}
-.submit-err{font-size:12px;color:#f87171;margin-top:10px;text-align:center;display:none;}
-/* ── ya propuesto / ya confirmado ── */
-#scr-enviado{align-items:center;justify-content:center;gap:16px;padding:60px 30px;text-align:center;}
-.ok-icon{font-family:'Bebas Neue',sans-serif;font-size:54px;color:var(--gold);}
-.ok-title{font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px;color:var(--w100);}
-.ok-sub{font-size:13px;color:var(--w60);line-height:1.6;max-width:340px;}
-.foot{padding:24px 20px 28px;text-align:center;}
-.foot-folio{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--w30);}
-.foot-txt{font-size:8px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;color:var(--w18);margin-top:8px;}
+.state-eyebrow{font-size:9px;letter-spacing:5px;color:rgba(198,168,107,.45);text-transform:uppercase;font-weight:700;margin-bottom:14px}
+.state-msg{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:19px;color:var(--w50);line-height:1.5;max-width:300px}
+
+/* ── header ── */
+.head{position:sticky;top:0;z-index:30;background:rgba(9,9,10,.97);
+  border-bottom:1px solid var(--w05);padding:14px 24px 12px;display:flex;align-items:center;justify-content:space-between}
+.head-brand{font-size:8px;letter-spacing:5px;color:rgba(198,168,107,.5);text-transform:uppercase;font-weight:700;margin-bottom:3px}
+.head-prop{font-family:"Bebas Neue",sans-serif;font-size:21px;letter-spacing:2px;line-height:1;color:var(--white)}
+.head-folio{font-family:"DM Mono",monospace;font-size:9px;letter-spacing:2px;color:var(--w20);margin-top:3px}
+.head-badge{font-size:8px;letter-spacing:2.5px;text-transform:uppercase;font-weight:700;padding:6px 11px;border:1px solid var(--gold-border);color:var(--gold);background:var(--gold-dim);white-space:nowrap}
+.head-badge.done{border-color:rgba(76,175,80,.35);color:var(--green);background:var(--green-dim)}
+
+.view{display:none;flex-direction:column;flex:1;animation:rise .5s cubic-bezier(.16,1,.3,1) both}
+.view.on{display:flex}
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── celebration ── */
+.fanfare{margin:0;padding:16px 24px;background:linear-gradient(180deg,rgba(198,168,107,.14),transparent);
+  border-bottom:1px solid var(--gold-border);text-align:center;animation:glow 2.4s ease-in-out infinite}
+@keyframes glow{0%,100%{background:linear-gradient(180deg,rgba(198,168,107,.10),transparent)}50%{background:linear-gradient(180deg,rgba(198,168,107,.18),transparent)}}
+.fanfare-eye{font-size:8px;letter-spacing:4px;color:var(--gold);text-transform:uppercase;font-weight:700;margin-bottom:5px}
+.fanfare-txt{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:18px;color:var(--gold-light);line-height:1.4}
+
+/* ── hero circle ── */
+.hero{display:flex;flex-direction:column;align-items:center;padding:30px 24px 22px;border-bottom:1px solid var(--w05);position:relative}
+.hero::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 220px 160px at center 38%,rgba(198,168,107,.07),transparent 70%)}
+.ring-wrap{position:relative;width:188px;height:188px}
+.ring-svg{transform:rotate(-90deg);width:188px;height:188px;overflow:visible}
+.ring-track{fill:none;stroke:rgba(255,255,255,.05);stroke-width:5}
+.ring-halo{fill:none;stroke:rgba(198,168,107,.08);stroke-width:15;stroke-linecap:round;transition:stroke-dashoffset 1.5s cubic-bezier(.16,1,.3,1)}
+.ring-fill{fill:none;stroke:url(#grad);stroke-width:5;stroke-linecap:round;transition:stroke-dashoffset 1.5s cubic-bezier(.16,1,.3,1)}
+.ring-mid{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.ring-pct{font-family:"Bebas Neue",sans-serif;font-size:54px;letter-spacing:2px;color:var(--gold);line-height:.9}
+.ring-cap{font-size:7px;letter-spacing:4px;color:rgba(198,168,107,.45);text-transform:uppercase;font-weight:700}
+.ring-deco{position:absolute;inset:-12px;border-radius:50%;border:1px solid rgba(198,168,107,.08);animation:pulse 3.2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:0;transform:scale(.96)}55%{opacity:1;transform:scale(1)}}
+
+.fase-head{padding:18px 24px 2px;width:100%}
+.fase-eye{font-size:8px;letter-spacing:3px;color:rgba(198,168,107,.5);text-transform:uppercase;font-weight:700;margin-bottom:5px}
+.fase-name{font-family:"Bebas Neue",sans-serif;font-size:30px;letter-spacing:1.5px;line-height:1;color:var(--white)}
+.fase-name b{color:var(--gold);font-weight:400}
+.fase-copy{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:16px;color:var(--w50);line-height:1.5;margin-top:9px}
+.detail-toggle{margin:18px 24px 0;width:calc(100% - 48px);padding:13px;border:1px solid var(--gold-border);background:var(--gold-dim);color:var(--gold);font-size:9px;letter-spacing:3px;text-transform:uppercase;font-weight:800;cursor:pointer}
+.detail-toggle:hover{background:rgba(198,168,107,.16)}
+.detail-box{display:none}
+.detail-box.on{display:block}
+
+/* ── stats ── */
+.stats{display:flex;gap:1px;background:var(--w05);margin:18px 24px 0;border:1px solid var(--w05)}
+.stat{flex:1;padding:13px 8px;text-align:center;background:var(--black)}
+.stat-num{font-family:"Bebas Neue",sans-serif;font-size:26px;letter-spacing:1px;color:var(--gold);line-height:1}
+.stat-lbl{font-size:7px;letter-spacing:2px;color:var(--w35);text-transform:uppercase;font-weight:600;margin-top:5px}
+
+/* ── acciones portal venta ── */
+.actions{display:none;padding:24px 24px 4px;border-top:1px solid var(--w05)}
+.actions.on{display:block}
+.actions-eye{font-size:8px;letter-spacing:3px;color:rgba(198,168,107,.5);text-transform:uppercase;font-weight:800;margin-bottom:8px}
+.actions-title{font-family:"Bebas Neue",sans-serif;font-size:28px;letter-spacing:1.5px;line-height:1;color:var(--white);margin-bottom:8px}
+.actions-copy{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:16px;color:var(--w50);line-height:1.5;margin-bottom:16px}
+.action-grid{display:grid;grid-template-columns:1fr;gap:12px}
+.action-card{border:1px solid var(--gold-border);background:linear-gradient(180deg,rgba(198,168,107,.08),rgba(255,255,255,.02));padding:16px;position:relative;overflow:hidden}
+.action-card::before{content:"";position:absolute;top:0;left:0;width:2px;height:100%;background:var(--gold)}
+.action-tag{font-size:7px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:800;margin-bottom:8px}
+.action-name{font-size:13px;font-weight:700;color:var(--white);letter-spacing:.2px;margin-bottom:7px}
+.action-text{font-size:12px;font-weight:300;color:var(--w70);line-height:1.65;margin-bottom:10px}
+.action-key{font-size:11.5px;color:var(--gold-light);line-height:1.55;margin:8px 0 12px;padding-left:10px;border-left:1px solid var(--gold-border)}
+.action-btn{display:flex;align-items:center;justify-content:center;width:100%;padding:13px;border:1px solid var(--gold-border);background:var(--gold-dim);color:var(--gold);font-size:8px;letter-spacing:2.5px;text-transform:uppercase;font-weight:800;text-decoration:none;transition:all .2s}
+.action-btn:hover{background:rgba(198,168,107,.16);border-color:rgba(198,168,107,.4)}
+.action-btn.disabled{border-color:var(--w10);background:rgba(255,255,255,.03);color:var(--w35);cursor:not-allowed}
+.action-note{font-size:10.5px;color:var(--w50);line-height:1.55;margin-top:9px}
+.action-status{display:inline-flex;margin-bottom:10px;padding:4px 8px;border:1px solid var(--w10);background:rgba(255,255,255,.03);font-size:7px;letter-spacing:1.8px;text-transform:uppercase;color:var(--w50);font-weight:800}
+
+/* ── timeline ── */
+.tl{padding:24px 24px 12px}
+.tl.collapsed{display:none}
+.tl-title{font-size:8px;letter-spacing:3px;color:var(--w35);text-transform:uppercase;font-weight:700;margin-bottom:18px}
+.tl-item{display:flex;gap:14px;position:relative}
+.tl-spine{display:flex;flex-direction:column;align-items:center;flex-shrink:0}
+.tl-node{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;z-index:1;transition:all .4s}
+.n-done{background:var(--gold-dim);border:1px solid var(--gold-border)}
+.n-active{background:var(--gold);box-shadow:0 0 0 4px rgba(198,168,107,.14)}
+.n-pending{background:var(--black-3);border:1px solid var(--w10)}
+.tl-line{width:1px;flex:1;min-height:26px}
+.line-done{background:linear-gradient(180deg,var(--gold-border),var(--gold-border))}
+.line-pending{background:var(--w05)}
+.tl-body{padding-bottom:22px;flex:1}
+.tl-pct{font-family:"DM Mono",monospace;font-size:9px;letter-spacing:1px;color:var(--w20);margin-bottom:2px}
+.tl-label{font-size:12px;letter-spacing:.3px;color:var(--w35);font-weight:500}
+.tl-label.active{color:var(--gold);font-weight:600}
+.tl-label.done{color:var(--w70)}
+.tl-detail{font-size:11px;font-weight:300;color:var(--w50);line-height:1.55;margin-top:7px}
+.tl-next{margin-top:10px;padding:10px 12px;border-left:2px solid var(--gold-border);background:var(--gold-glow)}
+.tl-next-lbl{font-size:7px;letter-spacing:3px;color:rgba(198,168,107,.5);text-transform:uppercase;font-weight:700;margin-bottom:4px}
+.tl-next-txt{font-size:11.5px;font-weight:300;color:var(--w70);line-height:1.5}
+.tl-pend{margin-top:10px}
+.tl-pend-lbl{font-size:7px;letter-spacing:3px;color:var(--w35);text-transform:uppercase;font-weight:700;margin-bottom:6px}
+.tl-pend-item{font-size:11.5px;font-weight:300;color:var(--w70);line-height:1.7;padding-left:14px;position:relative}
+.tl-pend-item::before{content:"·";position:absolute;left:2px;color:var(--gold)}
+
+/* ── footer / wa ── */
+.foot{margin-top:auto;padding:18px 24px 30px}
+.wa{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;padding:15px;
+  border:1px solid var(--gold-border);background:var(--gold-dim);color:var(--gold);
+  font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:700;text-decoration:none;
+  transition:all .25s;cursor:pointer}
+.wa:hover{background:rgba(198,168,107,.16);border-color:rgba(198,168,107,.4)}
+.wa svg{width:15px;height:15px;fill:currentColor}
+.foot-note{text-align:center;font-family:"DM Mono",monospace;font-size:8px;letter-spacing:1.5px;color:var(--w20);margin-top:16px}
+.foot-note b{color:rgba(198,168,107,.5);font-weight:400}
 </style>
 </head>
 <body>
 <div class="shell">
 
-  <nav class="nav">
-    <svg class="nav-casa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9h13v-9"/></svg>
-    <div class="nav-asesor">
-      <div class="nav-name" id="navName">Proponer cita</div>
-      <div class="nav-sub" id="navSub">Producción inmobiliaria</div>
-    </div>
-  </nav>
-
-  <div class="scr active" id="scr-loading">
+  <!-- LOADING -->
+  <div class="state on" id="stLoad">
     <div class="spinner"></div>
-    <div class="load-txt">Cargando</div>
+    <div class="state-eyebrow">Método Neri</div>
+    <div class="state-msg">Consultando el avance de venta de tu propiedad…</div>
   </div>
 
-  <div class="scr" id="scr-error">
-    <div class="err-icon">◇</div>
-    <div class="err-title">No encontramos este evento</div>
-    <div class="err-sub">El link no es válido o el evento ya no está disponible. Escríbele a tu asesor para recibir el link correcto.</div>
+  <!-- ERROR -->
+  <div class="state" id="stError">
+    <div class="state-eyebrow">Método Neri</div>
+    <div class="state-msg" id="errMsg">No encontramos esta operación. Verifica el enlace que te compartió tu asesor.</div>
   </div>
 
-  <div class="scr" id="scr-enviado">
-    <div class="ok-icon">✓</div>
-    <div class="ok-title" id="okTitle">Propuesta enviada</div>
-    <div class="ok-sub" id="okSub">Tu propuesta fue enviada a tu asesor. Te confirmará la disponibilidad final antes de agendar la producción.</div>
+  <!-- HEADER -->
+  <div class="head" id="head" style="display:none">
+    <div>
+      <div class="head-brand">Portal de Venta · Método Neri</div>
+      <div class="head-prop" id="hProp">—</div>
+      <div class="head-folio" id="hFolio">—</div>
+    </div>
+    <div class="head-badge" id="hBadge">En proceso</div>
   </div>
 
-  <div class="scr" id="scr-main">
+  <!-- VIEW -->
+  <div class="view" id="view">
+
+    <div class="fanfare" id="fanfare" style="display:none">
+      <div class="fanfare-eye">Apartada</div>
+      <div class="fanfare-txt" id="fanfareTxt">Tu propiedad acaba de ser apartada. Comienza el proceso de compra.</div>
+    </div>
+
     <div class="hero">
-      <span class="hero-tag">Producción inmobiliaria</span>
-      <div class="hero-info">
-        <div class="hero-prop" id="heroProp">—</div>
-        <div class="hero-frase">Propón el día y la hora que mejor te acomoden para la sesión de foto y video. Tu asesor revisará disponibilidad y te confirmará.</div>
+      <div class="ring-wrap">
+        <div class="ring-deco"></div>
+        <svg class="ring-svg" viewBox="0 0 188 188">
+          <defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#8B6914"/><stop offset="55%" stop-color="#C6A86B"/><stop offset="100%" stop-color="#E2C98A"/>
+          </linearGradient></defs>
+          <circle class="ring-track" cx="94" cy="94" r="84"/>
+          <circle class="ring-halo" id="ringHalo" cx="94" cy="94" r="84"/>
+          <circle class="ring-fill" id="ringFill" cx="94" cy="94" r="84"/>
+        </svg>
+        <div class="ring-mid">
+          <div class="ring-pct" id="ringPct">0%</div>
+          <div class="ring-cap" id="ringCap">Avance</div>
+        </div>
       </div>
     </div>
-    <div class="body">
-      <div class="sec-label">Tu propuesta</div>
-      <form id="formCita">
-        <div class="form-row two">
-          <div>
-            <label class="f-lbl">Día propuesto</label>
-            <input class="f-inp" type="date" id="fFecha" required>
-          </div>
-          <div>
-            <label class="f-lbl">Hora propuesta</label>
-            <input class="f-inp" type="time" id="fHora" min="09:00" max="15:00" required>
-            <div class="f-hora-hint">Horario disponible: 9:00 a.m. – 3:00 p.m., todos los días.</div>
-          </div>
-        </div>
-        <div class="form-row">
-          <label class="f-lbl">Comentario (opcional)</label>
-          <textarea class="f-inp" id="fComentario" placeholder="Cualquier detalle que tu asesor deba saber…"></textarea>
-        </div>
-        <div class="f-note">Esta es tu propuesta — tu asesor la revisa y te manda la confirmación formal con todos los datos.</div>
-        <button class="submit-btn" type="submit" id="btnEnviar">Enviar propuesta</button>
-        <div class="submit-err" id="submitErr">No se pudo enviar. Verifica tu conexión e intenta de nuevo.</div>
-      </form>
-    </div>
-  </div>
 
-  <div class="foot">
-    <div class="foot-folio" id="evFolio"></div>
-    <div class="foot-txt">Método NERI · Sistema operativo inmobiliario</div>
+    <div class="fase-head">
+      <div class="fase-eye" id="faseEye">Etapa actual</div>
+      <div class="fase-name" id="faseName">—<b>.</b></div>
+      <div class="fase-copy" id="faseCopy"></div>
+    </div>
+
+    <button id="detailToggle" class="detail-toggle" onclick="toggleDetalle()">Ver proceso completo</button>
+    <div id="detailBox" class="detail-box"></div>
+
+    <div class="stats" id="stats"></div>
+
+    <div class="actions" id="accionesWrap"></div>
+
+    <div class="tl collapsed" id="timelineSection">
+      <div class="tl-title" id="tlTitle">Recorrido</div>
+      <div id="tlWrap"></div>
+    </div>
+
+    <div class="foot">
+      <a class="wa" id="waBtn" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.945C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 018.413 3.488 11.824 11.824 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.51 5.26l-.999 3.648 3.978-1.043 .001-.001 .999-.911z"/></svg>
+        <span id="waLabel">Contactar a mi asesor</span>
+      </a>
+      <div class="foot-note">Portal de venta · <b id="fFolio">—</b></div>
+    </div>
+
   </div>
 </div>
 
 <script>
-/* Lee el evento (mismo webhook y mismo formato que usa Confirmacion.html) */
-var WEBHOOK_LEE = "https://hook.us2.make.com/5ixjyngdawk1wstore3xg91xmiwym5i9";
-/* Escribe la propuesta — webhook real del escenario Make 5431139
-   "NERI · Producción Inmobiliaria (propuesta cliente)", el mismo que
-   ya usaba progreso-zeta. Espera JSON: folioEvento, fechaPropuesta,
-   horaPropuesta, comentario. NO cambiar esta URL sin confirmar en
-   Make > Escenario 5431139 > Webhook, porque si cambia el ID del
-   hook, esta URL deja de funcionar. */
-var WEBHOOK_PROPONE = "https://hook.us2.make.com/u0o13og2uful6sinwcq5w5xnjs3rg0oq";
+// El webhook de Make vive en el servidor — no se expone al cliente.
+// La llamada va a /api/progreso (proxy Vercel) que internamente consulta Make.
+var API_PROGRESO = "/api/progreso";
+var EXP_DOC_BASE = "https://expedientedocumentalpropietario.vercel.app/";
+var CONFIRMACION_BASE = "https://intranetmetodonerirealtor.vercel.app/Confirmacion.html";
+// ProponerCita.html es donde el cliente SÍ puede escribir día/hora y enviar
+// su propuesta (formulario real). Confirmacion.html es de solo lectura —
+// nunca tuvo forma de recibir una propuesta, por eso el botón de abajo
+// mandaba ahí y el cliente se topaba con la ficha final sin poder proponer.
+var PRODUCCION_BASE = "https://intranetmetodonerirealtor.vercel.app/ProponerCita.html";
+// Contrato listo para Make/Airtable: folio, vistaPortal(vendedor|comprador), propiedad, asesor, whatsappAsesor, etapaVendedor/etapaComprador, pctVendedor/pctComprador, estadoVisual, pendientesVendedor/pendientesComprador, proximoPasoVendedor/proximoPasoComprador.
+var CIRC = 2 * Math.PI * 84;
 
-function show(id){
-  ['scr-loading','scr-error','scr-main','scr-enviado'].forEach(function(s){
-    document.getElementById(s).classList.toggle('active', s === id);
+/*
+  COLUMNA VERTEBRAL DEL PORTAL · MÉTODO NERI
+  Regla operativa confirmada:
+  - Vendedor: arranca solo cuando firma venta exclusiva o venta directa. Antes es lead curioso.
+  - Comprador: arranca solo en apartado. Antes es captación/asesoría, no portal formal.
+  - Un solo portal: la intranet/Make decide si pinta vista vendedor o vista comprador.
+  - El portal solo muestra datos que vengan de Airtable/Make; no escribe, no simula, no inventa.
+*/
+
+var FASES_VENDEDOR = [
+  {n:"Acuerdo de venta firmado",pct:0,copy:"La operación inicia formalmente. Ya existe compromiso de venta exclusiva o venta directa.",next:"Solicitar y validar la documentación inicial de la propiedad.",responsable:"Asesor + vendedor",tiempo:"Mismo día a 1 día"},
+  {n:"Documentación de propiedad solicitada",pct:8,copy:"Se pidió al vendedor la documentación base para revisar si la propiedad puede venderse sin riesgo.",next:"Recibir documentos y detectar bloqueos antes de publicar.",responsable:"Vendedor",tiempo:"1 a 3 días"},
+  {n:"Expediente de propiedad en revisión",pct:18,copy:"El asesor revisa escritura, predial, agua, régimen, adeudos y datos comerciales antes de avanzar.",next:"Completar o corregir documentos faltantes.",responsable:"Asesor + vendedor",tiempo:"3 a 10 días"},
+  {n:"Propiedad lista para publicar",pct:30,copy:"La propiedad cuenta con base documental suficiente para salir al mercado con cuidado.",next:"Preparar ficha técnica, fotos, video, descripción y estrategia de publicación.",responsable:"Asesor",tiempo:"1 a 3 días"},
+  {n:"Publicación y promoción activa",pct:42,copy:"La propiedad ya está visible y en promoción. Se registran interesados y actividad comercial.",next:"Filtrar leads compradores y evitar visitas sin claridad financiera.",responsable:"Asesor",tiempo:"7 a 60 días, según mercado"},
+  {n:"Compradores en filtro",pct:52,copy:"Los interesados se están calificando para saber si pueden comprar y si vale la pena avanzar.",next:"Agendar visita solo con comprador viable o iniciar diagnóstico financiero.",responsable:"Asesor",tiempo:"Mismo día a 2 días por lead"},
+  {n:"Visitas y seguimiento",pct:60,copy:"Se controla quién visitó, qué objeciones hubo y cuál es la siguiente acción.",next:"Definir oferta, segunda visita o descarte en menos de 24 horas.",responsable:"Asesor",tiempo:"1 a 5 días por visita"},
+  {n:"Oferta o negociación",pct:68,copy:"Se definen condiciones antes de aceptar un apartado: precio, forma de pago, fechas, penalizaciones y entrega.",next:"Formalizar apartado solo si las condiciones están claras.",responsable:"Asesor + comprador + vendedor",tiempo:"1 a 5 días"},
+  {n:"Apartado aceptado",pct:76,copy:"La propiedad sale del mercado bajo condiciones firmadas y se mueve a expediente final.",next:"Integrar expediente final del vendedor y comprador para notaría o crédito.",responsable:"Asesor + comprador + vendedor",tiempo:"1 a 3 días"},
+  {n:"Expediente final del vendedor",pct:84,copy:"Se completa la documentación personal, fiscal y bancaria del vendedor para escriturar.",next:"Enviar expediente completo a notaría y validar riesgos fiscales.",responsable:"Vendedor · Control asesor",tiempo:"3 a 10 días"},
+  {n:"Notaría, certificados e impuestos",pct:91,copy:"La notaría revisa capacidad legal, gravámenes, adeudos, impuestos y proyecto de escritura.",next:"Programar firma cuando el expediente y pagos estén listos.",responsable:"Notaría · Acompaña asesor",tiempo:"7 a 20 días con expediente completo"},
+  {n:"Firma de escritura",pct:96,copy:"La compraventa se formaliza legalmente con comprador, vendedor, notaría y crédito si aplica.",next:"Confirmar pago y coordinar entrega de la propiedad.",responsable:"Notaría + partes",tiempo:"1 día"},
+  {n:"Pago y entrega",pct:99,copy:"Se ejecuta o confirma el pago y se entrega posesión física de la propiedad según acuerdo.",next:"Cerrar expediente, documentos finales, comisión y seguimiento postventa.",responsable:"Asesor + vendedor + comprador",tiempo:"Mismo día a 72 horas, según forma de pago"},
+  {n:"Postcierre",pct:100,copy:"La operación queda cerrada y documentada. Se da seguimiento a inscripción, expediente y referidos.",next:"",responsable:"Asesor + notaría",tiempo:"30 a 90 días para documentos finales"}
+];
+
+var FASES_COMPRADOR = [
+  {n:"Apartado aceptado",pct:0,copy:"La propiedad quedó reservada bajo condiciones firmadas. Desde aquí inicia tu proceso formal de compra.",next:"Integrar expediente del comprador y confirmar forma de pago.",responsable:"Comprador + asesor",tiempo:"1 a 3 días"},
+  {n:"Expediente del comprador",pct:15,copy:"Se reúne tu documentación personal, fiscal y de compra para avanzar con seguridad.",next:"Validar crédito, recurso propio o esquema de pago definido.",responsable:"Comprador · Control asesor",tiempo:"2 a 30 días, según forma de pago"},
+  {n:"Crédito, recurso o avalúo",pct:32,copy:"Se confirma que el dinero puede llegar a la operación y que la propiedad cumple con el esquema de pago.",next:"Preparar instrucción o expediente completo para notaría.",responsable:"Comprador + banco/Infonavit/broker/notaría",tiempo:"3 a 45 días, según forma de pago"},
+  {n:"Notaría en revisión",pct:52,copy:"La notaría revisa documentos, forma de pago, impuestos, gravámenes y proyecto de escritura.",next:"Atender observaciones y preparar fecha de firma.",responsable:"Notaría · Acompaña asesor",tiempo:"7 a 20 días con expediente completo"},
+  {n:"Certificados e impuestos",pct:68,copy:"Se integran certificados, constancias, cálculos y pagos necesarios para llegar a firma.",next:"Confirmar que todo esté listo para firmar.",responsable:"Notaría + municipio/catastro/agua/registro",tiempo:"Según dependencia y gestoría"},
+  {n:"Firma de escritura",pct:84,copy:"La compraventa se formaliza legalmente ante notaría.",next:"Confirmar pago o dispersión y coordinar entrega de la propiedad.",responsable:"Notaría + comprador + vendedor",tiempo:"1 día"},
+  {n:"Pago y entrega",pct:96,copy:"Se confirma el pago y se coordina entrega de llaves, controles, medidores, inventario y posesión física.",next:"Cerrar expediente y dar seguimiento a documentos finales.",responsable:"Asesor + comprador + vendedor",tiempo:"Mismo día a 72 horas, según acuerdo"},
+  {n:"Postcierre",pct:100,copy:"La compra queda cerrada y documentada. Continúa el seguimiento de inscripción y documentos finales.",next:"",responsable:"Asesor + notaría",tiempo:"30 a 90 días para documentos finales"}
+];
+
+function $(id){return document.getElementById(id);}
+function show(id){["stLoad","stError"].forEach(function(s){$(s).classList.remove("on");});if(id)$(id).classList.add("on");}
+function getParam(k){var m=location.search.match(new RegExp("[?&]"+k+"=([^&]+)"));return m?decodeURIComponent(m[1]):"";}
+function getFolio(){return getParam("folio");}
+function esc(v){return String(v===undefined||v===null?"":v).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c];});}
+function norm(v){return String(v||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();}
+function isNum(v){return v!==undefined&&v!==null&&v!==""&&!isNaN(Number(v));}
+function pick(){for(var i=0;i<arguments.length;i++){if(arguments[i]!==undefined&&arguments[i]!==null&&arguments[i]!=="")return arguments[i];}return "";}
+function idxByName(arr,name){var n=norm(name);if(!n)return -1;for(var i=0;i<arr.length;i++){if(norm(arr[i].n)===n)return i;}return -1;}
+function resolveVista(d){
+  var q=norm(getParam("vista")||getParam("tipo")||getParam("rol"));
+  var v=norm(pick(q,d.vistaPortal,d.rolPortal,d.vista,d.capitulo));
+  if(v.indexOf("compr")>-1||v==="compra")return "comprador";
+  if(v.indexOf("vended")>-1||v.indexOf("comercial")>-1||v.indexOf("propiedad")>-1)return "vendedor";
+  if(d.etapaCompra||d.faseActualCompra)return "comprador";
+  if(d.etapaVendedor||d.etapa)return "vendedor";
+  return "";
+}
+function resolveStage(d,vista){
+  return pick(
+    vista==="vendedor"?pick(d.etapaVendedor,d.etapaPortalVendedor,d.etapa):"",
+    vista==="comprador"?pick(d.etapaComprador,d.etapaPortalComprador,d.etapaCompra,d.faseActual,d.fase):"",
+    d.etapaPortal,d.etapa_operativa,d.etapaActual,d.faseActual
+  );
+}
+function estadoTxt(v){
+  var e=norm(v);
+  if(e.indexOf("complet")>-1||e==="verde"||e==="ok")return "🟢 Completo";
+  if(e.indexOf("bloque")>-1||e==="rojo")return "🔴 Requiere atención";
+  if(e.indexOf("revision")>-1||e==="azul")return "🔵 Revisión del asesor";
+  if(e.indexOf("no iniciado")>-1||e==="negro")return "⚫ No iniciado";
+  if(e.indexOf("proceso")>-1||e==="amarillo")return "🟡 En proceso";
+  return v?String(v):"";
+}
+function pctFor(d,vista,f){
+  var p=pick(
+    vista==="vendedor"?pick(d.pctVendedor,d.porcentajeVendedor,d.avanceVendedor,d.pctComercializacion):"",
+    vista==="comprador"?pick(d.pctComprador,d.porcentajeComprador,d.avanceComprador,d.pctCompra):"",
+    d.porcentajePortal,d.pctPortal,d.avancePortal
+  );
+  if(isNum(p))return Math.max(0,Math.min(100,Number(p)));
+  return f.pct;
+}
+function setRing(pct){
+  var off=CIRC-(CIRC*pct/100);
+  $("ringPct").textContent=Math.round(pct)+"%";
+  setTimeout(function(){$("ringFill").style.strokeDashoffset=off;$("ringHalo").style.strokeDashoffset=off;},250);
+}
+function daysSince(iso){if(!iso)return "—";var d=new Date(iso);if(isNaN(d))return "—";return Math.max(0,Math.floor((Date.now()-d.getTime())/86400000));}
+function splitPend(s){if(!s)return [];return String(s).split(/[\n,]+/).map(function(x){return x.trim();}).filter(Boolean);}
+function cleanPhone(v){return String(v||"").replace(/[^0-9]/g,"");}
+function field(d,names){
+  d=d||{};
+  for(var i=0;i<names.length;i++){
+    var k=names[i];
+    if(d[k]!==undefined&&d[k]!==null&&d[k]!=="")return d[k];
+  }
+  var keys=Object.keys(d);
+  for(var j=0;j<names.length;j++){
+    var target=norm(names[j]);
+    for(var n=0;n<keys.length;n++){
+      if(norm(keys[n])===target&&d[keys[n]]!==undefined&&d[keys[n]]!==null&&d[keys[n]]!=="")return d[keys[n]];
+    }
+  }
+  return "";
+}
+function addParams(base,params){
+  var q=[];
+  Object.keys(params).forEach(function(k){if(params[k])q.push(encodeURIComponent(k)+"="+encodeURIComponent(params[k]));});
+  return base+(base.indexOf("?")>-1?"&":"?")+q.join("&");
+}
+function isLink(v){v=String(v||"").trim();return /^https?:\/\//i.test(v)||v.charAt(0)==="/";}
+function getToken(d){
+  return pick(
+    getParam("token"),
+    field(d,["Token Expediente","tokenExpediente","token","Token"])
+  );
+}
+function resolveExpedienteLink(d){
+  var direct=field(d,[
+    "Link Expediente Documental","linkExpedienteDocumental","Link Expediente","linkExpediente",
+    "Expediente Documental","expedienteDocumental","URL Expediente","urlExpediente","portalExpediente"
+  ]);
+  if(direct&&isLink(direct))return String(direct).trim();
+
+  /*
+    El folio del portal de progreso puede ser distinto al folio seguro del expediente.
+    Por eso aceptamos folioExpediente como llave documental, sin cambiar Airtable ni Make.
+    Si no viene, se mantiene el comportamiento anterior con el folio del portal.
+  */
+  var folio=pick(
+    getParam("folioExpediente"),
+    getParam("folio_documental"),
+    field(d,["Folio Expediente","folioExpediente","Folio Expediente Documental","folioExpedienteDocumental","Folio Documental","folioDocumental"]),
+    field(d,["folio","Folio"]),
+    getFolio()
+  );
+  var token=getToken(d);
+  if(folio&&token)return addParams(EXP_DOC_BASE,{folio:folio,token:token});
+  return "";
+}
+function isEventoFolio(v){
+  v=String(v||"").trim();
+  return /^EV-[A-Z]+-\d{4}-\d{3,}$/i.test(v) || /^EV-PROD/i.test(v);
+}
+function linkConfirmacionEvento(folioEvento){
+  if(!folioEvento)return "";
+  return addParams(CONFIRMACION_BASE,{evento:String(folioEvento).trim()});
+}
+function linkProponerEvento(folioEvento){
+  if(!folioEvento)return "";
+  return addParams(PRODUCCION_BASE,{evento:String(folioEvento).trim()});
+}
+function resolveProduccionLink(d){
+  /*
+    ANTES esta función primero buscaba un link ya armado por Make
+    (linkConfirmacionProduccion) y, si existía, lo usaba directo sin
+    revisar nada más. Verifiqué el escenario de Make que llena ese campo
+    (NERI · Portal Progreso, id 5212599): SIEMPRE arma ese link apuntando
+    a Confirmacion.html, sin importar si la cita ya está confirmada o ni
+    siquiera existe. Por eso el cliente nunca llegaba al formulario de
+    proponer — el link que Make ya traía ganaba antes de que esta función
+    alcanzara a decidir. Ahora esta función SIEMPRE decide por su cuenta,
+    usando 'estadoProduccion' y 'folioEventoProduccion', que ese mismo
+    escenario de Make SÍ manda bien en ambas ramas (evento existente y
+    evento recién creado) — verificado campo por campo contra el
+    blueprint real, no adivinado.
+  */
+  var estado=String(field(d,["estadoProduccion","Estado Produccion","Estado Producción","estadoOperacionProduccion"])||"").trim().toLowerCase();
+  var yaConfirmada=(estado==="confirmada"||estado==="realizada");
+  var folioEvento=pick(
+    getParam("eventoProduccion"),
+    getParam("evento"),
+    field(d,[
+      "folioEventoProduccion","Folio Evento Produccion","Folio Evento Producción",
+      "Folio Cita Produccion","Folio Cita Producción","folioCitaProduccion",
+      "Evento Produccion","Evento Producción","eventoProduccion",
+      "Folio Evento","folioEvento","Evento","evento",
+      "Folio Produccion","Folio Producción","folioProduccion"
+    ])
+  );
+  if(isEventoFolio(folioEvento))return yaConfirmada?linkConfirmacionEvento(folioEvento):linkProponerEvento(folioEvento);
+  // Último recurso: si Make sí llegó a mandar un link completo (por si
+  // algún día se agrega otro campo de link real, no el que sabemos que
+  // está mal) y no pudimos armar nada con folio+estado, lo usamos.
+  var direct=field(d,["linkConfirmacionProduccion","Link Confirmacion Produccion","Link Confirmación Producción"]);
+  if(direct && isLink(String(direct).trim()))return String(direct).trim();
+  return "";
+}
+function resolveProduccionWhatsapp(d){
+  var wa=cleanPhone(field(d,["whatsappAsesor","WhatsApp Asesor","telefonoAsesor","Teléfono Asesor","whatsapp","WhatsApp"]));
+  if(!wa)return "";
+  var asesor=field(d,["asesor","Asesor"])||"mi asesor";
+  var folio=pick(field(d,["folio","Folio"]),getFolio());
+  var msg="Hola "+asesor+", quiero confirmar la cita de foto y video de mi propiedad."+(folio?" Folio: "+folio:"");
+  return "https://wa.me/"+wa+"?text="+encodeURIComponent(msg);
+}
+function renderAcciones(d,vista){
+  var wrap=$("accionesWrap");
+  if(!wrap)return;
+  if(vista!=="vendedor"){wrap.className="actions";wrap.innerHTML="";return;}
+
+  var expLink=resolveExpedienteLink(d);
+  var prodLink=resolveProduccionLink(d);
+  var prodEstado=field(d,["Estado Produccion","Estado Producción","estadoProduccion","Estado Cita Produccion","Estado Cita Producción"])||"Pendiente de confirmar";
+  var prodYaConfirmada=/^(confirmada|realizada)$/i.test(String(prodEstado).trim());
+
+  var expBtn=expLink
+    ? '<a class="action-btn" href="'+esc(expLink)+'" target="_blank" rel="noopener">Subir mis documentos</a>'
+    : '<span class="action-btn disabled">Enlace seguro pendiente</span>';
+  var expNote=expLink
+    ? ''
+    : '<div class="action-note">Tu asesor debe compartirte el enlace completo para subir documentos de forma segura.</div>';
+
+  var prodBtnTxt=prodYaConfirmada?'Ver mi confirmación':'Proponer día y hora para foto y video';
+  var prodBtn=prodLink
+    ? '<a class="action-btn" href="'+esc(prodLink)+'" target="_blank" rel="noopener">'+esc(prodBtnTxt)+'</a>'
+    : '<span class="action-btn disabled">Cita pendiente</span>';
+  var prodNote=prodLink
+    ? ''
+    : '<div class="action-note">Tu asesor debe generar el evento de producción para que puedas proponer día y hora desde esta pantalla.</div>';
+
+  wrap.className="actions on";
+  wrap.innerHTML=''+
+    '<div class="actions-eye">Portal de Venta</div>'+
+    '<div class="actions-title">Acciones para avanzar</div>'+
+    '<div class="actions-copy">Un solo portal para seguir tu venta, subir documentos y preparar la salida al mercado.</div>'+
+    '<div class="action-grid">'+
+      '<div class="action-card">'+
+        '<div class="action-tag">Expediente documental</div>'+
+        '<div class="action-name">Documentos de la propiedad</div>'+
+        '<div class="action-text">Desde aquí puedes subir los documentos necesarios para avanzar con la venta de tu propiedad.</div>'+
+        expBtn+expNote+
+      '</div>'+
+      '<div class="action-card">'+
+        '<div class="action-tag">Producción inmobiliaria</div>'+
+        '<div class="action-name">Foto y video de la propiedad</div>'+
+        '<span class="action-status">'+esc(prodEstado)+'</span>'+
+        '<div class="action-text">Para preparar correctamente la salida al mercado necesitamos confirmar la cita de producción inmobiliaria de la estrella del proceso: la propiedad.</div>'+
+        '<div class="action-key">Sin esta cita todavía no podemos publicar correctamente la propiedad.</div>'+
+        prodBtn+prodNote+
+      '</div>'+
+    '</div>';
+}
+
+function buildTimeline(fases,actualIdx){
+  var wrap=$("tlWrap");wrap.innerHTML="";
+  fases.forEach(function(f,i){
+    var done=i<actualIdx,active=i===actualIdx,last=i===fases.length-1;
+    var item=document.createElement("div");item.className="tl-item";
+    var spine=document.createElement("div");spine.className="tl-spine";
+    var node=document.createElement("div");
+    node.className="tl-node "+(done?"n-done":active?"n-active":"n-pending");
+    node.innerHTML=done?'<span style="font-size:10px;color:#C6A86B">✓</span>':active?'<span style="width:7px;height:7px;border-radius:50%;background:#09090A;display:block"></span>':'<span style="font-size:8px;color:rgba(255,255,255,.2);font-weight:700">'+(i+1)+'</span>';
+    spine.appendChild(node);
+    if(!last){var line=document.createElement("div");line.className="tl-line "+(done?"line-done":"line-pending");spine.appendChild(line);}
+    var body=document.createElement("div");body.className="tl-body";
+    body.innerHTML='<div class="tl-pct">'+esc(f.pct)+'%</div><div class="tl-label '+(active?"active":done?"done":"")+'">'+esc(f.n)+'</div>';
+    if(active){
+      if(f.copy){var d=document.createElement("div");d.className="tl-detail";d.textContent=f.copy;body.appendChild(d);}
+      if(window.__META&&window.__META.length){
+        var mb=document.createElement("div");mb.className="tl-next";mb.innerHTML='<div class="tl-next-lbl">Control</div>';
+        window.__META.forEach(function(m){mb.innerHTML+='<div class="tl-next-txt">'+esc(m)+'</div>';});body.appendChild(mb);
+      }
+      if(window.__PEND&&window.__PEND.length){var pb=document.createElement("div");pb.className="tl-pend";pb.innerHTML='<div class="tl-pend-lbl">Pendientes</div>';window.__PEND.forEach(function(p){pb.innerHTML+='<div class="tl-pend-item">'+esc(p)+'</div>';});body.appendChild(pb);}
+      var nextTxt=window.__NEXT||f.next;
+      if(nextTxt){var ns=document.createElement("div");ns.className="tl-next";ns.innerHTML='<div class="tl-next-lbl">Próximo paso</div><div class="tl-next-txt">'+esc(nextTxt)+'</div>';body.appendChild(ns);}
+    }
+    item.appendChild(spine);item.appendChild(body);wrap.appendChild(item);
   });
 }
-function tv(v){ return v !== undefined && v !== null && String(v).trim() !== "" && String(v).trim() !== "—"; }
 
-var folio = (function(n){ try{ return new URLSearchParams(location.search).get(n)||""; }catch(e){ return ""; } })('evento');
-var C_asesorWa = '', C_asesorNombre = '', C_propiedad = '';
+function setHeaderBadge(d,pct){
+  var e=estadoTxt(d.estadoVisual||d.estadoEtapa||d.estado);
+  var label=e||((pct>=100)?"🟢 Completo":"🟡 En proceso");
+  $("hBadge").textContent=label.replace(/[🟢🟡🔴⚫🔵]/g,"").trim();
+  $("hBadge").className="head-badge"+(pct>=100||norm(label).indexOf("completo")>-1?" done":"");
+}
 
-(function cargar(){
-  if(!folio){ show('scr-error'); return; }
-  fetch(WEBHOOK_LEE + '?evento=' + encodeURIComponent(folio), { method:'GET', cache:'no-store' })
-    .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
-    .then(function(d){
-      d = Array.isArray(d) ? d[0] : d;
-      if(!d || (!d.folioEvento && !d.folio && !d.propiedad)){ show('scr-error'); return; }
-      var estado = String(d.estado||'').trim().toLowerCase();
-      document.getElementById('evFolio').textContent = 'FOLIO · ' + (d.folioEvento||d.folio||folio);
-      document.getElementById('heroProp').textContent = d.propiedad || '—';
-      document.title = 'Proponer cita · ' + (d.propiedad || 'Método NERI');
-      C_propiedad = d.propiedad || '';
-      C_asesorNombre = d.asesor || d.asesorNombre || '';
-      C_asesorWa = String(d.wa||d.whatsapp||d.asesorWhatsapp||'').replace(/\D/g,'');
-      if(d.asesor){ document.getElementById('navName').textContent = d.asesor; document.getElementById('navSub').textContent = 'Tu asesor inmobiliario'; }
-      // Ya confirmada o realizada → no tiene caso proponer de nuevo,
-      // se manda directo a la ficha formal (Confirmacion.html), mismo folio.
-      if(estado === 'confirmada' || estado === 'realizada'){
-        location.replace('Confirmacion.html?evento=' + encodeURIComponent(folio));
-        return;
-      }
-      // Ya está pendiente de que el asesor confirme → no se vuelve a
-      // pedir propuesta, se avisa que ya está en manos del asesor.
-      if(estado === 'pendiente de confirmar'){
-        document.getElementById('okTitle').textContent = 'Ya enviaste tu propuesta';
-        document.getElementById('okSub').textContent = 'Tu asesor está revisando la disponibilidad. En cuanto confirme, te va a llegar la confirmación formal con todos los datos.';
-        show('scr-enviado');
-        return;
-      }
-      show('scr-main');
-    })
-    .catch(function(){ show('scr-error'); });
-})();
-
-document.getElementById('formCita').addEventListener('submit', function(ev){
-  ev.preventDefault();
-  var btn = document.getElementById('btnEnviar');
-  var err = document.getElementById('submitErr');
-  err.style.display = 'none';
-  var fecha = document.getElementById('fFecha').value;
-  var hora = document.getElementById('fHora').value;
-  var comentario = document.getElementById('fComentario').value.trim();
-  if(!fecha || !hora) return;
-  // El min/max del input de hora es solo visual — muchos navegadores
-  // (sobre todo en celular) no lo obligan. Esta es la validación real.
-  var horaMin = hora.split(':').map(Number);
-  var minutosHora = horaMin[0]*60 + horaMin[1];
-  if(minutosHora < 9*60 || minutosHora > 15*60){
-    err.textContent = 'El horario disponible es de 9:00 a.m. a 3:00 p.m.';
-    err.style.display = 'block';
-    return;
+function renderStats(d,vista,pct){
+  var html="";
+  if(vista==="vendedor"){
+    var dias=daysSince(pick(d.fechaCompromiso,d.fechaAlta,d.fechaInicio));
+    var inter=pick(d.interesados,d.leadsCompradores,d.leads,"—");
+    var estado=pick(d.estadoOperacion,d.estado,"—");
+    if(dias!=="—"||inter!=="—"||estado!=="—"){
+      html='<div class="stat"><div class="stat-num">'+esc(dias)+'</div><div class="stat-lbl">Días activos</div></div>'+
+           '<div class="stat"><div class="stat-num">'+esc(inter)+'</div><div class="stat-lbl">Interesados</div></div>'+
+           '<div class="stat"><div class="stat-num">'+esc(estado)+'</div><div class="stat-lbl">Estado</div></div>';
+    }
   }
-  err.textContent = 'No se pudo enviar. Verifica tu conexión e intenta de nuevo.';
-  btn.disabled = true; btn.textContent = 'Enviando…';
-  fetch(WEBHOOK_PROPONE, {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({ folioEvento: folio, fechaPropuesta: fecha, horaPropuesta: hora, comentario: comentario })
-  })
-    .then(function(r){ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
-    .then(function(d){
-      if(d && d.mensaje) document.getElementById('okSub').textContent = d.mensaje;
-      document.getElementById('okTitle').textContent = 'Propuesta enviada';
-      show('scr-enviado');
-      // Aviso por WhatsApp DEL CLIENTE hacia el asesor — mismo patrón que
-      // usa el resto del sistema: se abre ya escrito, el cliente da clic
-      // en enviar (no es automático, nadie manda WhatsApp solo en este
-      // sistema). Si no hay número de asesor no se intenta nada — no
-      // bloquea, la propuesta ya quedó guardada de todos modos.
-      if(C_asesorWa){
-        var msg='Hola '+(C_asesorNombre||'')+', te escribo porque propuse una cita de producción inmobiliaria para '+(C_propiedad||'tu propiedad')+'.\n\n'
-          +'Día propuesto: '+fecha+'\nHora propuesta: '+hora+'\n'
-          +'Comentario: '+(comentario||'Sin comentario')+'\n\n'
-          +'Folio del evento: '+folio+'\n\n'
-          +'Por favor revisa disponibilidad y confirma la cita final.';
-        var waLink='https://wa.me/'+C_asesorWa+'?text='+encodeURIComponent(msg);
-        setTimeout(function(){ window.open(waLink,'_blank'); }, 400);
-      }
+  if(html){$("stats").innerHTML=html;$("stats").style.display="flex";}else{$("stats").style.display="none";}
+  var nums=$("stats").querySelectorAll(".stat-num");
+  for(var i=0;i<nums.length;i++){
+    if(String(nums[i].textContent).length>5){nums[i].style.fontSize="13px";nums[i].style.fontFamily="Montserrat";nums[i].style.fontWeight="600";nums[i].style.letterSpacing="1px";}
+  }
+}
+
+function render(d){
+  if(!d||!d.propiedad){show("stError");$("errMsg").textContent="No encontramos datos reales de esta operación. Verifica el folio o la respuesta de Make.";return;}
+
+  var vista=resolveVista(d);
+  var fases=vista==="comprador"?FASES_COMPRADOR:vista==="vendedor"?FASES_VENDEDOR:null;
+  if(!fases){show("stError");$("errMsg").textContent="La operación no trae vistaPortal válida: vendedor o comprador.";return;}
+  var stageName=resolveStage(d,vista);
+  var idx=idxByName(fases,stageName);
+  if(idx<0){show("stError");$("errMsg").textContent="La etapa enviada por Make no coincide con la columna vertebral del portal: "+stageName;return;}
+
+  var f=fases[idx];
+  var pct=pctFor(d,vista,f);
+  var tipo=pick(d.tipoOperacion,d.tipoVenta,d.convenioVenta,"");
+
+  $("hProp").textContent=d.propiedad||"";
+  $("hFolio").textContent=d.folio||"";
+  $("fFolio").textContent=d.folio||"";
+  setHeaderBadge(d,pct);
+
+  var wa=(d.whatsapp||d.whatsappAsesor||"").replace(/[^0-9]/g,"");
+  if(wa){
+    var msg=encodeURIComponent("Hola"+(d.asesor?" "+d.asesor:"") + ", me gustaría saber el avance de mi operación. Folio: "+(d.folio||""));
+    $("waBtn").href="https://wa.me/"+wa+"?text="+msg;
+    $("waLabel").textContent=d.waLabel||("Contactar a "+(d.asesor||"mi asesor"));
+    $("waBtn").style.display="";
+  } else { $("waBtn").style.display="none"; }
+
+  var estado=estadoTxt(d.estadoVisual||d.estadoEtapa||"");
+  window.__META=[];
+  if(estado)window.__META.push("Estado visual: "+estado);
+  window.__META.push("Responsable: "+(pick(d.responsableActual,d.responsable,f.responsable)||"No definido"));
+  window.__META.push("Tiempo estimado: "+(pick(d.tiempoEstimado,d.tiempo,f.tiempo)||"No definido"));
+  if(tipo)window.__META.push("Tipo de compromiso: "+tipo);
+  if(d.fechaLimite)window.__META.push("Fecha límite: "+d.fechaLimite);
+
+  window.__PEND=splitPend(pick(
+    vista==="vendedor"?d.pendientesVendedor:"",
+    vista==="comprador"?d.pendientesComprador:"",
+    d.pendientes
+  ));
+  window.__NEXT=pick(
+    vista==="vendedor"?d.proximoPasoVendedor:"",
+    vista==="comprador"?d.proximoPasoComprador:"",
+    d.proximoPaso
+  );
+
+  $("ringCap").textContent=vista==="comprador"?"Compra":"Venta";
+  $("faseEye").textContent=(vista==="comprador"?"Fase ":"Etapa ")+(idx+1)+" de "+fases.length+" · "+(vista==="comprador"?"Comprador":"Vendedor");
+  $("faseName").innerHTML=esc(f.n)+'<b>.</b>';
+  $("faseCopy").textContent=f.copy;
+  $("tlTitle").textContent=vista==="comprador"?"Detalle del comprador":"Proceso de venta";
+
+  if((vista==="comprador"&&norm(f.n).indexOf("apartado")>-1)||(vista==="vendedor"&&norm(f.n).indexOf("apartado")>-1)){
+    $("fanfare").style.display="";
+    $("fanfareTxt").textContent="La propiedad fue apartada. Desde aquí el avance depende de expedientes, crédito o recurso, notaría, firma y entrega.";
+  } else { $("fanfare").style.display="none"; }
+
+  renderStats(d,vista,pct);
+  renderAcciones(d,vista);
+  var timelineSection=$("timelineSection");
+  if(timelineSection)timelineSection.classList.add("collapsed");
+  $("detailBox").classList.remove("on");
+  $("detailToggle").textContent="Ver proceso completo";
+  setRing(pct);
+  buildTimeline(fases,idx);
+
+  show(null);
+  $("head").style.display="flex";
+  $("view").classList.add("on");
+}
+
+function toggleDetalle(){
+  var t=$("detailToggle");
+  var tl=$("timelineSection");
+  if(!tl)return;
+  var collapsed=tl.classList.toggle("collapsed");
+  t.textContent=collapsed?"Ver proceso completo":"Ocultar proceso completo";
+  if(!collapsed){
+    setTimeout(function(){
+      try{tl.scrollIntoView({behavior:"smooth",block:"start"});}catch(_){location.hash="tlTitle";}
+    },80);
+  }
+}
+
+function load(){
+  var folio=getFolio();
+  if(!folio){show("stError");$("errMsg").textContent="Falta el folio en el enlace. Pide a tu asesor que te comparta el link completo.";return;}
+  fetch(API_PROGRESO+"?folio="+encodeURIComponent(folio)+(getParam("vista")?"&vista="+encodeURIComponent(getParam("vista")):""))
+    .then(function(r){return r.text();})
+    .then(function(t){
+      var d;try{d=JSON.parse(t);}catch(e){d=null;}
+      render(d);
     })
-    .catch(function(){
-      err.style.display = 'block';
-      btn.disabled = false; btn.textContent = 'Enviar propuesta';
-    });
-});
+    .catch(function(){show("stError");$("errMsg").textContent="No pudimos consultar tu operación en este momento. Intenta de nuevo en unos minutos.";});
+}
+load();
+
 </script>
 </body>
 </html>
