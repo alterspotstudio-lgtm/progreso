@@ -37,10 +37,19 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opa
 .head-folio{font-family:"DM Mono",monospace;font-size:9px;letter-spacing:2px;color:var(--w20);margin-top:3px}
 .head-badge{font-size:8px;letter-spacing:2.5px;text-transform:uppercase;font-weight:700;padding:6px 11px;border:1px solid var(--gold-border);color:var(--gold);background:var(--gold-dim);white-space:nowrap}
 .head-badge.done{border-color:rgba(76,175,80,.35);color:var(--green);background:var(--green-dim)}
+.head-badge.paused{border-color:var(--w20);color:var(--w50);background:rgba(255,255,255,.04)}
+.head-badge.alert{border-color:rgba(232,93,93,.35);color:#E85D5D;background:rgba(232,93,93,.10)}
 
-.view{display:none;flex-direction:column;flex:1;animation:rise .5s cubic-bezier(.16,1,.3,1) both}
+.view{display:none;flex-direction:column;flex:1}
 .view.on{display:flex}
 @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.view.on .prop-banner{animation:rise .5s cubic-bezier(.16,1,.3,1) both}
+.view.on .fanfare{animation:rise .5s cubic-bezier(.16,1,.3,1) .05s both}
+.view.on .hero{animation:rise .5s cubic-bezier(.16,1,.3,1) .09s both}
+.view.on .fase-head{animation:rise .5s cubic-bezier(.16,1,.3,1) .16s both}
+.view.on .stats{animation:rise .5s cubic-bezier(.16,1,.3,1) .22s both}
+.view.on .actions.on{animation:rise .5s cubic-bezier(.16,1,.3,1) .22s both}
+.view.on .foot{animation:rise .5s cubic-bezier(.16,1,.3,1) .28s both}
 
 /* ── celebration ── */
 .fanfare{margin:0;padding:16px 24px;background:linear-gradient(180deg,rgba(198,168,107,.14),transparent);
@@ -50,13 +59,13 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opa
 .fanfare-txt{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:18px;color:var(--gold-light);line-height:1.4}
 
 /* ── banner de propiedad ── */
-.prop-banner{display:none;align-items:center;gap:13px;margin:14px 24px 0;padding:12px;border:1px solid var(--gold-border);background:var(--black-2)}
-.prop-banner.no-photo{padding:14px 16px}
-.pb-photo{width:52px;height:52px;object-fit:cover;border-radius:2px;border:1px solid var(--w10);flex-shrink:0;display:block}
-.pb-info{min-width:0;flex:1}
-.pb-tag{font-size:7px;letter-spacing:3px;color:rgba(198,168,107,.5);text-transform:uppercase;font-weight:700;margin-bottom:3px}
-.pb-name{font-family:"Bebas Neue",sans-serif;font-size:17px;letter-spacing:1px;color:var(--white);line-height:1.15;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pb-price{font-family:"DM Mono",monospace;font-size:12px;color:var(--gold);margin-top:4px;letter-spacing:.4px}
+.prop-banner{display:none;flex-direction:column;margin:14px 24px 0;border:1px solid var(--gold-border);background:var(--black-2);overflow:hidden}
+.prop-banner.no-photo .pb-photo{display:none}
+.pb-photo{width:100%;height:176px;object-fit:cover;display:block;border-bottom:1px solid var(--gold-border)}
+.pb-info{padding:13px 16px}
+.pb-tag{font-size:7px;letter-spacing:3px;color:rgba(198,168,107,.5);text-transform:uppercase;font-weight:700;margin-bottom:4px}
+.pb-name{font-family:"Bebas Neue",sans-serif;font-size:20px;letter-spacing:1px;color:var(--white);line-height:1.15}
+.pb-price{font-family:"DM Mono",monospace;font-size:13px;color:var(--gold);margin-top:4px;letter-spacing:.4px}
 
 /* ── hero circle ── */
 .hero{display:flex;flex-direction:column;align-items:center;padding:30px 24px 22px;border-bottom:1px solid var(--w05);position:relative}
@@ -439,11 +448,22 @@ function buildTimeline(fases,actualIdx){
   });
 }
 
+function badgeClass(rawLabel,pct){
+  if(pct>=100)return "done";
+  if(/^🟢/.test(rawLabel))return "done";
+  if(/^🔴/.test(rawLabel))return "alert";
+  if(/^⚫/.test(rawLabel))return "paused";
+  var n=norm(rawLabel);
+  if(n.indexOf("disponible")>-1||n.indexOf("activa")>-1||n.indexOf("vendida")>-1)return "done";
+  if(n.indexOf("pausa")>-1)return "paused";
+  if(n.indexOf("cancelada")>-1)return "alert";
+  return "";
+}
 function setHeaderBadge(d,pct){
   var e=estadoTxt(d.estadoVisual||d.estadoEtapa||d.estado);
   var label=e||((pct>=100)?"🟢 Completo":"🟡 En proceso");
   $("hBadge").textContent=label.replace(/[🟢🟡🔴⚫🔵]/g,"").trim();
-  $("hBadge").className="head-badge"+(pct>=100||norm(label).indexOf("completo")>-1?" done":"");
+  $("hBadge").className="head-badge "+badgeClass(label,pct);
 }
 
 function renderPropBanner(d,vista){
