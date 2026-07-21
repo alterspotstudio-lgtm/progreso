@@ -49,6 +49,15 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opa
 .fanfare-eye{font-size:8px;letter-spacing:4px;color:var(--gold);text-transform:uppercase;font-weight:700;margin-bottom:5px}
 .fanfare-txt{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:18px;color:var(--gold-light);line-height:1.4}
 
+/* ── banner de propiedad ── */
+.prop-banner{display:none;align-items:center;gap:13px;margin:14px 24px 0;padding:12px;border:1px solid var(--gold-border);background:var(--black-2)}
+.prop-banner.no-photo{padding:14px 16px}
+.pb-photo{width:52px;height:52px;object-fit:cover;border-radius:2px;border:1px solid var(--w10);flex-shrink:0;display:block}
+.pb-info{min-width:0;flex:1}
+.pb-tag{font-size:7px;letter-spacing:3px;color:rgba(198,168,107,.5);text-transform:uppercase;font-weight:700;margin-bottom:3px}
+.pb-name{font-family:"Bebas Neue",sans-serif;font-size:17px;letter-spacing:1px;color:var(--white);line-height:1.15;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pb-price{font-family:"DM Mono",monospace;font-size:12px;color:var(--gold);margin-top:4px;letter-spacing:.4px}
+
 /* ── hero circle ── */
 .hero{display:flex;flex-direction:column;align-items:center;padding:30px 24px 22px;border-bottom:1px solid var(--w05);position:relative}
 .hero::before{content:"";position:absolute;inset:0;pointer-events:none;
@@ -167,6 +176,15 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opa
   <!-- VIEW -->
   <div class="view" id="view">
 
+    <div class="prop-banner" id="propBanner" style="display:none">
+      <img class="pb-photo" id="pbPhoto" alt="">
+      <div class="pb-info">
+        <div class="pb-tag">Tu propiedad</div>
+        <div class="pb-name" id="pbName">—</div>
+        <div class="pb-price" id="pbPrice"></div>
+      </div>
+    </div>
+
     <div class="fanfare" id="fanfare" style="display:none">
       <div class="fanfare-eye">Apartada</div>
       <div class="fanfare-txt" id="fanfareTxt">Tu propiedad acaba de ser apartada. Comienza el proceso de compra.</div>
@@ -224,12 +242,6 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opa
 // La llamada va a /api/progreso (proxy Vercel) que internamente consulta Make.
 var API_PROGRESO = "/api/progreso";
 var EXP_DOC_BASE = "https://expedientedocumentalpropietario.vercel.app/";
-var CONFIRMACION_BASE = "https://intranetmetodonerirealtor.vercel.app/Confirmacion.html";
-// ProponerCita.html es donde el cliente SÍ puede escribir día/hora y enviar
-// su propuesta (formulario real). Confirmacion.html es de solo lectura —
-// nunca tuvo forma de recibir una propuesta, por eso el botón de abajo
-// mandaba ahí y el cliente se topaba con la ficha final sin poder proponer.
-var PRODUCCION_BASE = "https://intranetmetodonerirealtor.vercel.app/ProponerCita.html";
 // Contrato listo para Make/Airtable: folio, vistaPortal(vendedor|comprador), propiedad, asesor, whatsappAsesor, etapaVendedor/etapaComprador, pctVendedor/pctComprador, estadoVisual, pendientesVendedor/pendientesComprador, proximoPasoVendedor/proximoPasoComprador.
 var CIRC = 2 * Math.PI * 84;
 
@@ -243,20 +255,20 @@ var CIRC = 2 * Math.PI * 84;
 */
 
 var FASES_VENDEDOR = [
-  {n:"Acuerdo de venta firmado",pct:0,copy:"La operación inicia formalmente. Ya existe compromiso de venta exclusiva o venta directa.",next:"Solicitar y validar la documentación inicial de la propiedad.",responsable:"Asesor + vendedor",tiempo:"Mismo día a 1 día"},
-  {n:"Documentación de propiedad solicitada",pct:8,copy:"Se pidió al vendedor la documentación base para revisar si la propiedad puede venderse sin riesgo.",next:"Recibir documentos y detectar bloqueos antes de publicar.",responsable:"Vendedor",tiempo:"1 a 3 días"},
-  {n:"Expediente de propiedad en revisión",pct:18,copy:"El asesor revisa escritura, predial, agua, régimen, adeudos y datos comerciales antes de avanzar.",next:"Completar o corregir documentos faltantes.",responsable:"Asesor + vendedor",tiempo:"3 a 10 días"},
-  {n:"Propiedad lista para publicar",pct:30,copy:"La propiedad cuenta con base documental suficiente para salir al mercado con cuidado.",next:"Preparar ficha técnica, fotos, video, descripción y estrategia de publicación.",responsable:"Asesor",tiempo:"1 a 3 días"},
-  {n:"Publicación y promoción activa",pct:42,copy:"La propiedad ya está visible y en promoción. Se registran interesados y actividad comercial.",next:"Filtrar leads compradores y evitar visitas sin claridad financiera.",responsable:"Asesor",tiempo:"7 a 60 días, según mercado"},
-  {n:"Compradores en filtro",pct:52,copy:"Los interesados se están calificando para saber si pueden comprar y si vale la pena avanzar.",next:"Agendar visita solo con comprador viable o iniciar diagnóstico financiero.",responsable:"Asesor",tiempo:"Mismo día a 2 días por lead"},
-  {n:"Visitas y seguimiento",pct:60,copy:"Se controla quién visitó, qué objeciones hubo y cuál es la siguiente acción.",next:"Definir oferta, segunda visita o descarte en menos de 24 horas.",responsable:"Asesor",tiempo:"1 a 5 días por visita"},
-  {n:"Oferta o negociación",pct:68,copy:"Se definen condiciones antes de aceptar un apartado: precio, forma de pago, fechas, penalizaciones y entrega.",next:"Formalizar apartado solo si las condiciones están claras.",responsable:"Asesor + comprador + vendedor",tiempo:"1 a 5 días"},
-  {n:"Apartado aceptado",pct:76,copy:"La propiedad sale del mercado bajo condiciones firmadas y se mueve a expediente final.",next:"Integrar expediente final del vendedor y comprador para notaría o crédito.",responsable:"Asesor + comprador + vendedor",tiempo:"1 a 3 días"},
-  {n:"Expediente final del vendedor",pct:84,copy:"Se completa la documentación personal, fiscal y bancaria del vendedor para escriturar.",next:"Enviar expediente completo a notaría y validar riesgos fiscales.",responsable:"Vendedor · Control asesor",tiempo:"3 a 10 días"},
-  {n:"Notaría, certificados e impuestos",pct:91,copy:"La notaría revisa capacidad legal, gravámenes, adeudos, impuestos y proyecto de escritura.",next:"Programar firma cuando el expediente y pagos estén listos.",responsable:"Notaría · Acompaña asesor",tiempo:"7 a 20 días con expediente completo"},
-  {n:"Firma de escritura",pct:96,copy:"La compraventa se formaliza legalmente con comprador, vendedor, notaría y crédito si aplica.",next:"Confirmar pago y coordinar entrega de la propiedad.",responsable:"Notaría + partes",tiempo:"1 día"},
-  {n:"Pago y entrega",pct:99,copy:"Se ejecuta o confirma el pago y se entrega posesión física de la propiedad según acuerdo.",next:"Cerrar expediente, documentos finales, comisión y seguimiento postventa.",responsable:"Asesor + vendedor + comprador",tiempo:"Mismo día a 72 horas, según forma de pago"},
-  {n:"Postcierre",pct:100,copy:"La operación queda cerrada y documentada. Se da seguimiento a inscripción, expediente y referidos.",next:"",responsable:"Asesor + notaría",tiempo:"30 a 90 días para documentos finales"}
+  {n:"Acuerdo de venta firmado",pct:0,copy:"Tu operación arranca. Ya existe un compromiso firmado de venta.",next:"Reunir los documentos que hacen segura tu venta.",responsable:"Asesor + vendedor",tiempo:"Mismo día a 1 día"},
+  {n:"Documentación de propiedad solicitada",pct:8,copy:"Ya te pedimos la documentación base para vender sin riesgo.",next:"Revisar tus documentos y resolver bloqueos antes de publicar.",responsable:"Vendedor",tiempo:"1 a 3 días"},
+  {n:"Expediente de propiedad en revisión",pct:18,copy:"Revisamos escritura, predial, agua, régimen, adeudos y datos comerciales antes de avanzar.",next:"Completar o corregir lo que falte.",responsable:"Asesor + vendedor",tiempo:"3 a 10 días"},
+  {n:"Propiedad lista para publicar",pct:30,copy:"Tu propiedad ya tiene la base documental para salir al mercado.",next:"Preparar ficha técnica, fotos, video y estrategia de publicación.",responsable:"Asesor",tiempo:"1 a 3 días"},
+  {n:"Publicación y promoción activa",pct:42,copy:"Tu propiedad ya está visible y en promoción. Empiezan a llegar interesados.",next:"Filtrar a los interesados antes de agendar visitas.",responsable:"Asesor",tiempo:"7 a 60 días, según mercado"},
+  {n:"Compradores en filtro",pct:52,copy:"Calificamos a los interesados antes de avanzar contigo.",next:"Agendar visita solo con quien sí puede comprar.",responsable:"Asesor",tiempo:"Mismo día a 2 días por lead"},
+  {n:"Visitas y seguimiento",pct:60,copy:"Damos seguimiento a cada visita: quién fue, qué dudó, qué sigue.",next:"Definir oferta, segunda visita o descarte en 24 horas.",responsable:"Asesor",tiempo:"1 a 5 días por visita"},
+  {n:"Oferta o negociación",pct:68,copy:"Definimos condiciones antes de aceptar un apartado: precio, forma de pago, fechas, penalizaciones y entrega.",next:"Formalizar el apartado solo con condiciones claras.",responsable:"Asesor + comprador + vendedor",tiempo:"1 a 5 días"},
+  {n:"Apartado aceptado",pct:76,copy:"Tu propiedad sale del mercado bajo condiciones firmadas.",next:"Armar el expediente final para notaría o crédito.",responsable:"Asesor + comprador + vendedor",tiempo:"1 a 3 días"},
+  {n:"Expediente final del vendedor",pct:84,copy:"Completamos tu documentación personal, fiscal y bancaria para escriturar.",next:"Enviar tu expediente a notaría y validar riesgos fiscales.",responsable:"Vendedor · Control asesor",tiempo:"3 a 10 días"},
+  {n:"Notaría, certificados e impuestos",pct:91,copy:"La notaría revisa capacidad legal, gravámenes, adeudos, impuestos y proyecto de escritura.",next:"Programar la firma en cuanto todo esté listo.",responsable:"Notaría · Acompaña asesor",tiempo:"7 a 20 días con expediente completo"},
+  {n:"Firma de escritura",pct:96,copy:"Tu compraventa se formaliza legalmente, con todas las partes presentes.",next:"Confirmar el pago y coordinar la entrega.",responsable:"Notaría + partes",tiempo:"1 día"},
+  {n:"Pago y entrega",pct:99,copy:"Se confirma el pago y se entrega la propiedad según lo acordado.",next:"Cerrar expediente, comisión y seguimiento postventa.",responsable:"Asesor + vendedor + comprador",tiempo:"Mismo día a 72 horas, según forma de pago"},
+  {n:"Postcierre",pct:100,copy:"Tu operación queda cerrada y documentada. Damos seguimiento a inscripción y expediente.",next:"",responsable:"Asesor + notaría",tiempo:"30 a 90 días para documentos finales"}
 ];
 
 var FASES_COMPRADOR = [
@@ -371,71 +383,12 @@ function resolveExpedienteLink(d){
   if(folio&&token)return addParams(EXP_DOC_BASE,{folio:folio,token:token});
   return "";
 }
-function isEventoFolio(v){
-  v=String(v||"").trim();
-  return /^EV-[A-Z]+-\d{4}-\d{3,}$/i.test(v) || /^EV-PROD/i.test(v);
-}
-function linkConfirmacionEvento(folioEvento){
-  if(!folioEvento)return "";
-  return addParams(CONFIRMACION_BASE,{evento:String(folioEvento).trim()});
-}
-function linkProponerEvento(folioEvento){
-  if(!folioEvento)return "";
-  return addParams(PRODUCCION_BASE,{evento:String(folioEvento).trim()});
-}
-function resolveProduccionLink(d){
-  /*
-    ANTES esta función primero buscaba un link ya armado por Make
-    (linkConfirmacionProduccion) y, si existía, lo usaba directo sin
-    revisar nada más. Verifiqué el escenario de Make que llena ese campo
-    (NERI · Portal Progreso, id 5212599): SIEMPRE arma ese link apuntando
-    a Confirmacion.html, sin importar si la cita ya está confirmada o ni
-    siquiera existe. Por eso el cliente nunca llegaba al formulario de
-    proponer — el link que Make ya traía ganaba antes de que esta función
-    alcanzara a decidir. Ahora esta función SIEMPRE decide por su cuenta,
-    usando 'estadoProduccion' y 'folioEventoProduccion', que ese mismo
-    escenario de Make SÍ manda bien en ambas ramas (evento existente y
-    evento recién creado) — verificado campo por campo contra el
-    blueprint real, no adivinado.
-  */
-  var estado=String(field(d,["estadoProduccion","Estado Produccion","Estado Producción","estadoOperacionProduccion"])||"").trim().toLowerCase();
-  var yaConfirmada=(estado==="confirmada"||estado==="realizada");
-  var folioEvento=pick(
-    getParam("eventoProduccion"),
-    getParam("evento"),
-    field(d,[
-      "folioEventoProduccion","Folio Evento Produccion","Folio Evento Producción",
-      "Folio Cita Produccion","Folio Cita Producción","folioCitaProduccion",
-      "Evento Produccion","Evento Producción","eventoProduccion",
-      "Folio Evento","folioEvento","Evento","evento",
-      "Folio Produccion","Folio Producción","folioProduccion"
-    ])
-  );
-  if(isEventoFolio(folioEvento))return yaConfirmada?linkConfirmacionEvento(folioEvento):linkProponerEvento(folioEvento);
-  // Último recurso: si Make sí llegó a mandar un link completo (por si
-  // algún día se agrega otro campo de link real, no el que sabemos que
-  // está mal) y no pudimos armar nada con folio+estado, lo usamos.
-  var direct=field(d,["linkConfirmacionProduccion","Link Confirmacion Produccion","Link Confirmación Producción"]);
-  if(direct && isLink(String(direct).trim()))return String(direct).trim();
-  return "";
-}
-function resolveProduccionWhatsapp(d){
-  var wa=cleanPhone(field(d,["whatsappAsesor","WhatsApp Asesor","telefonoAsesor","Teléfono Asesor","whatsapp","WhatsApp"]));
-  if(!wa)return "";
-  var asesor=field(d,["asesor","Asesor"])||"mi asesor";
-  var folio=pick(field(d,["folio","Folio"]),getFolio());
-  var msg="Hola "+asesor+", quiero confirmar la cita de foto y video de mi propiedad."+(folio?" Folio: "+folio:"");
-  return "https://wa.me/"+wa+"?text="+encodeURIComponent(msg);
-}
 function renderAcciones(d,vista){
   var wrap=$("accionesWrap");
   if(!wrap)return;
   if(vista!=="vendedor"){wrap.className="actions";wrap.innerHTML="";return;}
 
   var expLink=resolveExpedienteLink(d);
-  var prodLink=resolveProduccionLink(d);
-  var prodEstado=field(d,["Estado Produccion","Estado Producción","estadoProduccion","Estado Cita Produccion","Estado Cita Producción"])||"Pendiente de confirmar";
-  var prodYaConfirmada=/^(confirmada|realizada)$/i.test(String(prodEstado).trim());
 
   var expBtn=expLink
     ? '<a class="action-btn" href="'+esc(expLink)+'" target="_blank" rel="noopener">Subir mis documentos</a>'
@@ -443,14 +396,6 @@ function renderAcciones(d,vista){
   var expNote=expLink
     ? ''
     : '<div class="action-note">Tu asesor debe compartirte el enlace completo para subir documentos de forma segura.</div>';
-
-  var prodBtnTxt=prodYaConfirmada?'Ver mi confirmación':'Proponer día y hora para foto y video';
-  var prodBtn=prodLink
-    ? '<a class="action-btn" href="'+esc(prodLink)+'" target="_blank" rel="noopener">'+esc(prodBtnTxt)+'</a>'
-    : '<span class="action-btn disabled">Cita pendiente</span>';
-  var prodNote=prodLink
-    ? ''
-    : '<div class="action-note">Tu asesor debe generar el evento de producción para que puedas proponer día y hora desde esta pantalla.</div>';
 
   wrap.className="actions on";
   wrap.innerHTML=''+
@@ -463,14 +408,6 @@ function renderAcciones(d,vista){
         '<div class="action-name">Documentos de la propiedad</div>'+
         '<div class="action-text">Desde aquí puedes subir los documentos necesarios para avanzar con la venta de tu propiedad.</div>'+
         expBtn+expNote+
-      '</div>'+
-      '<div class="action-card">'+
-        '<div class="action-tag">Producción inmobiliaria</div>'+
-        '<div class="action-name">Foto y video de la propiedad</div>'+
-        '<span class="action-status">'+esc(prodEstado)+'</span>'+
-        '<div class="action-text">Para preparar correctamente la salida al mercado necesitamos confirmar la cita de producción inmobiliaria de la estrella del proceso: la propiedad.</div>'+
-        '<div class="action-key">Sin esta cita todavía no podemos publicar correctamente la propiedad.</div>'+
-        prodBtn+prodNote+
       '</div>'+
     '</div>';
 }
@@ -509,6 +446,23 @@ function setHeaderBadge(d,pct){
   $("hBadge").className="head-badge"+(pct>=100||norm(label).indexOf("completo")>-1?" done":"");
 }
 
+function renderPropBanner(d,vista){
+  var wrap=$("propBanner");
+  if(!wrap)return;
+  // Por ahora solo vendedor: el lado comprador sigue en pausa hasta la siguiente fase.
+  var nombre=d.propiedad||"";
+  if(vista!=="vendedor"||!nombre){wrap.style.display="none";return;}
+  var foto=field(d,["fotoPortada","Foto de portada"]);
+  var precio=field(d,["precio","Precio Formateado","Precio"]);
+  $("pbName").textContent=nombre;
+  var pbPrice=$("pbPrice");
+  if(precio){pbPrice.textContent=precio;pbPrice.style.display="";}
+  else{pbPrice.style.display="none";}
+  var img=$("pbPhoto");
+  if(foto){img.src=foto;img.style.display="";wrap.classList.remove("no-photo");}
+  else{img.removeAttribute("src");img.style.display="none";wrap.classList.add("no-photo");}
+  wrap.style.display="flex";
+}
 function renderStats(d,vista,pct){
   var html="";
   if(vista==="vendedor"){
@@ -585,6 +539,7 @@ function render(d){
     $("fanfareTxt").textContent="La propiedad fue apartada. Desde aquí el avance depende de expedientes, crédito o recurso, notaría, firma y entrega.";
   } else { $("fanfare").style.display="none"; }
 
+  renderPropBanner(d,vista);
   renderStats(d,vista,pct);
   renderAcciones(d,vista);
   var timelineSection=$("timelineSection");
