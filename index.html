@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Portal de Venta de tu Propiedad · Método NERI</title>
+<title>Portal de Seguimiento · Método NERI</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
@@ -163,7 +163,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opa
   <div class="state on" id="stLoad">
     <div class="spinner"></div>
     <div class="state-eyebrow">Método Neri</div>
-    <div class="state-msg">Consultando el avance de venta de tu propiedad…</div>
+    <div class="state-msg">Consultando el avance de tu operación…</div>
   </div>
 
   <!-- ERROR -->
@@ -175,7 +175,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opa
   <!-- HEADER -->
   <div class="head" id="head" style="display:none">
     <div>
-      <div class="head-brand">Portal de Venta · Método Neri</div>
+      <div class="head-brand" id="headBrand">Portal · Método Neri</div>
       <div class="head-prop" id="hProp">—</div>
       <div class="head-folio" id="hFolio">—</div>
     </div>
@@ -240,7 +240,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opa
         <svg viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163a11.867 11.867 0 01-1.587-5.945C.16 5.335 5.495 0 12.05 0a11.817 11.817 0 018.413 3.488 11.824 11.824 0 013.48 8.414c-.003 6.557-5.338 11.892-11.893 11.892a11.9 11.9 0 01-5.688-1.448L.057 24zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884a9.86 9.86 0 001.51 5.26l-.999 3.648 3.978-1.043 .001-.001 .999-.911z"/></svg>
         <span id="waLabel">Contactar a mi asesor</span>
       </a>
-      <div class="foot-note">Portal de venta · <b id="fFolio">—</b></div>
+      <div class="foot-note"><span id="footKind">Portal</span> · <b id="fFolio">—</b></div>
     </div>
 
   </div>
@@ -280,16 +280,40 @@ var FASES_VENDEDOR = [
   {n:"Postcierre",pct:100,copy:"Tu operación queda cerrada y documentada. Damos seguimiento a inscripción y expediente.",next:"",responsable:"Asesor + notaría",tiempo:"30 a 90 días para documentos finales"}
 ];
 
+/*
+  Las 8 etapas del comprador son EXACTAMENTE las opciones del campo Etapa
+  en Portal Progreso Clientes, con los mismos porcentajes que ya calcula
+  la fórmula de Airtable. No inventar nombres: si no empatan, el portal
+  no encuentra la etapa y manda al cliente a pantalla de error.
+*/
 var FASES_COMPRADOR = [
-  {n:"Apartado aceptado",pct:0,copy:"La propiedad quedó reservada bajo condiciones firmadas. Desde aquí inicia tu proceso formal de compra.",next:"Integrar expediente del comprador y confirmar forma de pago.",responsable:"Comprador + asesor",tiempo:"1 a 3 días"},
-  {n:"Expediente del comprador",pct:15,copy:"Se reúne tu documentación personal, fiscal y de compra para avanzar con seguridad.",next:"Validar crédito, recurso propio o esquema de pago definido.",responsable:"Comprador · Control asesor",tiempo:"2 a 30 días, según forma de pago"},
-  {n:"Crédito, recurso o avalúo",pct:32,copy:"Se confirma que el dinero puede llegar a la operación y que la propiedad cumple con el esquema de pago.",next:"Preparar instrucción o expediente completo para notaría.",responsable:"Comprador + banco/Infonavit/broker/notaría",tiempo:"3 a 45 días, según forma de pago"},
-  {n:"Notaría en revisión",pct:52,copy:"La notaría revisa documentos, forma de pago, impuestos, gravámenes y proyecto de escritura.",next:"Atender observaciones y preparar fecha de firma.",responsable:"Notaría · Acompaña asesor",tiempo:"7 a 20 días con expediente completo"},
-  {n:"Certificados e impuestos",pct:68,copy:"Se integran certificados, constancias, cálculos y pagos necesarios para llegar a firma.",next:"Confirmar que todo esté listo para firmar.",responsable:"Notaría + municipio/catastro/agua/registro",tiempo:"Según dependencia y gestoría"},
-  {n:"Firma de escritura",pct:84,copy:"La compraventa se formaliza legalmente ante notaría.",next:"Confirmar pago o dispersión y coordinar entrega de la propiedad.",responsable:"Notaría + comprador + vendedor",tiempo:"1 día"},
-  {n:"Pago y entrega",pct:96,copy:"Se confirma el pago y se coordina entrega de llaves, controles, medidores, inventario y posesión física.",next:"Cerrar expediente y dar seguimiento a documentos finales.",responsable:"Asesor + comprador + vendedor",tiempo:"Mismo día a 72 horas, según acuerdo"},
-  {n:"Postcierre",pct:100,copy:"La compra queda cerrada y documentada. Continúa el seguimiento de inscripción y documentos finales.",next:"",responsable:"Asesor + notaría",tiempo:"30 a 90 días para documentos finales"}
+  {n:"Apartado",pct:5,copy:"La propiedad quedó reservada a tu nombre y salió del mercado. Desde aquí empieza tu proceso de compra.",next:"Revisar contigo las condiciones y confirmar tu forma de pago.",responsable:"Tu asesor",tiempo:"1 a 3 días"},
+  {n:"Revisión de compra",pct:15,copy:"Revisamos contigo precio, forma de pago, fechas y condiciones de entrega antes de avanzar.",next:"Reunir los documentos que necesitamos para continuar.",responsable:"Tú y tu asesor",tiempo:"2 a 5 días"},
+  {n:"Preparando documentos",pct:30,copy:"Reunimos tu documentación personal y la de tu forma de pago. Este es el paso que más acelera o más frena una compra.",next:"Completar lo que falte para poder cerrar el acuerdo.",responsable:"Tú · Tu asesor te acompaña",tiempo:"2 a 30 días, según tu forma de pago"},
+  {n:"Acuerdo de compra",pct:45,copy:"Se confirma que el dinero puede llegar a la operación: crédito autorizado, recurso disponible o avalúo aprobado.",next:"Enviar todo a notaría para que inicie la revisión.",responsable:"Tú, con tu banco o institución",tiempo:"3 a 45 días, según tu forma de pago"},
+  {n:"Revisión en notaría",pct:60,copy:"La notaría revisa documentos, impuestos y gravámenes, y prepara el proyecto de tu escritura.",next:"Atender cualquier observación que levante la notaría.",responsable:"Notaría · Tu asesor da seguimiento",tiempo:"7 a 20 días"},
+  {n:"Últimas confirmaciones",pct:75,copy:"Se integran los certificados, constancias y pagos que faltan para poder firmar.",next:"Confirmar la fecha y hora de tu firma.",responsable:"Notaría y dependencias",tiempo:"Según cada dependencia"},
+  {n:"Día de firma",pct:90,copy:"Tu compra se formaliza legalmente. Firmas la escritura ante notario con todas las partes presentes.",next:"Confirmar el pago y coordinar la entrega de tu propiedad.",responsable:"Notaría, tú y el vendedor",tiempo:"1 día"},
+  {n:"Entrega de llaves",pct:100,copy:"Recibes llaves, controles, medidores e inventario. La propiedad ya es tuya.",next:"",responsable:"Tu asesor, tú y el vendedor",tiempo:"Mismo día a 72 horas"}
 ];
+
+/*
+  Tolerancia a nombres viejos. Airtable conserva dos opciones heredadas
+  (Expediente, Postcierre) y hubo registros con la nomenclatura anterior.
+  En vez de borrarlas en Airtable —lo que rompería escenarios de Make—
+  aquí se traducen al nombre vigente.
+*/
+var ALIAS_COMPRADOR = {
+  "expediente":"Preparando documentos",
+  "expediente del comprador":"Preparando documentos",
+  "postcierre":"Entrega de llaves",
+  "apartado aceptado":"Apartado",
+  "credito, recurso o avaluo":"Acuerdo de compra",
+  "notaria en revision":"Revisión en notaría",
+  "certificados e impuestos":"Últimas confirmaciones",
+  "firma de escritura":"Día de firma",
+  "pago y entrega":"Entrega de llaves"
+};
 
 function $(id){return document.getElementById(id);}
 function show(id){["stLoad","stError"].forEach(function(s){$(s).classList.remove("on");});if(id)$(id).classList.add("on");}
@@ -299,12 +323,30 @@ function esc(v){return String(v===undefined||v===null?"":v).replace(/[&<>"']/g,f
 function norm(v){return String(v||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();}
 function isNum(v){return v!==undefined&&v!==null&&v!==""&&!isNaN(Number(v));}
 function pick(){for(var i=0;i<arguments.length;i++){if(arguments[i]!==undefined&&arguments[i]!==null&&arguments[i]!=="")return arguments[i];}return "";}
-function idxByName(arr,name){var n=norm(name);if(!n)return -1;for(var i=0;i<arr.length;i++){if(norm(arr[i].n)===n)return i;}return -1;}
+function idxByName(arr,name,vista){
+  var n=norm(name);
+  if(!n)return -1;
+  for(var i=0;i<arr.length;i++){if(norm(arr[i].n)===n)return i;}
+  if(vista==="comprador"&&ALIAS_COMPRADOR[n]){
+    var alias=norm(ALIAS_COMPRADOR[n]);
+    for(var j=0;j<arr.length;j++){if(norm(arr[j].n)===alias)return j;}
+  }
+  return -1;
+}
+/*
+  El folio de la propiedad lleva -V- aunque el registro sea de un comprador,
+  porque el folio nace del lado vendedor. Por eso solo la letra C decide vista;
+  la letra V nunca se interpreta como vendedor.
+*/
+function vistaPorFolio(){
+  return /-c-/.test(norm(getFolio())) ? "comprador" : "";
+}
 function resolveVista(d){
   var q=norm(getParam("vista")||getParam("tipo")||getParam("rol"));
   var v=norm(pick(q,d.vistaPortal,d.rolPortal,d.vista,d.capitulo));
   if(v.indexOf("compr")>-1||v==="compra")return "comprador";
   if(v.indexOf("vended")>-1||v.indexOf("comercial")>-1||v.indexOf("propiedad")>-1)return "vendedor";
+  if(vistaPorFolio())return "comprador";
   if(d.etapaCompra||d.faseActualCompra)return "comprador";
   if(d.etapaVendedor||d.etapa)return "vendedor";
   return "";
@@ -369,12 +411,19 @@ function getToken(d){
     field(d,["Token Expediente","tokenExpediente","token","Token"])
   );
 }
-function resolveExpedienteLink(d){
+function resolveExpedienteLink(d,vista){
   var direct=field(d,[
     "Link Expediente Documental","linkExpedienteDocumental","Link Expediente","linkExpediente",
     "Expediente Documental","expedienteDocumental","URL Expediente","urlExpediente","portalExpediente"
   ]);
-  if(direct&&isLink(direct))return String(direct).trim();
+  if(direct&&isLink(direct)){
+    direct=String(direct).trim();
+    // El expediente del comprador vive en el mismo portal del propietario, en su propia vista.
+    if(vista==="comprador"&&!/[?&]vista=/i.test(direct)){
+      direct+=(direct.indexOf("?")>-1?"&":"?")+"vista=comprador";
+    }
+    return direct;
+  }
 
   /*
     El folio del portal de progreso puede ser distinto al folio seguro del expediente.
@@ -389,15 +438,23 @@ function resolveExpedienteLink(d){
     getFolio()
   );
   var token=getToken(d);
-  if(folio&&token)return addParams(EXP_DOC_BASE,{folio:folio,token:token});
+  if(folio&&token){
+    var params={folio:folio,token:token};
+    if(vista==="comprador")params.vista="comprador";
+    return addParams(EXP_DOC_BASE,params);
+  }
   return "";
+}
+function formaDePago(d){
+  return field(d,["formaPago","Forma de Pago","metodoCredito","Método / Crédito","metodoPago","Método de Pago","credito","Crédito"]);
 }
 function renderAcciones(d,vista){
   var wrap=$("accionesWrap");
   if(!wrap)return;
-  if(vista!=="vendedor"){wrap.className="actions";wrap.innerHTML="";return;}
+  if(vista!=="vendedor"&&vista!=="comprador"){wrap.className="actions";wrap.innerHTML="";return;}
 
-  var expLink=resolveExpedienteLink(d);
+  var esComprador=vista==="comprador";
+  var expLink=resolveExpedienteLink(d,vista);
 
   var expBtn=expLink
     ? '<a class="action-btn" href="'+esc(expLink)+'" target="_blank" rel="noopener">Subir mis documentos</a>'
@@ -406,16 +463,38 @@ function renderAcciones(d,vista){
     ? ''
     : '<div class="action-note">Tu asesor debe compartirte el enlace completo para subir documentos de forma segura.</div>';
 
+  var eye,title,copy,tag,name,text,extra="";
+
+  if(esComprador){
+    var pago=formaDePago(d);
+    eye="Portal de Compra";
+    title="Acciones para avanzar";
+    copy="Un solo lugar para seguir tu compra y entregar tus documentos.";
+    tag="Expediente del comprador";
+    name="Tus documentos de compra";
+    text="Aquí subes lo que necesitamos para avanzar con tu compra. Cada documento que entregas acorta el tiempo hasta tu firma.";
+    if(pago)extra='<div class="action-status">Forma de pago · '+esc(pago)+'</div>';
+    else extra='<div class="action-status">Forma de pago por confirmar</div>';
+  } else {
+    eye="Portal de Venta";
+    title="Acciones para avanzar";
+    copy="Un solo portal para seguir tu venta, subir documentos y preparar la salida al mercado.";
+    tag="Expediente documental";
+    name="Documentos de la propiedad";
+    text="Desde aquí puedes subir los documentos necesarios para avanzar con la venta de tu propiedad.";
+  }
+
   wrap.className="actions on";
   wrap.innerHTML=''+
-    '<div class="actions-eye">Portal de Venta</div>'+
-    '<div class="actions-title">Acciones para avanzar</div>'+
-    '<div class="actions-copy">Un solo portal para seguir tu venta, subir documentos y preparar la salida al mercado.</div>'+
+    '<div class="actions-eye">'+esc(eye)+'</div>'+
+    '<div class="actions-title">'+esc(title)+'</div>'+
+    '<div class="actions-copy">'+esc(copy)+'</div>'+
     '<div class="action-grid">'+
       '<div class="action-card">'+
-        '<div class="action-tag">Expediente documental</div>'+
-        '<div class="action-name">Documentos de la propiedad</div>'+
-        '<div class="action-text">Desde aquí puedes subir los documentos necesarios para avanzar con la venta de tu propiedad.</div>'+
+        '<div class="action-tag">'+esc(tag)+'</div>'+
+        '<div class="action-name">'+esc(name)+'</div>'+
+        extra+
+        '<div class="action-text">'+esc(text)+'</div>'+
         expBtn+expNote+
       '</div>'+
     '</div>';
@@ -469,11 +548,13 @@ function setHeaderBadge(d,pct){
 function renderPropBanner(d,vista){
   var wrap=$("propBanner");
   if(!wrap)return;
-  // Por ahora solo vendedor: el lado comprador sigue en pausa hasta la siguiente fase.
+  // La propiedad es la estrella en las dos vistas: el comprador también debe verla.
   var nombre=d.propiedad||"";
-  if(vista!=="vendedor"||!nombre){wrap.style.display="none";return;}
+  if((vista!=="vendedor"&&vista!=="comprador")||!nombre){wrap.style.display="none";return;}
   var foto=field(d,["fotoPortada","Foto de portada"]);
   var precio=field(d,["precio","Precio Formateado","Precio"]);
+  var tag=wrap.querySelector(".pb-tag");
+  if(tag)tag.textContent=vista==="comprador"?"La propiedad que estás comprando":"Tu propiedad";
   $("pbName").textContent=nombre;
   var pbPrice=$("pbPrice");
   if(precio){pbPrice.textContent=precio;pbPrice.style.display="";}
@@ -495,6 +576,16 @@ function renderStats(d,vista,pct){
            '<div class="stat"><div class="stat-num">'+esc(estado)+'</div><div class="stat-lbl">Estado</div></div>';
     }
   }
+  if(vista==="comprador"){
+    var diasC=daysSince(pick(d.fechaApartado,d.fechaCompromiso,d.fechaAlta,d.fechaInicio,field(d,["Fecha de Entrada","fechaEntrada"])));
+    var pagoC=pick(formaDePago(d),"—");
+    var pasoC=(isNum(pct)?Math.round(pct):0)+"%";
+    if(diasC!=="—"||pagoC!=="—"){
+      html='<div class="stat"><div class="stat-num">'+esc(diasC)+'</div><div class="stat-lbl">Días en proceso</div></div>'+
+           '<div class="stat"><div class="stat-num">'+esc(pagoC)+'</div><div class="stat-lbl">Forma de pago</div></div>'+
+           '<div class="stat"><div class="stat-num">'+esc(pasoC)+'</div><div class="stat-lbl">Avance</div></div>';
+    }
+  }
   if(html){$("stats").innerHTML=html;$("stats").style.display="flex";}else{$("stats").style.display="none";}
   var nums=$("stats").querySelectorAll(".stat-num");
   for(var i=0;i<nums.length;i++){
@@ -503,18 +594,24 @@ function renderStats(d,vista,pct){
 }
 
 function render(d){
-  if(!d||!d.propiedad){show("stError");$("errMsg").textContent="No encontramos datos reales de esta operación. Verifica el folio o la respuesta de Make.";return;}
+  if(!d||!d.propiedad){show("stError");$("errMsg").textContent="No encontramos esta operación. Verifica el enlace que te compartió tu asesor.";return;}
 
   var vista=resolveVista(d);
   var fases=vista==="comprador"?FASES_COMPRADOR:vista==="vendedor"?FASES_VENDEDOR:null;
-  if(!fases){show("stError");$("errMsg").textContent="La operación no trae vistaPortal válida: vendedor o comprador.";return;}
+  if(!fases){show("stError");$("errMsg").textContent="Este enlace está incompleto. Pide a tu asesor que te lo comparta de nuevo.";return;}
   var stageName=resolveStage(d,vista);
-  var idx=idxByName(fases,stageName);
-  if(idx<0){show("stError");$("errMsg").textContent="La etapa enviada por Make no coincide con la columna vertebral del portal: "+stageName;return;}
+  var idx=idxByName(fases,stageName,vista);
+  if(idx<0){show("stError");$("errMsg").textContent="Estamos actualizando el avance de tu operación. Tu asesor puede darte el detalle en este momento.";return;}
 
   var f=fases[idx];
   var pct=pctFor(d,vista,f);
   var tipo=pick(d.tipoOperacion,d.tipoVenta,d.convenioVenta,"");
+
+  // El comprador nunca debe leer que está vendiendo.
+  var esComprador=vista==="comprador";
+  document.title=(esComprador?"Portal de Compra":"Portal de Venta")+" · Método NERI";
+  if($("headBrand"))$("headBrand").textContent=(esComprador?"Portal de Compra":"Portal de Venta")+" · Método Neri";
+  if($("footKind"))$("footKind").textContent=esComprador?"Portal de compra":"Portal de venta";
 
   $("hProp").textContent=d.propiedad||"";
   $("hFolio").textContent=d.folio||"";
