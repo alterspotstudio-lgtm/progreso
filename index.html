@@ -264,7 +264,7 @@ var CIRC = 2 * Math.PI * 84;
 */
 
 var FASES_VENDEDOR = [
-  {n:"Acuerdo de venta firmado",pct:0,copy:"Tu operación arranca. Ya existe un compromiso firmado de venta.",next:"Reunir los documentos que hacen segura tu venta.",responsable:"Asesor + vendedor",tiempo:"Mismo día a 1 día"},
+  {n:"Acuerdo de venta firmado",pct:6,copy:"Tu operación arranca. Ya existe un compromiso firmado de venta.",next:"Reunir los documentos que hacen segura tu venta.",responsable:"Asesor + vendedor",tiempo:"Mismo día a 1 día"},
   {n:"Documentación de propiedad solicitada",pct:8,copy:"Ya te pedimos la documentación base para vender sin riesgo.",next:"Revisar tus documentos y resolver bloqueos antes de publicar.",responsable:"Vendedor",tiempo:"1 a 3 días"},
   {n:"Expediente de propiedad en revisión",pct:18,copy:"Revisamos escritura, predial, agua, régimen, adeudos y datos comerciales antes de avanzar.",next:"Completar o corregir lo que falte.",responsable:"Asesor + vendedor",tiempo:"3 a 10 días"},
   {n:"Propiedad lista para publicar",pct:30,copy:"Tu propiedad ya tiene la base documental para salir al mercado.",next:"Preparar ficha técnica, fotos, video y estrategia de publicación.",responsable:"Asesor",tiempo:"1 a 3 días"},
@@ -538,8 +538,14 @@ function badgeClass(rawLabel,pct){
   if(n.indexOf("cancelada")>-1)return "alert";
   return "";
 }
+/* El badge pintaba cualquier texto que llegara en los datos. Con una
+   propiedad recién firmada decía "En comercialización", que es falso y le
+   cuesta credibilidad al asesor frente al propietario. Ahora solo se
+   muestran estados reales de la propiedad; lo demás es "En proceso". */
+var ESTADOS_REALES=["apartada","vendida","en pausa","cancelada"];
 function setHeaderBadge(d,pct){
   var e=estadoTxt(d.estadoVisual||d.estadoEtapa||d.estado);
+  if(ESTADOS_REALES.indexOf(norm(e))===-1) e="";
   var label=e||((pct>=100)?"🟢 Completo":"🟡 En proceso");
   $("hBadge").textContent=label.replace(/[🟢🟡🔴⚫🔵]/g,"").trim();
   $("hBadge").className="head-badge "+badgeClass(label,pct);
@@ -571,8 +577,11 @@ function renderStats(d,vista,pct){
     var inter=pick(d.interesados,d.leadsCompradores,d.leads,"—");
     var estado=pick(d.estadoOperacion,d.estado,"—");
     if(dias!=="—"||inter!=="—"||estado!=="—"){
-      html='<div class="stat"><div class="stat-num">'+esc(dias)+'</div><div class="stat-lbl">Días activos</div></div>'+
-           '<div class="stat"><div class="stat-num">'+esc(inter)+'</div><div class="stat-lbl">Interesados</div></div>'+
+      /* Concordancia: con un solo dia decía "1 Días activos". */
+      var lblDias=(String(dias)==="1")?"Día activo":"Días activos";
+      var lblInter=(String(inter)==="1")?"Interesado":"Interesados";
+      html='<div class="stat"><div class="stat-num">'+esc(dias)+'</div><div class="stat-lbl">'+lblDias+'</div></div>'+
+           '<div class="stat"><div class="stat-num">'+esc(inter)+'</div><div class="stat-lbl">'+lblInter+'</div></div>'+
            '<div class="stat"><div class="stat-num">'+esc(estado)+'</div><div class="stat-lbl">Estado</div></div>';
     }
   }
@@ -646,7 +655,7 @@ function render(d){
   );
 
   $("ringCap").textContent=vista==="comprador"?"Compra":"Venta";
-  $("faseEye").textContent=(vista==="comprador"?"Fase ":"Etapa ")+(idx+1)+" de "+fases.length+" · "+(vista==="comprador"?"Comprador":"Vendedor");
+  $("faseEye").textContent=(vista==="comprador"?"Fase actual · Comprador":"Etapa actual · Vendedor");
   $("faseName").innerHTML=esc(f.n)+'<b>.</b>';
   $("faseCopy").textContent=f.copy;
   $("tlTitle").textContent=vista==="comprador"?"Detalle del comprador":"Proceso de venta";
