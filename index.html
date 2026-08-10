@@ -577,6 +577,60 @@ function badgeClass(rawLabel,pct){
    cuesta credibilidad al asesor frente al propietario. Ahora solo se
    muestran estados reales de la propiedad; lo demás es "En proceso". */
 var ESTADOS_REALES=["activa","disponible","apartada","vendida","en pausa","cancelada"];
+
+/*
+  El tercer recuadro repetia el porcentaje que ya esta en grande en el anillo.
+  Ahora dice el ESTADO de la operacion, en el lenguaje del cliente.
+
+  Se deriva de la etapa, no de un campo suelto de Airtable. Esa es la razon:
+  una etapa siempre existe y siempre es verdadera, mientras que un campo de
+  estado se puede quedar viejo. Asi el recuadro nunca puede decir que la casa
+  esta en el mercado cuando apenas se estan recibiendo documentos.
+
+  Las palabras son las del cliente, no las del sistema: el protagonista es la
+  experiencia del cliente, nunca el sistema (design system Metodo NERI).
+*/
+var ESTADO_OPERACION={
+  vendedor:[
+    "Alistando tu casa","Alistando tu casa","Alistando tu casa","Alistando tu casa",
+    "En el mercado","En el mercado","En el mercado","En el mercado",
+    "Apartada","Apartada","En notaría","En notaría","En entrega","Vendida"
+  ],
+  comprador:[
+    "Apartada","Apartada","Tus documentos","Tus documentos",
+    "En notaría","En notaría","Tu firma","Ya es tuya"
+  ]
+};
+/* Orden real del camino. Sirve para no retroceder: si la etapa ya va mas
+   adelante que el Estado Propiedad, manda la etapa; si el Estado Propiedad
+   va mas adelante, manda el. */
+/* Las llaves van SIN acento a proposito: norm() los quita antes de buscar.
+   Con acento la busqueda fallaba y todo caia a 0, asi que una compra en
+   notaria retrocedia a "Apartada". */
+var ESTADO_ORDEN={
+  "alistando tu casa":1,"en el mercado":2,"apartada":3,"tus documentos":4,
+  "en notaria":5,"tu firma":6,"en entrega":6,"ya es tuya":7,"vendida":7
+};
+/*
+  'Etapa Comercializacion' se queda en "En comercializacion" aunque la
+  propiedad ya este apartada: esa escalera no tiene un peldano despues del
+  mercado. Por eso el Estado Propiedad tambien cuenta, y gana el que vaya
+  mas adelante. Sin esto, una casa apartada seguia diciendo que se esta
+  comercializando.
+*/
+function estadoOperacion(d,vista,idx){
+  var real=norm(pick(d.estadoOperacion,d.estado,d.estadoVisual));
+  /* En pausa y Cancelada son decisiones, no avance: mandan siempre. */
+  if(real==="en pausa")  return "En pausa";
+  if(real==="cancelada") return "Cancelada";
+
+  var porEtapa=((ESTADO_OPERACION[vista]||[])[idx])||"";
+  var porEstado=(real==="apartada")?"Apartada":(real==="vendida")?"Vendida":"";
+  if(!porEtapa)  return porEstado;
+  if(!porEstado) return porEtapa;
+  return (ESTADO_ORDEN[norm(porEstado)]||0) > (ESTADO_ORDEN[norm(porEtapa)]||0)
+    ? porEstado : porEtapa;
+}
 /*
   Filtro unico para cualquier texto de estado que vaya a ojos del cliente.
   Todo lo que no sea un estado real de la propiedad ("En comercializacion",
@@ -612,31 +666,35 @@ function renderPropBanner(d,vista){
   else{img.removeAttribute("src");img.style.display="none";wrap.classList.add("no-photo");}
   wrap.style.display="flex";
 }
-function renderStats(d,vista,pct){
+function renderStats(d,vista,pct,idx){
   var html="";
+  var estadoOp=estadoOperacion(d,vista,idx);
   if(vista==="vendedor"){
     var dias=daysSince(pick(d.fechaCompromiso,d.fechaAlta,d.fechaInicio));
     var inter=pick(d.interesados,d.leadsCompradores,d.leads,"—");
     /* Antes pintaba el texto crudo de Make: con una propiedad recien firmada
-       decia "En comercializacion". Ahora pasa por el mismo filtro del badge. */
-    var estado=pick(estadoPublico(pick(d.estadoOperacion,d.estado)),"—");
-    if(dias!=="—"||inter!=="—"||estado!=="—"){
+       decia "En comercializacion". Ahora sale de la etapa, que siempre es
+       verdadera. Si no hay etapa resuelta, el recuadro no se pinta: uno con
+       una raya no informa nada y ocupa el lugar de algo util. */
+    var estado=estadoOp||estadoPublico(pick(d.estadoOperacion,d.estado));
+    if(dias!=="—"||inter!=="—"||estado){
       /* Concordancia: con un solo dia decía "1 Días activos". */
       var lblDias=(String(dias)==="1")?"Día activo":"Días activos";
       var lblInter=(String(inter)==="1")?"Interesado":"Interesados";
       html='<div class="stat"><div class="stat-num">'+esc(dias)+'</div><div class="stat-lbl">'+lblDias+'</div></div>'+
            '<div class="stat"><div class="stat-num">'+esc(inter)+'</div><div class="stat-lbl">'+lblInter+'</div></div>'+
-           '<div class="stat"><div class="stat-num">'+esc(estado)+'</div><div class="stat-lbl">Estado</div></div>';
+           (estado?'<div class="stat"><div class="stat-num">'+esc(estado)+'</div><div class="stat-lbl">Estado</div></div>':'');
     }
   }
   if(vista==="comprador"){
     var diasC=daysSince(pick(d.fechaApartado,d.fechaCompromiso,d.fechaAlta,d.fechaInicio,field(d,["Fecha de Entrada","fechaEntrada"])));
     var pagoC=pick(formaDePago(d),"—");
-    var pasoC=(isNum(pct)?Math.round(pct):0)+"%";
-    if(diasC!=="—"||pagoC!=="—"){
+    /* Aqui iba el porcentaje otra vez. El anillo ya lo dice en grande y en
+       el centro de la pantalla; repetirlo abajo en chico no agrega nada. */
+    if(diasC!=="—"||pagoC!=="—"||estadoOp){
       html='<div class="stat"><div class="stat-num">'+esc(diasC)+'</div><div class="stat-lbl">Días en proceso</div></div>'+
            '<div class="stat"><div class="stat-num">'+esc(pagoC)+'</div><div class="stat-lbl">Forma de pago</div></div>'+
-           '<div class="stat"><div class="stat-num">'+esc(pasoC)+'</div><div class="stat-lbl">Avance</div></div>';
+           (estadoOp?'<div class="stat"><div class="stat-num">'+esc(estadoOp)+'</div><div class="stat-lbl">Estado</div></div>':'');
     }
   }
   if(html){$("stats").innerHTML=html;$("stats").style.display="flex";}else{$("stats").style.display="none";}
@@ -713,7 +771,7 @@ function render(d){
   } else { $("fanfare").style.display="none"; }
 
   renderPropBanner(d,vista);
-  renderStats(d,vista,pct);
+  renderStats(d,vista,pct,idx);
   renderAcciones(d,vista);
   var timelineSection=$("timelineSection");
   if(timelineSection)timelineSection.classList.add("collapsed");
