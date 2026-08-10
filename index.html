@@ -323,12 +323,31 @@ function esc(v){return String(v===undefined||v===null?"":v).replace(/[&<>"']/g,f
 function norm(v){return String(v||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").trim();}
 function isNum(v){return v!==undefined&&v!==null&&v!==""&&!isNaN(Number(v));}
 function pick(){for(var i=0;i<arguments.length;i++){if(arguments[i]!==undefined&&arguments[i]!==null&&arguments[i]!=="")return arguments[i];}return "";}
+/*
+  El vendedor no tiene todavia un campo de compraventa en Airtable: lo unico
+  que existe es 'Etapa Comercializacion', que es una escalera interna de
+  preparacion y publicacion. Mientras se crea 'Etapa Compraventa', estos alias
+  traducen esos 7 valores al lenguaje del portal para que el propietario nunca
+  caiga en pantalla de error ni lea vocabulario interno.
+*/
+var ALIAS_VENDEDOR = {
+  "propiedad creada":"Acuerdo de venta firmado",
+  "informacion validada":"Documentaci\u00f3n de propiedad solicitada",
+  "expediente iniciado":"Expediente de propiedad en revisi\u00f3n",
+  "produccion agendada":"Propiedad lista para publicar",
+  "produccion realizada":"Propiedad lista para publicar",
+  "publicacion activa":"Publicaci\u00f3n y promoci\u00f3n activa",
+  "en comercializacion":"Compradores en filtro",
+  "apartada":"Apartado aceptado",
+  "vendida":"Postcierre"
+};
 function idxByName(arr,name,vista){
   var n=norm(name);
   if(!n)return -1;
   for(var i=0;i<arr.length;i++){if(norm(arr[i].n)===n)return i;}
-  if(vista==="comprador"&&ALIAS_COMPRADOR[n]){
-    var alias=norm(ALIAS_COMPRADOR[n]);
+  var tabla=(vista==="comprador")?ALIAS_COMPRADOR:(vista==="vendedor")?ALIAS_VENDEDOR:null;
+  if(tabla&&tabla[n]){
+    var alias=norm(tabla[n]);
     for(var j=0;j<arr.length;j++){if(norm(arr[j].n)===alias)return j;}
   }
   return -1;
@@ -367,13 +386,28 @@ function estadoTxt(v){
   if(e.indexOf("proceso")>-1||e==="amarillo")return "🟡 En proceso";
   return v?String(v):"";
 }
+/*
+  'pctComercializacion' quedo FUERA a proposito. Esa formula de Airtable
+  devuelve 100 en cuanto la propiedad se marca Apartada, cuando todavia
+  faltan expediente final, notaria, firma, pago y entrega. El propietario
+  veia el anillo lleno y despues esperaba 30 a 60 dias mas.
+  El campo correcto es 'pctVenta' (% Venta), que espeja los pct del portal.
+*/
+var PCT_TOLERANCIA = 15;
 function pctFor(d,vista,f){
   var p=pick(
-    vista==="vendedor"?pick(d.pctVendedor,d.porcentajeVendedor,d.avanceVendedor,d.pctComercializacion):"",
+    vista==="vendedor"?pick(d.pctVenta,d.pctVendedor,d.porcentajeVendedor,d.avanceVendedor):"",
     vista==="comprador"?pick(d.pctComprador,d.porcentajeComprador,d.avanceComprador,d.pctCompra):"",
     d.porcentajePortal,d.pctPortal,d.avancePortal
   );
-  if(isNum(p))return Math.max(0,Math.min(100,Number(p)));
+  if(isNum(p)){
+    var v=Math.max(0,Math.min(100,Number(p)));
+    /* Red de seguridad: si el porcentaje que llega no corresponde a la etapa
+       activa, manda la etapa. El anillo y la linea de tiempo no pueden
+       decirle cosas distintas al cliente. */
+    if(Math.abs(v-f.pct)>PCT_TOLERANCIA)return f.pct;
+    return v;
+  }
   return f.pct;
 }
 function setRing(pct){
@@ -542,7 +576,15 @@ function badgeClass(rawLabel,pct){
    propiedad recién firmada decía "En comercialización", que es falso y le
    cuesta credibilidad al asesor frente al propietario. Ahora solo se
    muestran estados reales de la propiedad; lo demás es "En proceso". */
-var ESTADOS_REALES=["apartada","vendida","en pausa","cancelada"];
+var ESTADOS_REALES=["activa","disponible","apartada","vendida","en pausa","cancelada"];
+/*
+  Filtro unico para cualquier texto de estado que vaya a ojos del cliente.
+  Todo lo que no sea un estado real de la propiedad ("En comercializacion",
+  "Produccion agendada", etc.) es vocabulario interno y no se muestra.
+*/
+function estadoPublico(v){
+  return ESTADOS_REALES.indexOf(norm(v))>-1 ? String(v).trim() : "";
+}
 function setHeaderBadge(d,pct){
   var e=estadoTxt(d.estadoVisual||d.estadoEtapa||d.estado);
   if(ESTADOS_REALES.indexOf(norm(e))===-1) e="";
@@ -575,7 +617,9 @@ function renderStats(d,vista,pct){
   if(vista==="vendedor"){
     var dias=daysSince(pick(d.fechaCompromiso,d.fechaAlta,d.fechaInicio));
     var inter=pick(d.interesados,d.leadsCompradores,d.leads,"—");
-    var estado=pick(d.estadoOperacion,d.estado,"—");
+    /* Antes pintaba el texto crudo de Make: con una propiedad recien firmada
+       decia "En comercializacion". Ahora pasa por el mismo filtro del badge. */
+    var estado=pick(estadoPublico(pick(d.estadoOperacion,d.estado)),"—");
     if(dias!=="—"||inter!=="—"||estado!=="—"){
       /* Concordancia: con un solo dia decía "1 Días activos". */
       var lblDias=(String(dias)==="1")?"Día activo":"Días activos";
@@ -635,9 +679,12 @@ function render(d){
     $("waBtn").style.display="";
   } else { $("waBtn").style.display="none"; }
 
+  /* estadoTxt() devuelve el valor original si no reconoce el semaforo, y por
+     ahi se colaba "En comercializacion" al bloque de Control del cliente.
+     Solo se muestra cuando es un semaforo reconocido. */
   var estado=estadoTxt(d.estadoVisual||d.estadoEtapa||"");
   window.__META=[];
-  if(estado)window.__META.push("Estado visual: "+estado);
+  if(estado&&/^[🟢🟡🔴⚫🔵]/.test(estado))window.__META.push("Estado: "+estado);
   window.__META.push("Responsable: "+(pick(d.responsableActual,d.responsable,f.responsable)||"No definido"));
   window.__META.push("Tiempo estimado: "+(pick(d.tiempoEstimado,d.tiempo,f.tiempo)||"No definido"));
   if(tipo)window.__META.push("Tipo de compromiso: "+tipo);
