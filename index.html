@@ -455,13 +455,25 @@ function getToken(d){
   );
 }
 function resolveExpedienteLink(d,vista){
-  var direct=field(d,[
+  /*
+    Un expediente pertenece a una persona concreta. Nunca se reutiliza una liga
+    genérica entre vendedor y comprador: si Make entrega la del comprador en
+    ambas vistas, el vendedor queda sin botón antes que entrar al expediente
+    equivocado.
+  */
+  var camposComprador=[
+    "Link Expediente Comprador","linkExpedienteComprador",
     "Link Expediente Documental","linkExpedienteDocumental","Link Expediente","linkExpediente",
     "Expediente Documental","expedienteDocumental","URL Expediente","urlExpediente","portalExpediente"
-  ]);
+  ];
+  var camposVendedor=[
+    "Link Expediente Propietario","linkExpedientePropietario",
+    "Link Expediente Vendedor","linkExpedienteVendedor",
+    "URL Expediente Propietario","urlExpedientePropietario"
+  ];
+  var direct=field(d,vista==="comprador"?camposComprador:camposVendedor);
   if(direct&&isLink(direct)){
     direct=String(direct).trim();
-    // El expediente del comprador vive en el mismo portal del propietario, en su propia vista.
     if(vista==="comprador"&&!/[?&]vista=/i.test(direct)){
       direct+=(direct.indexOf("?")>-1?"&":"?")+"vista=comprador";
     }
@@ -469,18 +481,30 @@ function resolveExpedienteLink(d,vista){
   }
 
   /*
-    El folio del portal de progreso puede ser distinto al folio seguro del expediente.
-    Por eso aceptamos folioExpediente como llave documental, sin cambiar Airtable ni Make.
-    Si no viene, se mantiene el comportamiento anterior con el folio del portal.
+    Solo el comprador conserva el armado de compatibilidad con folio/token
+    genéricos, porque los datos actuales de Make pertenecen a su expediente.
+    El vendedor requiere llaves explícitas propias.
   */
-  var folio=pick(
-    getParam("folioExpediente"),
-    getParam("folio_documental"),
-    field(d,["Folio Expediente","folioExpediente","Folio Expediente Documental","folioExpedienteDocumental","Folio Documental","folioDocumental"]),
-    field(d,["folio","Folio"]),
-    getFolio()
-  );
-  var token=getToken(d);
+  var folio,token;
+  if(vista==="vendedor"){
+    folio=pick(
+      getParam("folioExpedientePropietario"),
+      field(d,["Folio Expediente Propietario","folioExpedientePropietario","Folio Documental Propietario","folioDocumentalPropietario"])
+    );
+    token=pick(
+      getParam("tokenExpedientePropietario"),
+      field(d,["Token Expediente Propietario","tokenExpedientePropietario","Token Propietario","tokenPropietario"])
+    );
+  }else{
+    folio=pick(
+      getParam("folioExpediente"),
+      getParam("folio_documental"),
+      field(d,["Folio Expediente","folioExpediente","Folio Expediente Documental","folioExpedienteDocumental","Folio Documental","folioDocumental"]),
+      field(d,["folio","Folio"]),
+      getFolio()
+    );
+    token=getToken(d);
+  }
   if(folio&&token){
     var params={folio:folio,token:token};
     if(vista==="comprador")params.vista="comprador";
@@ -488,6 +512,7 @@ function resolveExpedienteLink(d,vista){
   }
   return "";
 }
+
 function formaDePago(d){
   return field(d,["formaPago","Forma de Pago","metodoCredito","Método / Crédito","metodoPago","Método de Pago","credito","Crédito"]);
 }
