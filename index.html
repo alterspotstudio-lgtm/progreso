@@ -656,6 +656,31 @@ function setHeaderBadge(d,pct){
   $("hBadge").className="head-badge "+badgeClass(label,pct);
 }
 
+/* LA CASA SE QUEDABA SIN FOTO JUSTO EL DIA DEL APARTADO
+   El escenario de Make responde por dos caminos. El de propiedad publicada
+   manda foto y precio; el que entra en cuanto la propiedad esta Apartada o
+   Vendida no los manda. Resultado: el dia mas importante de la operacion,
+   comprador y vendedor abren su portal y la propiedad aparece sin foto y sin
+   precio. Se leen del mismo servidor que usa la ficha tecnica, que es publico
+   y con cache de CDN. Si Make ya los mando, esto no se ejecuta. */
+function completarPropiedad(d,vista){
+  var folio=d.folio||"";
+  if(!folio)return;
+  var faltaFoto=!field(d,["fotoPortada","Foto de portada"]);
+  var faltaPrecio=!field(d,["precio","Precio Formateado","Precio"]);
+  if(!faltaFoto&&!faltaPrecio)return;
+  try{
+    fetch("https://intranetmetodonerirealtor.vercel.app/api/propiedad-activa?folio="+encodeURIComponent(folio))
+      .then(function(r){return r.ok?r.json():null;})
+      .then(function(x){
+        if(!x)return;
+        if(faltaFoto&&x.fotoPortada)d.fotoPortada=x.fotoPortada;
+        if(faltaPrecio&&(x.precioFormateado||x.precio))d.precio=x.precioFormateado||x.precio;
+        renderPropBanner(d,vista);
+      })
+      .catch(function(){ /* el portal ya esta pintado; esto solo lo mejora */ });
+  }catch(e){}
+}
 function renderPropBanner(d,vista){
   var wrap=$("propBanner");
   if(!wrap)return;
@@ -852,6 +877,7 @@ function render(d){
   renderPulso(d,vista,f,idx);
 
   renderPropBanner(d,vista);
+  completarPropiedad(d,vista);
   renderStats(d,vista,pct,idx);
   renderAcciones(d,vista);
   var timelineSection=$("timelineSection");
