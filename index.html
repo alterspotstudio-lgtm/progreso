@@ -58,6 +58,10 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opa
 .fanfare-eye{font-size:8px;letter-spacing:4px;color:var(--gold);text-transform:uppercase;font-weight:700;margin-bottom:5px}
 .fanfare-txt{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:18px;color:var(--gold-light);line-height:1.4}
 
+.pulso{margin:0;padding:13px 24px;border-bottom:1px solid var(--gold-border);text-align:center}
+.pulso-txt{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:16px;color:var(--gold-light);line-height:1.45}
+.pulso-sub{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.30);margin-top:6px;font-weight:600}
+
 /* ── banner de propiedad ── */
 .prop-banner{display:none;flex-direction:column;margin:14px 24px 0;border:1px solid var(--gold-border);background:var(--black-2);overflow:hidden}
 .prop-banner.no-photo .pb-photo{display:none}
@@ -200,7 +204,12 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opa
     </div>
 
     <div class="hero">
-      <div class="ring-wrap">
+      <div class="pulso" id="pulso" style="display:none">
+      <div class="pulso-txt" id="pulsoTxt"></div>
+      <div class="pulso-sub" id="pulsoSub"></div>
+    </div>
+
+    <div class="ring-wrap">
         <div class="ring-deco"></div>
         <svg class="ring-svg" viewBox="0 0 188 188">
           <defs><linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -704,6 +713,80 @@ function renderStats(d,vista,pct,idx){
   }
 }
 
+/* ═══ EL DIA DEL APARTADO ═══════════════════════════════════════════════
+   Decia: "La propiedad fue apartada. Desde aqui el avance depende de
+   expedientes, credito o recurso, notaria, firma y entrega." Una lista de
+   tramites. Ese aviso llega el dia que se vende una casa — para el vendedor
+   es el final de meses de espera, y para el comprador el principio de todo.
+   Se nombra lo que paso, no lo que falta. Lo que falta ya lo dice el anillo. */
+function renderFanfarria(d,vista,f){
+  var wrap=$("fanfare");
+  if(!wrap)return;
+  var esApartado=norm(f.n).indexOf("apartado")>-1;
+  if(!esApartado){ wrap.style.display="none"; return; }
+  var casa=d.propiedad||"tu propiedad";
+  var eye=wrap.querySelector(".fanfare-eye");
+  if(vista==="vendedor"){
+    if(eye)eye.textContent="Apartada";
+    $("fanfareTxt").textContent="Lo lograste. "+casa+" salió hoy del mercado: hay un comprador con condiciones firmadas y dinero comprometido.";
+  }else{
+    if(eye)eye.textContent="Es tuya";
+    $("fanfareTxt").textContent="Felicidades. "+casa+" ya está apartada a tu nombre y nadie más puede comprarla.";
+  }
+  wrap.style.display="";
+}
+
+/* ═══ EL PULSO DE LA PROPIEDAD ══════════════════════════════════════════
+   Un vendedor entra a su portal a preguntar lo mismo siempre: "¿esta
+   pasando algo?". El anillo le da un porcentaje; un porcentaje no contesta
+   esa pregunta. Aqui se le dice, con lo que de verdad hay registrado, que su
+   casa esta viva. La frase cambia por propiedad para que no se sienta un
+   letrero fijo. */
+var PULSO_SIN_INTERES=[
+  "Tu casa ya está frente a la gente correcta. Lo que sigue es cuestión de encontrarla.",
+  "Cada día de publicación es una casa más vista. Esto se gana con constancia.",
+  "Tu propiedad está en el mercado y trabajando. No hay que hacer nada más que sostener."
+];
+var PULSO_CON_INTERES=[
+  "Tu propiedad está generando interés.",
+  "Hay gente preguntando por tu casa.",
+  "Tu casa está llamando la atención.",
+  "Ya hay ojos puestos en tu propiedad."
+];
+var PULSO_APARTADO=[
+  "De aquí en adelante todo avanza hacia la firma.",
+  "Lo difícil ya pasó. Ahora es papeleo con fecha.",
+  "Tu operación está en manos de notaría y expedientes."
+];
+function pulsoIdx(clave,total){
+  var h=2166136261,k=String(clave||"");
+  for(var i=0;i<k.length;i++){ h^=k.charCodeAt(i); h=Math.imul(h,16777619); }
+  return total?(Math.abs(h)%total):0;
+}
+function renderPulso(d,vista,f,idx){
+  var wrap=$("pulso");
+  if(!wrap)return;
+  /* Solo el vendedor. El comprador ya tiene su fanfarria y su expediente:
+     agregarle una frase suelta seria ruido sobre lo que si tiene que hacer. */
+  if(vista!=="vendedor"){ wrap.style.display="none"; return; }
+  var apartado=norm(f.n).indexOf("apartado")>-1;
+  var n=parseInt(pick(d.interesados,d.leadsCompradores,d.leads,"0"),10);
+  if(isNaN(n))n=0;
+  var lista, sub;
+  if(apartado || idx>9){
+    lista=PULSO_APARTADO; sub="";
+  }else if(n>0){
+    lista=PULSO_CON_INTERES;
+    sub=n===1?"1 interesado registrado":(n+" interesados registrados");
+  }else{
+    lista=PULSO_SIN_INTERES; sub="";
+  }
+  $("pulsoTxt").textContent=lista[pulsoIdx((d.folio||"")+"|"+n, lista.length)];
+  $("pulsoSub").textContent=sub;
+  $("pulsoSub").style.display=sub?"":"none";
+  wrap.style.display="";
+}
+
 function render(d){
   if(!d||!d.propiedad){show("stError");$("errMsg").textContent="No encontramos esta operación. Verifica el enlace que te compartió tu asesor.";return;}
 
@@ -765,10 +848,8 @@ function render(d){
   $("faseCopy").textContent=f.copy;
   $("tlTitle").textContent=vista==="comprador"?"Detalle del comprador":"Proceso de venta";
 
-  if((vista==="comprador"&&norm(f.n).indexOf("apartado")>-1)||(vista==="vendedor"&&norm(f.n).indexOf("apartado")>-1)){
-    $("fanfare").style.display="";
-    $("fanfareTxt").textContent="La propiedad fue apartada. Desde aquí el avance depende de expedientes, crédito o recurso, notaría, firma y entrega.";
-  } else { $("fanfare").style.display="none"; }
+  renderFanfarria(d,vista,f);
+  renderPulso(d,vista,f,idx);
 
   renderPropBanner(d,vista);
   renderStats(d,vista,pct,idx);
