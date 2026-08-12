@@ -960,10 +960,18 @@ function enriquecerVisitas(d,folio){
 function load(){
   var folio=getFolio();
   if(!folio){show("stError");$("errMsg").textContent="Falta el folio en el enlace. Pide a tu asesor que te comparta el link completo.";return;}
+  /* Dos generaciones de link conviven a propósito (ver api/progreso.js):
+     el del vendedor ya mandaba folioExpedientePropietario/tokenExpedientePropietario
+     desde antes del cambio de seguridad, y no se puede reemitir cada link
+     ya enviado. Si el nombre nuevo no viene en la URL, se usa el viejo —
+     el servidor ya acepta los dos, pero aquí nunca se los estábamos
+     mandando. Bug real en producción, reportado por Enrique 12-ago-2026. */
+  var folioExp=getParam("folioExpediente")||getParam("folioExpedientePropietario");
+  var tok=getParam("token")||getParam("tokenExpedientePropietario");
   var secureParams="?folio="+encodeURIComponent(folio)
     +(getParam("vista")?"&vista="+encodeURIComponent(getParam("vista")):"")
-    +(getParam("folioExpediente")?"&folioExpediente="+encodeURIComponent(getParam("folioExpediente")):"")
-    +(getParam("token")?"&token="+encodeURIComponent(getParam("token")):"");
+    +(folioExp?"&folioExpediente="+encodeURIComponent(folioExp):"")
+    +(tok?"&token="+encodeURIComponent(tok):"");
   fetch(API_PROGRESO+secureParams)
     .then(function(r){return r.text();})
     .then(function(t){
