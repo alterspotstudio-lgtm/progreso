@@ -960,7 +960,11 @@ function enriquecerVisitas(d,folio){
 function load(){
   var folio=getFolio();
   if(!folio){show("stError");$("errMsg").textContent="Falta el folio en el enlace. Pide a tu asesor que te comparta el link completo.";return;}
-  fetch(API_PROGRESO+"?folio="+encodeURIComponent(folio)+(getParam("vista")?"&vista="+encodeURIComponent(getParam("vista")):""))
+  var secureParams="?folio="+encodeURIComponent(folio)
+    +(getParam("vista")?"&vista="+encodeURIComponent(getParam("vista")):"")
+    +(getParam("folioExpediente")?"&folioExpediente="+encodeURIComponent(getParam("folioExpediente")):"")
+    +(getParam("token")?"&token="+encodeURIComponent(getParam("token")):"");
+  fetch(API_PROGRESO+secureParams)
     .then(function(r){return r.text();})
     .then(function(t){
       var d;try{d=JSON.parse(t);}catch(e){d=null;}
