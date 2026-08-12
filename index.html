@@ -259,7 +259,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opa
 // El webhook de Make vive en el servidor — no se expone al cliente.
 // La llamada va a /api/progreso (proxy Vercel) que internamente consulta Make.
 var API_PROGRESO = "/api/progreso";
-var API_VISITAS = "https://intranetmetodonerirealtor.vercel.app/api/progreso-visitas";
+var API_VISITAS = "https://intranetmetodonerirealtor.vercel.app/api/propiedad-activa?modo=visitas";
 var EXP_DOC_BASE = "https://expedientedocumentalpropietario.vercel.app/";
 // Contrato para Make/Airtable: folio, vistaPortal, propiedad, asesor, whatsappAsesor, etapas, porcentajes, pendientes, próximos pasos y, cuando existan, visitasRealizadas/ultimaVisita. El portal nunca inventa actividad.
 var CIRC = 2 * Math.PI * 84;
@@ -946,7 +946,7 @@ function toggleDetalle(){
 
 function enriquecerVisitas(d,folio){
   if(!d || resolveVista(d)!=="vendedor")return Promise.resolve(d);
-  return fetch(API_VISITAS+"?folio="+encodeURIComponent(folio),{cache:"no-store"})
+  return fetch(API_VISITAS+"&folio="+encodeURIComponent(folio),{cache:"no-store"})
     .then(function(r){return r.ok?r.json():null;})
     .then(function(v){
       if(v&&isNum(v.visitasRealizadas)){
