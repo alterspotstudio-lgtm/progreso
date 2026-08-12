@@ -259,6 +259,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opa
 // El webhook de Make vive en el servidor — no se expone al cliente.
 // La llamada va a /api/progreso (proxy Vercel) que internamente consulta Make.
 var API_PROGRESO = "/api/progreso";
+var API_VISITAS = "https://intranetmetodonerirealtor.vercel.app/api/progreso-visitas";
 var EXP_DOC_BASE = "https://expedientedocumentalpropietario.vercel.app/";
 // Contrato para Make/Airtable: folio, vistaPortal, propiedad, asesor, whatsappAsesor, etapas, porcentajes, pendientes, próximos pasos y, cuando existan, visitasRealizadas/ultimaVisita. El portal nunca inventa actividad.
 var CIRC = 2 * Math.PI * 84;
@@ -813,6 +814,12 @@ function pulsoIdx(clave,total){
   for(var i=0;i<k.length;i++){ h^=k.charCodeAt(i); h=Math.imul(h,16777619); }
   return total?(Math.abs(h)%total):0;
 }
+function fechaVisitaLegible(value){
+  if(!value)return "";
+  var d=new Date(value);
+  if(isNaN(d))return String(value);
+  return d.toLocaleDateString("es-MX",{day:"numeric",month:"long",year:"numeric"});
+}
 function renderPulso(d,vista,f,idx){
   var wrap=$("pulso");
   if(!wrap)return;
@@ -830,7 +837,7 @@ function renderPulso(d,vista,f,idx){
     lista=PULSO_APARTADO; sub="";
   }else if(visitas>0){
     mensaje=visitas===1?"Ya se realizó una visita a tu propiedad.":"Ya se realizaron "+visitas+" visitas a tu propiedad.";
-    if(ultimaVisita) mensaje+=" La más reciente fue "+ultimaVisita+".";
+    if(ultimaVisita) mensaje+=" La más reciente fue el "+fechaVisitaLegible(ultimaVisita)+".";
     sub="Tu asesor está dando seguimiento y registrará aquí el siguiente avance.";
   }else if(n>0){
     lista=PULSO_CON_INTERES;
@@ -937,6 +944,19 @@ function toggleDetalle(){
   }
 }
 
+function enriquecerVisitas(d,folio){
+  if(!d || resolveVista(d)!=="vendedor")return Promise.resolve(d);
+  return fetch(API_VISITAS+"?folio="+encodeURIComponent(folio),{cache:"no-store"})
+    .then(function(r){return r.ok?r.json():null;})
+    .then(function(v){
+      if(v&&isNum(v.visitasRealizadas)){
+        d.visitasRealizadas=Number(v.visitasRealizadas);
+        if(v.ultimaVisita)d.ultimaVisita=v.ultimaVisita;
+      }
+      return d;
+    })
+    .catch(function(){return d;});
+}
 function load(){
   var folio=getFolio();
   if(!folio){show("stError");$("errMsg").textContent="Falta el folio en el enlace. Pide a tu asesor que te comparta el link completo.";return;}
@@ -944,7 +964,7 @@ function load(){
     .then(function(r){return r.text();})
     .then(function(t){
       var d;try{d=JSON.parse(t);}catch(e){d=null;}
-      render(d);
+      return enriquecerVisitas(d,folio).then(render);
     })
     .catch(function(){show("stError");$("errMsg").textContent="No pudimos consultar tu operación en este momento. Intenta de nuevo en unos minutos.";});
 }
