@@ -260,7 +260,7 @@ body::after{content:"";position:fixed;inset:0;pointer-events:none;z-index:50;opa
 // La llamada va a /api/progreso (proxy Vercel) que internamente consulta Make.
 var API_PROGRESO = "/api/progreso";
 var EXP_DOC_BASE = "https://expedientedocumentalpropietario.vercel.app/";
-// Contrato listo para Make/Airtable: folio, vistaPortal(vendedor|comprador), propiedad, asesor, whatsappAsesor, etapaVendedor/etapaComprador, pctVendedor/pctComprador, estadoVisual, pendientesVendedor/pendientesComprador, proximoPasoVendedor/proximoPasoComprador.
+// Contrato para Make/Airtable: folio, vistaPortal, propiedad, asesor, whatsappAsesor, etapas, porcentajes, pendientes, próximos pasos y, cuando existan, visitasRealizadas/ultimaVisita. El portal nunca inventa actividad.
 var CIRC = 2 * Math.PI * 84;
 
 /*
@@ -822,16 +822,23 @@ function renderPulso(d,vista,f,idx){
   var apartado=norm(f.n).indexOf("apartado")>-1;
   var n=parseInt(pick(d.interesados,d.leadsCompradores,d.leads,"0"),10);
   if(isNaN(n))n=0;
-  var lista, sub;
+  var visitas=parseInt(field(d,["visitasRealizadas","Visitas Realizadas","numeroVisitas","Número de Visitas","visitas"]),10);
+  if(isNaN(visitas))visitas=0;
+  var ultimaVisita=field(d,["ultimaVisita","Última Visita","fechaUltimaVisita","Fecha Última Visita"]);
+  var lista, sub, mensaje;
   if(apartado || idx>9){
     lista=PULSO_APARTADO; sub="";
+  }else if(visitas>0){
+    mensaje=visitas===1?"Ya se realizó una visita a tu propiedad.":"Ya se realizaron "+visitas+" visitas a tu propiedad.";
+    if(ultimaVisita) mensaje+=" La más reciente fue "+ultimaVisita+".";
+    sub="Tu asesor está dando seguimiento y registrará aquí el siguiente avance.";
   }else if(n>0){
     lista=PULSO_CON_INTERES;
     sub=n===1?"1 interesado registrado":(n+" interesados registrados");
   }else{
     lista=PULSO_SIN_INTERES; sub="";
   }
-  $("pulsoTxt").textContent=lista[pulsoIdx((d.folio||"")+"|"+n, lista.length)];
+  $("pulsoTxt").textContent=mensaje||lista[pulsoIdx((d.folio||"")+"|"+n+"|"+visitas, lista.length)];
   $("pulsoSub").textContent=sub;
   $("pulsoSub").style.display=sub?"":"none";
   wrap.style.display="";
