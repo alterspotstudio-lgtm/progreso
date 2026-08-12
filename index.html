@@ -798,6 +798,18 @@ var PULSO_SIN_INTERES=[
   "Cada día de publicación es una casa más vista. Esto se gana con constancia.",
   "Tu propiedad está en el mercado y trabajando. No hay que hacer nada más que sostener."
 ];
+/* Las 3 frases de arriba dan por hecho que la propiedad YA está publicada
+   ("ya está frente a la gente", "cada día de publicación", "en el mercado").
+   Se usaban también como respaldo genérico para cualquier etapa sin
+   interesados — incluida la etapa 1 de 14 ("Acuerdo de venta firmado"),
+   4 pasos antes de que exista publicación. Reportado por Enrique 12-ago-2026:
+   el portal le decía "sostener, ya está en el mercado" a una propiedad que
+   apenas firmó el acuerdo con el asesor. */
+var PULSO_PREPARANDO=[
+  "Estamos armando tu expediente antes de salir al mercado.",
+  "Cada documento que se revisa ahora evita retrasos después.",
+  "Tu propiedad se prepara para salir bien, no rápido."
+];
 var PULSO_CON_INTERES=[
   "Tu propiedad está generando interés.",
   "Hay gente preguntando por tu casa.",
@@ -809,6 +821,13 @@ var PULSO_APARTADO=[
   "Lo difícil ya pasó. Ahora es papeleo con fecha.",
   "Tu operación está en manos de notaría y expedientes."
 ];
+/* Primer índice de FASES_VENDEDOR donde la propiedad ya está publicada.
+   Calculado por nombre, no a mano, para no desalinearse si el orden del
+   arreglo cambia. Antes de este índice, PULSO_SIN_INTERES no aplica. */
+var IDX_PUBLICACION=(function(){
+  for(var i=0;i<FASES_VENDEDOR.length;i++){ if(FASES_VENDEDOR[i].n==="Publicación y promoción activa") return i; }
+  return 4;
+})();
 function pulsoIdx(clave,total){
   var h=2166136261,k=String(clave||"");
   for(var i=0;i<k.length;i++){ h^=k.charCodeAt(i); h=Math.imul(h,16777619); }
@@ -842,6 +861,8 @@ function renderPulso(d,vista,f,idx){
   }else if(n>0){
     lista=PULSO_CON_INTERES;
     sub=n===1?"1 interesado registrado":(n+" interesados registrados");
+  }else if(idx<IDX_PUBLICACION){
+    lista=PULSO_PREPARANDO; sub="";
   }else{
     lista=PULSO_SIN_INTERES; sub="";
   }
