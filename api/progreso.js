@@ -12,10 +12,22 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Método no permitido' });
   }
 
-  const { folio, vista } = req.query;
+  const q = req.query || {};
+  const folio = q.folio;
+  const vista = q.vista;
+  /* Dos generaciones de link conviven a propósito: el portal del vendedor ya
+     manda folioExpedientePropietario/tokenExpedientePropietario desde antes
+     de este cambio (no se puede reemitir cada link ya enviado), y el del
+     comprador manda folioExpediente/token. Se aceptan los dos nombres como
+     alias del mismo par — la validación de abajo es idéntica para ambos. */
+  const folioExpediente = q.folioExpediente || q.folioExpedientePropietario;
+  const token = q.token || q.tokenExpedientePropietario;
 
   if (!folio) {
     return res.status(400).json({ error: 'Falta el parámetro folio' });
+  }
+  if (!folioExpediente || !token) {
+    return res.status(401).json({ error: 'El enlace de seguimiento está incompleto o no es seguro.' });
   }
 
   if (!MAKE_WEBHOOK) {
@@ -24,6 +36,17 @@ export default async function handler(req, res) {
   }
 
   try {
+    const esComprador = String(vista || '').toLowerCase().includes('compr');
+    const validationPath = esComprador ? 'expediente-comprador-documentos' : 'expediente-documentos';
+    const validationParams = new URLSearchParams({ folio: String(folioExpediente), token: String(token) });
+    const validationRes = await fetch(
+      'https://expedientedocumentalpropietario.vercel.app/api/' + validationPath + '?' + validationParams.toString(),
+      { headers: { Accept: 'application/json' }, cache: 'no-store' }
+    );
+    if (!validationRes.ok) {
+      return res.status(401).json({ error: 'Este enlace de seguimiento no es válido o ya no está disponible.' });
+    }
+
     const params = new URLSearchParams({ folio });
     if (vista) params.set('vista', vista);
 
