@@ -12,7 +12,16 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Método no permitido' });
   }
 
-  const { folio, vista, folioExpediente, token } = req.query;
+  const q = req.query || {};
+  const folio = q.folio;
+  const vista = q.vista;
+  /* Dos generaciones de link conviven a propósito: el portal del vendedor ya
+     manda folioExpedientePropietario/tokenExpedientePropietario desde antes
+     de este cambio (no se puede reemitir cada link ya enviado), y el del
+     comprador manda folioExpediente/token. Se aceptan los dos nombres como
+     alias del mismo par — la validación de abajo es idéntica para ambos. */
+  const folioExpediente = q.folioExpediente || q.folioExpedientePropietario;
+  const token = q.token || q.tokenExpedientePropietario;
 
   if (!folio) {
     return res.status(400).json({ error: 'Falta el parámetro folio' });
